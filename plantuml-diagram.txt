@@ -1,0 +1,50 @@
+@startuml
+
+class AuthenticationActivity
+class HomeActivity
+class ProfileActivity
+
+class UserProfile
+class Emotion
+enum EmotionType
+
+HomeActivity -- MapFragment
+HomeActivity -- MoodListFragment
+HomeActivity -- SearchFragment
+HomeActivity -- FollowingFragment
+
+ProfileActivity -- UserProfile
+
+SearchFragment -- ProfileListFragment
+FollowingFragment -- ProfileListFragment
+
+ProfileListFragment -- UserProfile
+
+class MoodEvent
+{
+    Location location
+    DateTime dateTime;
+    String remark;
+    Image image;
+    SocialSituation situation
+    
+    EmotionType emotionType;
+}
+
+class MoodList
+{
+    MoodEvent event
+    sort()
+}
+
+EmotionType -- Emotion
+
+UserProfile -- MoodList
+
+MoodListFragment -- MoodList
+
+MoodList -- MoodEvent
+
+MoodEvent -- EmotionType
+
+@enduml
