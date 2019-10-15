@@ -5,8 +5,7 @@ class HomeActivity
 class ProfileActivity
 class SignInActivity
 
-class UserProfile
-{
+class UserProfile {
     username : String
     firstName : String
     lastName : String
@@ -21,7 +20,8 @@ HomeActivity *-- FollowingFragment
 HomeActivity o-- FilterFragment
 HomeActivity o-- DetailsFragment
 
-FilterFragment -- Filter
+abstract class Filter <<android>>
+class FilterFragment
 
 ProfileActivity -- UserProfile
 ProfileActivity -- MoodListFragment
@@ -36,32 +36,44 @@ MoodListFragment -- MoodAdapter
 
 DetailsFragment -- MoodEvent
 
-class MoodEvent
-{
-    Location location
+class MoodEvent {
+    Coordinate location
     DateTime dateTime;
     String remark;
     Image image;
     SocialSituation situation
-    
-    EmotionType emotionType;
+    Emotion emotion
 }
 
-class MoodAdapter
-{
+class Coordinate {
+    latitude : double
+    longitude : double
 }
+
+MoodEvent -- Coordinate
+
+class MoodAdapter {
+    getFilter : MoodFilter
+}
+
+MoodAdapter -- MoodFilter
+
+class MoodFilter {
+    filter(filterSequence : String}
+}
+
+abstract class Filter <<android>> 
+Filter <|-- MoodFilter
 
 UserProfile -- MoodAdapter
 
+class ArrayAdapter <<android>>
 ArrayAdapter <|-- MoodAdapter
 
 MoodAdapter -- MoodEvent
-interface Filterable
-Filterable <|-- MoodEvent
+interface Filterable <<android>>
+Filterable <|-- MoodAdapter
 
 MoodEvent -- Emotion
-MoodEvent -- Date
-MoodEvent -- Location
-MoodEvent -- Image
 
 @enduml
