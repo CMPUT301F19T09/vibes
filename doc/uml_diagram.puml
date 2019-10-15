@@ -19,7 +19,7 @@ class MoodEvent {
     String remark;
     Image image;
     SocialSituation situation
-    Emotion emotion
+    EmotionType emotion
     MoodEvent(dateTime:DateTime,emotion:Emotion)
 }
 
@@ -84,5 +84,8 @@ interface Filterable <<android>>
 Filterable <|-- MoodAdapter
 
 MoodEvent -- Emotion
+
+enum EmotionType
+EmotionType -- Emotion
 
 @enduml
