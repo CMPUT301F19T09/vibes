@@ -9,8 +9,25 @@ class UserProfile {
     username : String
     firstName : String
     lastName : String
+    UserProfile(username:String)
+    UserProfile(username:String,firstName:String,lastName:String)
 }
-class Emotion
+
+class MoodEvent {
+    Coordinate location
+    DateTime dateTime;
+    String remark;
+    Image image;
+    SocialSituation situation
+    Emotion emotion
+    MoodEvent(dateTime:DateTime,emotion:Emotion)
+}
+
+class Emotion {
+    String imageResourceName
+    String emotionName
+    Emotion(imageResourceName:String,emotionName:String)
+}
 
 HomeActivity *-- MapFragment
 HomeActivity o-- MoodListFragment
@@ -36,18 +53,10 @@ MoodListFragment -- MoodAdapter
 
 DetailsFragment -- MoodEvent
 
-class MoodEvent {
-    Coordinate location
-    DateTime dateTime;
-    String remark;
-    Image image;
-    SocialSituation situation
-    Emotion emotion
-}
-
 class Coordinate {
     latitude : double
     longitude : double
+    Coordinate(latitude:double,longitude:double)
 }
 
 MoodEvent -- Coordinate
