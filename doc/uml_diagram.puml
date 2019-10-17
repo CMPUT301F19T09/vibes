@@ -2,7 +2,16 @@
 
 AuthenticationActivity -- SignInActivity
 AuthenticationActivity -- HomeActivity
-class AuthenticationActivity
+class AuthenticationActivity {
+}
+
+SignInActivity -- HomeActivity
+class SignInActivity {
+    username : EditText
+    password : EditText
+    loginButton : Button
+    registerButton : Button
+}
 
 HomeActivity *-- MapFragment
 HomeActivity o-- MoodListFragment
@@ -12,23 +21,22 @@ HomeActivity *-- AddFragment
 HomeActivity *-- FollowingFragment
 HomeActivity o-- FilterFragment
 HomeActivity o-- DetailsFragment
-class HomeActivity
+class HomeActivity{
+    logoutButton : Button
+    followingButton : Button
+    filterButton : Button
+    stateButton : Button
+    addButton : Button
+    searchButton : Button
+}
 
 ProfileActivity -- UserProfile
 ProfileActivity -- MoodListFragment
 ProfileActivity -- FilterFragment
 class ProfileActivity
 
-SignInActivity -- HomeActivity
-class SignInActivity {
-    
-}
-
 UserProfile -- MoodAdapter
 class UserProfile {
-    username : String
-    firstName : String
-    lastName : String
     UserProfile(username:String)
     UserProfile(username:String,firstName:String,lastName:String)
 }
@@ -64,6 +72,9 @@ class Coordinate {
 
 MoodListFragment -- MoodAdapter
 class MoodListFragment {
+    dataList : ArrayList<MoodEvent> 
+    dataAdapter : ArrayAdapter<MoodEvent> 
+    listView : ListView 
 }
 
 MoodAdapter -- MoodFilter
@@ -109,11 +120,23 @@ class DetailsFragment {
 }
 
 FollowingFragment -- UserProfile
+FollowingFragment -- ProfileAdapter
 class FollowingFragment {
-    dataList : ArrayList<MoodEvent> 
-    dataAdapter : ArrayAdapter<MoodEvent> 
+    dataList : ArrayList<Profile> 
+    dataAdapter : ArrayAdapter<Profile> 
     listView : ListView 
     
+}
+
+ProfileAdapter -- Profile
+class ProfileAdapter
+
+Profile <|-- UserProfile
+class Profile {
+    username : String
+    firstName : String
+    lastName : String
+    Profile(username:String,firstName:String,lastName:String)
 }
 
 MapFragment -- MoodAdapter
@@ -128,6 +151,7 @@ Filter <|-- MoodFilter
 abstract class Filter <<android>> 
 
 ArrayAdapter <|-- MoodAdapter
+ArrayAdapter <|-- ProfileAdapter
 class ArrayAdapter <<android>>
 
 Filterable <|-- MoodAdapter
