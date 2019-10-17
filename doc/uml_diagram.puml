@@ -29,6 +29,57 @@ class Emotion {
     Emotion(imageResourceName:String,emotionName:String)
 }
 
+class Coordinate {
+    latitude : double
+    longitude : double
+    Coordinate(latitude:double,longitude:double)
+}
+
+class MoodAdapter {
+    getFilter : MoodFilter
+}
+
+class MoodFilter {
+    filter(filterSequence : String}
+}
+
+class SearchFragment {
+    EditText searchEntry
+    Button submitButton
+    LinearLayout results
+}
+
+class AddFragment {
+    EditText mood
+    Button photoButton
+    EditText reason
+    Button dateButton
+    Button timeButton
+    EditText socialSituation
+    EditText location
+    Button submitButton
+}
+
+class DetailsFragment {
+    Image moodImage
+    Image photo
+    TextView name
+    TextView reason
+    TextView time
+    TextView date
+    TextView socialSituation
+    TextView location
+    Button editButton
+    Button deleteButton
+}
+
+class FollowingFragment {
+    ArrayList<MoodEvent> dataList
+    ArrayAdapter<MoodEvent> dataAdapter
+    ListView listView
+    
+}
+
 HomeActivity *-- MapFragment
 HomeActivity o-- MoodListFragment
 HomeActivity o-- MoodAdapter
@@ -53,23 +104,13 @@ MoodListFragment -- MoodAdapter
 
 DetailsFragment -- MoodEvent
 
-class Coordinate {
-    latitude : double
-    longitude : double
-    Coordinate(latitude:double,longitude:double)
-}
 
 MoodEvent -- Coordinate
 
-class MoodAdapter {
-    getFilter : MoodFilter
-}
+
 
 MoodAdapter -- MoodFilter
 
-class MoodFilter {
-    filter(filterSequence : String}
-}
 
 abstract class Filter <<android>> 
 Filter <|-- MoodFilter
