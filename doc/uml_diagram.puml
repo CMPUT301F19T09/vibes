@@ -21,6 +21,7 @@ HomeActivity *-- AddFragment
 HomeActivity *-- FollowingFragment
 HomeActivity o-- FilterFragment
 HomeActivity o-- DetailsFragment
+HomeActivity -- UserProfile
 class HomeActivity{
     logoutButton : Button
     followingButton : Button
@@ -33,7 +34,9 @@ class HomeActivity{
 ProfileActivity -- UserProfile
 ProfileActivity -- MoodListFragment
 ProfileActivity -- FilterFragment
-class ProfileActivity
+class ProfileActivity{
+
+}
 
 UserProfile -- MoodAdapter
 class UserProfile {
@@ -81,10 +84,11 @@ MoodAdapter -- MoodFilter
 MoodAdapter -- MoodEvent
 class MoodAdapter {
     getFilter : MoodFilter
+    getView(position:int,convertView:View,parent:ViewGroup) : View
 }
 
 class MoodFilter {
-    filter(filterSequence : String}
+    filter(filterSequence:String)
 }
 
 SearchFragment -- UserProfile
@@ -94,6 +98,7 @@ class SearchFragment {
     results : LinearLayout 
 }
 
+AddFragment -- MoodEvent
 class AddFragment {
     mood : EditText
     photoButton : Button 
@@ -121,15 +126,17 @@ class DetailsFragment {
 
 FollowingFragment -- UserProfile
 FollowingFragment -- ProfileAdapter
+
 class FollowingFragment {
     dataList : ArrayList<Profile> 
     dataAdapter : ArrayAdapter<Profile> 
     listView : ListView 
-    
 }
 
 ProfileAdapter -- Profile
-class ProfileAdapter
+class ProfileAdapter{
+    getView(position:int,convertView:View,parent:ViewGroup) : View
+}
 
 Profile <|-- UserProfile
 class Profile {
