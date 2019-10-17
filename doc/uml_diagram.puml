@@ -47,7 +47,8 @@ ProfileActivity -- FilterFragment
 FollowingFragment -- UserProfile
 SearchFragment -- UserProfile
 
-MapFragment -- MoodAdapter
+'MapFragment -- MoodAdapter
+MapFragment -- MoodFilter
 
 MoodListFragment -- MoodAdapter
 
