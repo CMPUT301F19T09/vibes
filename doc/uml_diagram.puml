@@ -1,10 +1,30 @@
 @startuml
 
+AuthenticationActivity -- SignInActivity
+AuthenticationActivity -- HomeActivity
 class AuthenticationActivity
-class HomeActivity
-class ProfileActivity
-class SignInActivity
 
+HomeActivity *-- MapFragment
+HomeActivity o-- MoodListFragment
+HomeActivity o-- MoodAdapter
+HomeActivity *-- SearchFragment
+HomeActivity *-- AddFragment
+HomeActivity *-- FollowingFragment
+HomeActivity o-- FilterFragment
+HomeActivity o-- DetailsFragment
+class HomeActivity
+
+ProfileActivity -- UserProfile
+ProfileActivity -- MoodListFragment
+ProfileActivity -- FilterFragment
+class ProfileActivity
+
+SignInActivity -- HomeActivity
+class SignInActivity {
+    
+}
+
+UserProfile -- MoodAdapter
 class UserProfile {
     username : String
     firstName : String
@@ -13,20 +33,27 @@ class UserProfile {
     UserProfile(username:String,firstName:String,lastName:String)
 }
 
+MoodEvent -- Coordinate
+MoodEvent -- Emotion
+MoodEvent -- SocialSituation
 class MoodEvent {
-    Coordinate location
-    DateTime dateTime;
-    String remark;
-    Image image;
-    SocialSituation situation
-    EmotionType emotion
+    location : Coordinate 
+    dateTime : DateTime 
+    remark : String 
+    image : Image 
+    situation : SocialSituation 
+    emotion : Emotion
     MoodEvent(dateTime:DateTime,emotion:Emotion)
 }
 
 class Emotion {
-    String imageResourceName
-    String emotionName
+    imageResourceName : String 
+    emotionName : String 
     Emotion(imageResourceName:String,emotionName:String)
+}
+
+class SocialSituation {
+    socialSituation String
 }
 
 class Coordinate {
@@ -35,6 +62,12 @@ class Coordinate {
     Coordinate(latitude:double,longitude:double)
 }
 
+MoodListFragment -- MoodAdapter
+class MoodListFragment {
+}
+
+MoodAdapter -- MoodFilter
+MoodAdapter -- MoodEvent
 class MoodAdapter {
     getFilter : MoodFilter
 }
@@ -43,90 +76,65 @@ class MoodFilter {
     filter(filterSequence : String}
 }
 
+SearchFragment -- UserProfile
 class SearchFragment {
-    EditText searchEntry
-    Button submitButton
-    LinearLayout results
+    searchEntry : EditText 
+    submitButton : Button 
+    results : LinearLayout 
 }
 
 class AddFragment {
-    EditText mood
-    Button photoButton
-    EditText reason
-    Button dateButton
-    Button timeButton
-    EditText socialSituation
-    EditText location
-    Button submitButton
+    mood : EditText
+    photoButton : Button 
+    reason : EditText 
+    dateButton : Button 
+    timeButton : Button 
+    socialSituation : EditText 
+    location : EditText 
+    submitButton : Button 
 }
 
+DetailsFragment -- MoodEvent
 class DetailsFragment {
-    Image moodImage
-    Image photo
-    TextView name
-    TextView reason
-    TextView time
-    TextView date
-    TextView socialSituation
-    TextView location
-    Button editButton
-    Button deleteButton
+    moodImage : Image 
+    photo : Image 
+    name : TextView 
+    reason : TextView 
+    time : TextView 
+    date : TextView 
+    socialSituation : TextView 
+    location : TextView 
+    editButton : Button 
+    deleteButton : Button 
 }
 
+FollowingFragment -- UserProfile
 class FollowingFragment {
-    ArrayList<MoodEvent> dataList
-    ArrayAdapter<MoodEvent> dataAdapter
-    ListView listView
+    dataList : ArrayList<MoodEvent> 
+    dataAdapter : ArrayAdapter<MoodEvent> 
+    listView : ListView 
     
 }
 
-HomeActivity *-- MapFragment
-HomeActivity o-- MoodListFragment
-HomeActivity o-- MoodAdapter
-HomeActivity *-- SearchFragment
-HomeActivity *-- FollowingFragment
-HomeActivity o-- FilterFragment
-HomeActivity o-- DetailsFragment
+MapFragment -- MoodAdapter
+class MapFragment {
+}
 
 abstract class Filter <<android>>
+
 class FilterFragment
 
-ProfileActivity -- UserProfile
-ProfileActivity -- MoodListFragment
-ProfileActivity -- FilterFragment
-
-FollowingFragment -- UserProfile
-SearchFragment -- UserProfile
-
-MapFragment -- MoodAdapter
-
-MoodListFragment -- MoodAdapter
-
-DetailsFragment -- MoodEvent
-
-
-MoodEvent -- Coordinate
-
-
-
-MoodAdapter -- MoodFilter
-
-
-abstract class Filter <<android>> 
 Filter <|-- MoodFilter
+abstract class Filter <<android>> 
 
-UserProfile -- MoodAdapter
-
-class ArrayAdapter <<android>>
 ArrayAdapter <|-- MoodAdapter
+class ArrayAdapter <<android>>
 
-MoodAdapter -- MoodEvent
-interface Filterable <<android>>
 Filterable <|-- MoodAdapter
+interface Filterable <<android>>
 
-MoodEvent -- Emotion
-
-enum EmotionType
 EmotionType -- Emotion
+enum EmotionType
+
 
 @enduml
