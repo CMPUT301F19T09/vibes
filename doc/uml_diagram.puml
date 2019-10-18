@@ -1,8 +1,19 @@
 @startuml
 
-skinparam linetype ortho
+'skinparam linetype ortho
+skinparam {
+    linetype ortho
+    Class {
+        FontSize 18
+        ArrowFontSize 10
+    }
+    
+    Package {
+        FontSize 24
+    }   
+}
 
-package "View" {
+package "View" <<Rectangle>> {
 
     package "Activities" <<Rectangle>> {
 
@@ -16,11 +27,14 @@ package "View" {
             profile : Profile
         }
 
-        AuthenticationActivity "1" -- "1" HomeActivity : "Transitions to\nHomeActivity\nif logged in."
-        AuthenticationActivity "1" -- "1" SignInActivity : "Transitions to\nSignInActivity\nif not logged in."
-        SignInActivity "1" -- "1" HomeActivity : "Transitions to\nHomeActivity\nonce logged in."
-        HomeActivity -- ProfileActivity: "Transitions to\nHomeActivity\n/\nProfileActivity."
+        AuthenticationActivity  --  HomeActivity
+        AuthenticationActivity  --  SignInActivity
+        'SignInActivity  --  HomeActivity
+        'HomeActivity -- ProfileActivity
+
     }
+    
+    note left of AuthenticationActivity : Uses Firebase OAuth to\ndetermine whether the user\nis logged in and authenticates\nthe results of siginin activity.
 
     package "Fragments" <<Rectangle>> {
 
@@ -56,18 +70,18 @@ package "View" {
             applyFilter(filter : String)
         }
 
-        HomeActivity "1" *-- "1" MapFragment : "Transitions to\nMapFragment."
-        HomeActivity "1" o-- "1" MoodListFragment : "Transitions to\nMoodListFragment."
-        HomeActivity "1" *-- "1" SearchFragment : "Transitions to\nSearchFragment."
-        HomeActivity "1" *-- "1" AddFragment : "Transitions to\nAddFragment."
-        HomeActivity "1" *-- "1" FollowingFragment : "Transitions to\nFollowingFragment."
-        HomeActivity "1" o-- "1" FilterFragment : "Transitions to\nFilterFragment."
-        HomeActivity "1" o-- "1" DetailsFragment : "Transitions to\nDetailsFragment."
-        ProfileActivity "1" o-- "1" MoodListFragment : "Transitions to\nMoodListFragment."
-        ProfileActivity "1" o-- "1" FilterFragment : "Transitions to\nFilterFragment."
+        HomeActivity "1" *-- "1" MapFragment
+        HomeActivity "1" o-- "1" MoodListFragment
+        HomeActivity "1" *-- "1" SearchFragment
+        HomeActivity "1" *-- "1" AddFragment
+        HomeActivity "1" *-- "1" FollowingFragment
+        HomeActivity "1" o-- "1" FilterFragment
+        HomeActivity "1" o-- "1" DetailsFragment
+        ProfileActivity "1" o-- "1" MoodListFragment
+        ProfileActivity "1" o-- "1" FilterFragment
 
-        SearchFragment "1" o-- "2" ProfileListFragment : "SearchFragment\nlists matching\nprofiles via\nProfileListFragment."
-        FollowingFragment "1" o-- "1" ProfileListFragment : "FollowingFragment\nlists followees via\nProfileListFragment."
+        SearchFragment "1" o-- "2" ProfileListFragment
+        FollowingFragment "1" o-- "1" ProfileListFragment
 
     }
 
@@ -100,27 +114,31 @@ package "Control" <<Rectangle>> {
         filter(constraint : CharSequence) <<override>>
     }
     
-    Filterable "1" <|-- "1" MoodAdapter : "MoodAdapter uses\nFilterable\nto filter moods."
-    ArrayAdapter "1" <|-- "1" MoodAdapter : "MoodEvent implements\nArrayAdapter."
+    Filterable  <|-- MoodAdapter
+    ArrayAdapter <|-- MoodAdapter
 
-    Filterable "1" <|-- "1" ProfileAdapter : "ProfileAdapter uses\nFilterable\nto filter profiles."
-    ArrayAdapter "1" <|-- "1" ProfileAdapter : "ProfileEvent implements\nArrayAdapter."
+    Filterable  <|-- ProfileAdapter
+    ArrayAdapter <|-- ProfileAdapter
     
-    Filter "1" <|-- "1" MoodFilter : "MoodFilter implements\nFilter."
-    Filter "1" <|-- "1" ProfileFilter : "ProfileFilter implements\nFilter."
+    Filter <|-- MoodFilter
+    Filter <|-- ProfileFilter
 
-    ProfileAdapter "1" -- "1" ProfileFilter : "ProfileAdapter uses\nProfileFilter\nto filter profiles."
-    MoodAdapter "1" -- "1" MoodFilter : "MoodAdapter uses\nMoodFilter\nto filter moods."
+    ProfileAdapter "1" -- "1" ProfileFilter
+    MoodAdapter "1" -- "1" MoodFilter
+
 }
 
-MapFragment "1" -- "1" MoodAdapter : "MapFragment\ndisplays the moods\nfrom MoodAdapter."
-MoodListFragment "1" -- "1" MoodAdapter : "MoodListFragment\ndisplays the moods\nfrom MoodAdapter."
-MoodListFragment "1" -- "1" MoodFilter : "MoodListFragment uses\nFilterable\nto filter moods."
+note top of Filter : ArrayAdapters can provide\nFilters that allow only a\nsubset of the data to be\nshown
 
-ProfileListFragment "1" o-- "1" ProfileAdapter : "ProfileListFragment\ndisplays the profiles\nfrom ProfileAdapter."
-ProfileListFragment "1" -- "1" ProfileFilter : "ProfileListFragment uses\nProfileFilter\nto filter profiles."
-
+MapFragment "1" o-- "1" MoodAdapter
 MapFragment "1" -- "1" MoodFilter
+
+MoodListFragment "1" o-- "1" MoodAdapter
+MoodListFragment "1" -- "1" MoodFilter
+
+ProfileListFragment "1" o-- "1" ProfileAdapter
+ProfileListFragment "1" -- "1" ProfileFilter
+
 
 package "Model" <<Rectangle>> {
 
@@ -136,7 +154,7 @@ package "Model" <<Rectangle>> {
         image : Image 
         situation : SocialSituation 
         emotion : Emotion
-        MoodEvent(dateTime:DateTime,emotion:Emotion)
+        MoodEvent(dateTime : DateTime, emotion : Emotion)
     }
 
     class Emotion {
@@ -185,22 +203,22 @@ package "Model" <<Rectangle>> {
     class DateTime
     }   
 
-    MoodEvent "1" o-- "1" Emotion : "Emotion is\ncontained by\nMoodEvent."
-    MoodEvent "1" *-- "1" Location : "Location is\ncontained by\nMoodEvent."
-    MoodEvent "1" o-- "1" SocialSituation : "SocialSituation is\ncontained by\nMoodEvent."
-    MoodEvent "1" *-- "1" DateTime : "DateTime is\ncontained by\nMoodEvent."
+    MoodEvent "0..*" o-- "1" Emotion
+    MoodEvent "1" *-- "0..1" Location
+    MoodEvent "0..*" o-- "1" SocialSituation
+    MoodEvent "1" *-- "1" DateTime
 
-    Profile "1" <|-- "1" UserProfile : "UserProfile\nis a kind of\nProfile"
-    Profile "1" <|-- "1" PublicProfile : "PublicProfile\nis a kind of\nProfile"
+    Profile <|-- UserProfile
+    Profile <|-- PublicProfile
 
 }
 
-MoodAdapter "1" -- "0..*" MoodEvent : "MoodAdapter\nconnects the\nMoodEvents's\nto the data set."
-ProfileAdapter "1" -- "0..*" Profile : "ProfileAdapter\nconnects the\nProfile's\nto the data set."
+MoodAdapter "1" -- "0..*" MoodEvent
+ProfileAdapter "1" -- "0..*" Profile
 
-MoodFilter "1" -- "1" MoodEvent : "MoodEvent\nuses\nMoodFilter."
-ProfileFilter "1" -- "0..*" Profile : "Profile\nuses\nProfileFilter."
+MoodFilter "1" -- "0..*" MoodEvent
+ProfileFilter "1" -- "0..*" Profile
 
-DetailsFragment "1" -- "1" MoodEvent : "Details\ndisplays the details\nof a MoodEvent."
+DetailsFragment "1" o-- "1" MoodEvent
 
 @enduml
