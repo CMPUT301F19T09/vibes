@@ -1,0 +1,235 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam {
+    linetype ortho
+    classAttributeIconSize 0
+    Class {
+        FontSize 18
+        ArrowFontSize 10
+    }
+    
+    Package {
+        FontSize 24
+    }   
+}
+
+package "View" <<Rectangle>> {
+
+    package "Activities" <<Rectangle>> {
+
+        class AuthenticationActivity
+
+        class SignInActivity
+
+        class HomeActivity
+
+        class ProfileActivity {
+            -profile : Profile
+        }
+
+        AuthenticationActivity  --  HomeActivity
+        AuthenticationActivity  --  SignInActivity
+        'SignInActivity  --  HomeActivity
+        'HomeActivity -- ProfileActivity
+
+    }
+    
+    note left of AuthenticationActivity : Uses Firebase OAuth to\ndetermine whether the user\nis logged in and authenticates\nthe results of siginin activity.
+
+    package "Fragments" <<Rectangle>> {
+
+        class MoodListFragment {
+            -dataList : List<MoodEvent> 
+            -dataAdapter : ArrayAdapter<MoodEvent> 
+            -listView : ListView
+
+            +applyFilter(filter : String)
+        }
+
+        class SearchFragment {
+            -profileList : ProfileListFragment
+            -currentSearch : String
+            -applyFilter(filter : String)
+        }
+
+        class AddFragment {
+        }
+
+        class FollowingFragment {
+            -profileList : ProfileListFragment
+            -followRequests : ProfileListFragment
+        }
+
+        class DetailsFragment {
+            -mood : MoodEvent
+            -editingEnabled : boolean
+        }
+
+        class ProfileListFragment {
+            -listView : ListView
+            -dataList : List<Profile>
+
+            +applyFilter(filter : String)
+        }
+
+        HomeActivity "1" *-- "1" MapFragment
+        HomeActivity "1" o-- "1" MoodListFragment
+        HomeActivity "1" *-- "1" SearchFragment
+        HomeActivity "1" *-- "1" AddFragment
+        HomeActivity "1" *-- "1" FollowingFragment
+        HomeActivity "1" o-- "1" FilterFragment
+        HomeActivity "1" o-- "1" DetailsFragment
+        ProfileActivity "1" o-- "1" MoodListFragment
+        ProfileActivity "1" o-- "1" FilterFragment
+
+        SearchFragment "1" o-- "2" ProfileListFragment
+        FollowingFragment "1" o-- "1" ProfileListFragment
+
+    }
+
+}
+
+package "Android API" <<Rectangle>> {
+
+    interface Filterable
+    interface Filter
+    abstract class ArrayAdapter
+}
+
+package "Control" <<Rectangle>> {
+
+    class MoodAdapter {
+        -dataList : List<MoodEvent>
+        +getFilter() : MoodFilter
+    }
+
+    class ProfileAdapter {
+        -dataList : List<MoodEvent>
+        +getFilter() : ProfileFilter
+    }
+
+    class MoodFilter {
+        +filter(constraint : CharSequence) <<override>>
+        +getFilteredItems() : List<Mood>
+    }
+
+    class ProfileFilter {
+        +filter(constraint : CharSequence) <<override>>
+        +getFilteredItems() : List<Profile>
+    }
+    
+    Filterable  <|-- MoodAdapter
+    ArrayAdapter <|-- MoodAdapter
+
+    Filterable  <|-- ProfileAdapter
+    ArrayAdapter <|-- ProfileAdapter
+    
+    Filter <|-- MoodFilter
+    Filter <|-- ProfileFilter
+
+    ProfileAdapter "1" -- "1" ProfileFilter
+    MoodAdapter "1" -- "1" MoodFilter
+
+}
+
+note top of Filter : ArrayAdapters can provide\nFilters that allow only a\nsubset of the data to be\nshown
+
+MapFragment "1" o-- "1" MoodAdapter
+MapFragment "1" -- "1" MoodFilter
+
+MoodListFragment "1" o-- "1" MoodAdapter
+MoodListFragment "1" -- "1" MoodFilter
+
+ProfileListFragment "1" o-- "1" ProfileAdapter
+ProfileListFragment "1" -- "1" ProfileFilter
+
+
+package "Model" <<Rectangle>> {
+
+    class UserProfile {
+        +UserProfile(username : String)
+        +UserProfile(username : String, firstName : String, lastName : String)
+    }
+
+    class MoodEvent {
+        ..fields with getters and setters..
+        -location : Location 
+        -dateTime : DateTime 
+        -remark : String 
+        -image : Image 
+        -situation : SocialSituation 
+        -emotion : Emotion
+        ..
+        +MoodEvent(dateTime : DateTime, emotion : Emotion)
+
+    }
+
+    class Emotion {
+        ..static..
+        -emotions : static Map<String, Emotion>
+        +get(name : String) : static Emotion
+        ..
+        -Emotion(imageResource : String, name : String)
+        ..fields with getters and setters..
+        -imageResource : String 
+        -name : String 
+    }
+
+    class SocialSituation {
+        ..static..
+        -situations : static Map<String, SocialSituation>
+        +get(key : String) : static SocialSituation
+        ..
+        -SocialSituation(name : String)
+        ..fields with getters and setters..
+        -name : String
+    }
+
+    class Location {
+        +Location(latitude:double,longitude:double)
+        ..fields have getters and setters..
+        -latitude : double
+        -longitude : double
+    }
+
+    class Profile {
+        ..fields have getters and setters..
+        -username : final String
+        -firstName : String
+        -lastName : String
+        ..
+        +Profile(username : String)
+        +Profile(username : String, firstName : String, lastName : String)
+    }
+
+    class PublicProfile {
+        +PublicProfile(username : String)
+        +PublicProfile(username : String, firstName : String, lastName : String)
+        ..fields have getters and setters..
+        -following : boolean
+    }
+
+    package "Java API" <<Rectangle>> {
+        class DateTime
+    }   
+
+    MoodEvent "0..*" o-- "1" Emotion
+    MoodEvent "1" *-- "0..1" Location
+    MoodEvent "0..*" o-- "1" SocialSituation
+    MoodEvent "1" *-- "1" DateTime
+
+    Profile <|-- UserProfile
+    Profile <|-- PublicProfile
+
+}
+
+MoodAdapter "1" -- "0..*" MoodEvent
+ProfileAdapter "1" -- "0..*" Profile
+
+MoodFilter "1" -- "0..*" MoodEvent
+ProfileFilter "1" -- "0..*" Profile
+
+DetailsFragment "1" o-- "1" MoodEvent
+
+@enduml
