@@ -16,9 +16,9 @@ package "View" {
             profile : Profile
         }
 
-        AuthenticationActivity -- HomeActivity
-        AuthenticationActivity -- SignInActivity
-        SignInActivity -- HomeActivity
+        AuthenticationActivity "1" -- "1" HomeActivity : "Transitions to\nHomeActivity\nif logged in."
+        AuthenticationActivity "1" -- "1" SignInActivity : "Transitions to\nSignInActivity\nif not logged in."
+        SignInActivity "1" -- "1" HomeActivity : "Transitions to\nHomeActivity\nonce logged in."
         HomeActivity -- ProfileActivity
     }
 
@@ -100,28 +100,27 @@ package "Control" <<Rectangle>> {
         filter(constraint : CharSequence) <<override>>
     }
     
-    Filterable <|-- MoodAdapter
-    ArrayAdapter <|-- MoodAdapter : MoodEvent
+    Filterable "1" <|-- "1" MoodAdapter
+    ArrayAdapter "1" <|-- "1" MoodAdapter : MoodEvent
 
-    Filterable <|-- ProfileAdapter
-    ArrayAdapter <|-- ProfileAdapter : Profile
+    Filterable "1" <|-- "1" ProfileAdapter
+    ArrayAdapter "1" <|-- "1" ProfileAdapter : Profile
     
-    Filter <|-- MoodFilter
-    Filter <|-- ProfileFilter
+    Filter "1" <|-- "1" MoodFilter
+    Filter "1" <|-- "1" ProfileFilter
 
     ProfileAdapter -- ProfileFilter
-    MoodAdapter -- MoodFilter 
+    MoodAdapter "1" -- "1" MoodFilter 
 }
 
-MapFragment -- MoodAdapter
-MapFragment -- MoodFilter
-MoodListFragment -- MoodAdapter
-MoodListFragment -- MoodFilter
+MapFragment "1" -- "1" MoodAdapter
+MoodListFragment "1" -- "1" MoodAdapter
+MoodListFragment "1" -- "1" MoodFilter
 
-ProfileListFragment o-- ProfileAdapter
-ProfileListFragment -- ProfileFilter
+ProfileListFragment "1" o-- "1" ProfileAdapter
+ProfileListFragment "1" -- "1" ProfileFilter
 
-MapFragment -- MoodFilter
+MapFragment "1" -- "1" MoodFilter
 
 package "Model" <<Rectangle>> {
 
@@ -186,22 +185,22 @@ package "Model" <<Rectangle>> {
     class DateTime
     }   
 
-    MoodEvent o-- Emotion
-    MoodEvent *-- Location
-    MoodEvent o-- SocialSituation
-    MoodEvent *-- DateTime
+    MoodEvent "1" o-- "1" Emotion
+    MoodEvent "1" *-- "1" Location
+    MoodEvent "1" o-- "1" SocialSituation
+    MoodEvent "1" *-- "1" DateTime
 
-    Profile <|-- UserProfile
-    Profile <|-- PublicProfile
+    Profile "1" <|-- "1" UserProfile
+    Profile "1" <|-- "1" PublicProfile
 
 }
 
-MoodAdapter -- MoodEvent
-ProfileAdapter -- Profile
+MoodAdapter "1" -- "0..*" MoodEvent
+ProfileAdapter "1" -- "0..*" Profile
 
-MoodFilter -- MoodEvent
-ProfileFilter -- Profile
+MoodFilter "1" -- "1" MoodEvent
+ProfileFilter "1" -- "0..*" Profile
 
-DetailsFragment -- MoodEvent
+DetailsFragment "1" -- "1" MoodEvent
 
 @enduml
