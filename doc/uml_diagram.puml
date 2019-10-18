@@ -1,92 +1,208 @@
 @startuml
 
-class AuthenticationActivity
-class HomeActivity
-class ProfileActivity
-class SignInActivity
+skinparam linetype ortho
 
-class UserProfile {
-    username : String
-    firstName : String
-    lastName : String
-    UserProfile(username:String)
-    UserProfile(username:String,firstName:String,lastName:String)
+package "View" {
+
+    package "Activities" <<Rectangle>> {
+
+        class AuthenticationActivity
+
+        class SignInActivity
+
+        class HomeActivity
+
+        class ProfileActivity {
+            profile : Profile
+        }
+
+        AuthenticationActivity -- HomeActivity
+        AuthenticationActivity -- SignInActivity
+        SignInActivity -- HomeActivity
+        HomeActivity -- ProfileActivity
+    }
+
+    package "Fragments" <<Rectangle>> {
+
+        class MoodListFragment {
+            dataList : List<MoodEvent> 
+            dataAdapter : ArrayAdapter<MoodEvent> 
+            listView : ListView
+
+            applyFilter(filter : String)
+        }
+
+        class SearchFragment {
+            profileList : ProfileListFragment
+            currentSearch : String
+        }
+
+        class AddFragment {
+        }
+
+        class FollowingFragment {
+            profileList : ProfileListFragment
+        }
+
+        class DetailsFragment {
+            mood : MoodEvent
+            editingEnabled : boolean
+        }
+
+        class ProfileListFragment {
+            listView : ListView
+            dataList : List<Profile>
+
+            applyFilter(filter : String)
+        }
+
+        HomeActivity "1" *-- "1" MapFragment
+        HomeActivity "1" o-- "1" MoodListFragment
+        HomeActivity "1" *-- "1" SearchFragment
+        HomeActivity "1" *-- "1" AddFragment
+        HomeActivity "1" *-- "1" FollowingFragment
+        HomeActivity "1" o-- "1" FilterFragment
+        HomeActivity "1" o-- "1" DetailsFragment
+        ProfileActivity "1" o-- "1" MoodListFragment
+        ProfileActivity "1" o-- "1" FilterFragment
+
+        SearchFragment "1" o-- "2" ProfileListFragment
+        FollowingFragment "1" o-- "1" ProfileListFragment
+
+    }
+
 }
 
-class MoodEvent {
-    Coordinate location
-    DateTime dateTime;
-    String remark;
-    Image image;
-    SocialSituation situation
-    EmotionType emotion
-    MoodEvent(dateTime:DateTime,emotion:Emotion)
+package "Android API" <<Rectangle>> {
+
+    interface Filterable
+    interface Filter
+    abstract class ArrayAdapter
 }
 
-class Emotion {
-    String imageResourceName
-    String emotionName
-    Emotion(imageResourceName:String,emotionName:String)
+package "Control" <<Rectangle>> {
+
+    class MoodAdapter {
+        dataList : List<MoodEvent>
+        getFilter() : MoodFilter
+    }
+
+    class ProfileAdapter {
+        dataList : List<MoodEvent>
+        getFilter() : ProfileFilter
+    }
+
+    class MoodFilter {
+        filter(constraint : CharSequence) <<override>>
+    }
+
+    class ProfileFilter {
+        filter(constraint : CharSequence) <<override>>
+    }
+    
+    Filterable <|-- MoodAdapter
+    ArrayAdapter <|-- MoodAdapter : MoodEvent
+
+    Filterable <|-- ProfileAdapter
+    ArrayAdapter <|-- ProfileAdapter : Profile
+    
+    Filter <|-- MoodFilter
+    Filter <|-- ProfileFilter
+
+    ProfileAdapter -- ProfileFilter
+    MoodAdapter -- MoodFilter 
+
 }
 
-HomeActivity *-- MapFragment
-HomeActivity o-- MoodListFragment
-HomeActivity o-- MoodAdapter
-HomeActivity *-- SearchFragment
-HomeActivity *-- FollowingFragment
-HomeActivity o-- FilterFragment
-HomeActivity o-- DetailsFragment
+MapFragment -- MoodAdapter
+MapFragment -- MoodFilter
+MoodListFragment -- MoodAdapter
+MoodListFragment -- MoodFilter
 
-abstract class Filter <<android>>
-class FilterFragment
+ProfileListFragment o-- ProfileAdapter
+ProfileListFragment -- ProfileFilter
 
-ProfileActivity -- UserProfile
-ProfileActivity -- MoodListFragment
-ProfileActivity -- FilterFragment
-
-FollowingFragment -- UserProfile
-SearchFragment -- UserProfile
-
-'MapFragment -- MoodAdapter
 MapFragment -- MoodFilter
 
-MoodListFragment -- MoodAdapter
+package "Model" <<Rectangle>> {
 
-DetailsFragment -- MoodEvent
+    class UserProfile {
+        UserProfile(username : String)
+        UserProfile(username : String, firstName : String, lastName : String)
+    }
 
-class Coordinate {
-    latitude : double
-    longitude : double
-    Coordinate(latitude:double,longitude:double)
+    class MoodEvent {
+        location : Location 
+        dateTime : DateTime 
+        remark : String 
+        image : Image 
+        situation : SocialSituation 
+        emotion : Emotion
+        MoodEvent(dateTime:DateTime,emotion:Emotion)
+    }
+
+    class Emotion {
+        -emotions : static Map<String, Emotion>
+        +get(name : String) : static Emotion
+
+        -imageResource : String 
+        -name : String 
+    }
+
+    class SocialSituation {
+        -situations : static Map<String, SocialSituation>
+        +get(key : String) : static SocialSituation
+
+        -name : String
+        -SocialSituation(name : String)
+    }
+
+    class Location {
+        -latitude : double
+        -longitude : double
+
+        +Location(latitude:double,longitude:double)
+
+        +getLatitude() : double
+        +getLongitude() : double
+    }
+
+    class Profile {
+        -username : final String
+        -firstName : String
+        -lastName : String
+
+        +Profile(username : String)
+        +Profile(username : String, firstName : String, lastName : String)
+    }
+
+    class PublicProfile {
+        -following : boolean
+
+        +PublicProfile(username : String)
+        +PublicProfile(username : String, firstName : String, lastName : String)
+    }
+
+    package "Java API" <<Rectangle>> {
+    class DateTime
+    }   
+
+    MoodEvent o-- Emotion
+    MoodEvent *-- Location
+    MoodEvent o-- SocialSituation
+    MoodEvent *-- DateTime
+
+    Profile <|-- UserProfile
+    Profile <|-- PublicProfile
+
 }
-
-MoodEvent -- Coordinate
-
-class MoodAdapter {
-    getFilter : MoodFilter
-}
-
-MoodAdapter -- MoodFilter
-
-class MoodFilter {
-    filter(filterSequence : String}
-}
-
-abstract class Filter <<android>> 
-Filter <|-- MoodFilter
-
-UserProfile -- MoodAdapter
-
-class ArrayAdapter <<android>>
-ArrayAdapter <|-- MoodAdapter
 
 MoodAdapter -- MoodEvent
-interface Filterable <<android>>
-Filterable <|-- MoodAdapter
+ProfileAdapter -- Profile
 
-MoodEvent -- Emotion
+MoodFilter -- MoodEvent
+ProfileFilter -- Profile
 
-enum EmotionType
-EmotionType -- Emotion
+DetailsFragment -- MoodEvent
 
 @enduml
