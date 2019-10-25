@@ -6,13 +6,108 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/main_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#3D5AFE"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tob_bar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="8dp"
+            android:text="vibes"
+            android:textColor="#FFFFFF"
+            android:textSize="40sp"
+            android:textStyle="italic" />
+
+        <ImageButton
+            android:id="@+id/follow_list_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#3D5AFE"
+            app:srcCompat="@drawable/ic_people_white_36dp" />
+
+        <ImageButton
+            android:id="@+id/profile_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#3D5AFE"
+            app:srcCompat="@drawable/ic_person_white_36dp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/main_fragment_root"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/main_bottom_bar"
+        app:layout_constraintTop_toBottomOf="@+id/filter_button"
+        tools:layout_editor_absoluteX="155dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:text="Fragment Root" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/main_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="101dp">
+
+        <ImageButton
+            android:id="@+id/view_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#3D5AFE"
+            app:srcCompat="@drawable/ic_map_white_36dp" />
+
+        <ImageButton
+            android:id="@+id/add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#3D5AFE"
+            app:srcCompat="@drawable/ic_add_circle_white_36dp" />
+
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#3D5AFE"
+            app:srcCompat="@drawable/ic_search_white_36dp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/filter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_top_bar"
+        app:srcCompat="@drawable/ic_filter_list_black_36dp" />
 
+    <TextView
+        android:id="@+id/filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="7dp"
+        android:layout_marginRight="7dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/filter_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_button"
+        app:layout_constraintTop_toTopOf="@+id/filter_button"
+        tools:text="Happy" />
 </androidx.constraintlayout.widget.ConstraintLayout>
