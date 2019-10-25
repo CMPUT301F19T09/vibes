@@ -17,6 +17,17 @@ public class User {
         this.username = username;
         /*
         Initialize with values from firebase
+        Get moods and followers into arrayList
          */
     }
+
+    // getFollowersLatest()
+
+    // getFollowerLastest(String username)
+
+    // addMood(MoodEvent moodEvent)
+
+    // editMood(MoodEvent moodEvent, Integer index)
+
+    // deleteMood(Integer index)
 }
