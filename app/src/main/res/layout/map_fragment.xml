@@ -9,5 +9,5 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/frg"
         android:layout_width="match_parent"
-        android:layout_height="300px"/>
+        android:layout_height="700px"/>
 </FrameLayout>
