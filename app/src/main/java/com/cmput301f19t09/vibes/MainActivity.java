@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import java.io.Serializable;
@@ -20,19 +21,13 @@ public class MainActivity extends FragmentActivity
 {
     //private final static Class defaultFragment = MoodListFragment.class;
 
-    private enum FragmentType
+    private enum ButtonMode
     {
-        NONE,
         LIST,
-        MAP,
-        ADD,
-        SEARCH,
-        PROFILE,
-        FOLLOWING,
-        FILTER;
+        MAP;
     }
 
-    private FragmentType currentFragment;
+    private ButtonMode currentButtonMode;
 
     /*
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -44,10 +39,8 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
 
         //currentFragment = FragmentType.NONE;
-        currentFragment = FragmentType.LIST;
-        updateViewButton(currentFragment);
-
-        //setMainFragment(MoodListFragment.class);
+        currentButtonMode = ButtonMode.MAP;
+        updateViewButton();
 
         ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
                 viewButton;
@@ -63,7 +56,6 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                currentFragment = FragmentType.ADD;
                 //setMainFragment(AddFragment.class);
             }
         });
@@ -73,7 +65,6 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                currentFragment = FragmentType.SEARCH;
                 //setMainFragment(SearchFragment.class);
             }
         });
@@ -83,7 +74,6 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                currentFragment = FragmentType.PROFILE;
                 //setMainFragment(ProfileFragment.class);
             }
         });
@@ -93,7 +83,6 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                currentFragment = FragmentType.FOLLOWING;
                 //setMainFragment(FollowingFragment.class);
             }
         });
@@ -108,21 +97,20 @@ public class MainActivity extends FragmentActivity
                 is pressed (i.e. the current fragment)
                  */
 
-                System.out.println("Switch@");
-                updateViewButton(currentFragment);
-
-                switch (currentFragment)
+                switch (currentButtonMode)
                 {
-                    case NONE:
                     case MAP:
-                        currentFragment = FragmentType.LIST;
-                        //setMainFragment(ListFragment.class);
+                        //setMainFragment(MapFragment.class);
+                        currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
-                        currentFragment = FragmentType.MAP;
-                        //setMainFragment(MapFragment.class);
+                    default:
+                        //setMainFragment(ListFragment.class);
+                        currentButtonMode = ButtonMode.MAP;
                         break;
                 }
+
+                updateViewButton();
             }
         });
     }
@@ -132,6 +120,8 @@ public class MainActivity extends FragmentActivity
      */
     public void setMainFragment(Class fragmentClass)
     {
+        ViewGroup root = findViewById(R.id.main_fragment_root);
+        root.removeAllViewsInLayout();
         if (!Fragment.class.isAssignableFrom(fragmentClass))
         {
             throw new IllegalArgumentException("Argument is not subclass of Fragment!");
@@ -241,7 +231,6 @@ public class MainActivity extends FragmentActivity
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         dialog.show(transaction, null);
-        transaction.commit();
     }
 
     /*
@@ -249,17 +238,16 @@ public class MainActivity extends FragmentActivity
     @param fragmentType
         The type of fragment that the button will open if pressed
      */
-    private void updateViewButton(FragmentType fragmentType)
+    private void updateViewButton()
     {
         ImageButton viewButton = (ImageButton) findViewById(R.id.view_button);
         @DrawableRes int image;
 
-        switch (fragmentType)
+        switch (currentButtonMode)
         {
             case MAP:
                 image = R.drawable.ic_map_white_36dp;
                 break;
-            case NONE:
             case LIST:
             default:
                 image = R.drawable.ic_list_white_36dp;
