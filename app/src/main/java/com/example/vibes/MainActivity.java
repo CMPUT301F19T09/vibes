@@ -25,11 +25,13 @@ public class MainActivity extends FragmentActivity
         NONE,
         LIST,
         MAP,
+        ADD,
         SEARCH,
-        PROFILE;
+        PROFILE,
+        FOLLOWING,
+        FILTER;
     }
 
-    private String filterMode;
     private FragmentType currentFragment;
 
     /*
@@ -41,10 +43,9 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        filterMode = null;
-
         //currentFragment = FragmentType.NONE;
         currentFragment = FragmentType.LIST;
+        updateViewButton(currentFragment);
 
         //setMainFragment(MoodListFragment.class);
 
@@ -53,7 +54,6 @@ public class MainActivity extends FragmentActivity
 
         addButton = findViewById(R.id.add_button);
         searchButton = findViewById(R.id.search_button);
-        filterButton = findViewById(R.id.filter_button);
         profileButton = findViewById(R.id.profile_button);
         followingButton = findViewById(R.id.follow_list_button);
         viewButton = findViewById(R.id.view_button);
@@ -63,6 +63,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
+                currentFragment = FragmentType.ADD;
                 //setMainFragment(AddFragment.class);
             }
         });
@@ -72,16 +73,8 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
+                currentFragment = FragmentType.SEARCH;
                 //setMainFragment(SearchFragment.class);
-            }
-        });
-
-        filterButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                //openDialog(FilterFragment.class);
             }
         });
 
@@ -90,6 +83,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
+                currentFragment = FragmentType.PROFILE;
                 //setMainFragment(ProfileFragment.class);
             }
         });
@@ -99,7 +93,8 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                //addFragment(FollowingFragment.class);
+                currentFragment = FragmentType.FOLLOWING;
+                //setMainFragment(FollowingFragment.class);
             }
         });
 
@@ -112,18 +107,20 @@ public class MainActivity extends FragmentActivity
                 Set the button to represent which fragment will be opened the NEXT TIME the button
                 is pressed (i.e. the current fragment)
                  */
+
+                System.out.println("Switch@");
                 updateViewButton(currentFragment);
 
                 switch (currentFragment)
                 {
                     case NONE:
                     case MAP:
-                        //setMainFragment(ListFragment.class);
                         currentFragment = FragmentType.LIST;
+                        //setMainFragment(ListFragment.class);
                         break;
                     case LIST:
-                        //setMainFragment(MapFragment.class);
                         currentFragment = FragmentType.MAP;
+                        //setMainFragment(MapFragment.class);
                         break;
                 }
             }
@@ -184,7 +181,7 @@ public class MainActivity extends FragmentActivity
         key : argument name
         value : argument value
      */
-    public void openDialog(Class dialogClass, Map<String, Serializable> arguments)
+    public void openDialog(Class dialogClass, Bundle arguments)
     {
         // If the dialogClass is not a subclass of DialogFragment throw an exception
         if (!DialogFragment.class.isAssignableFrom(dialogClass))
@@ -211,13 +208,7 @@ public class MainActivity extends FragmentActivity
         // If arguments were provided put them in a bundle and pass them to the new fragment
         if (arguments != null)
         {
-            Bundle bundle = new Bundle();
-            for (String key : arguments.keySet())
-            {
-                bundle.putSerializable(key, arguments.get(key));
-            }
-
-            dialog.setArguments(bundle);
+            dialog.setArguments(arguments);
         }
 
         // Show the dialog using FragmentTransaction
