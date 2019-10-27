@@ -14,25 +14,41 @@ public class MapFragment extends Fragment {
     /**
      * User structure required to display a user.
      */
-    static class User{
+    static class UserPoint{
         String username;
+        double lon;
+        double lat;
+        String timestamp;
+        int moodId;
+    }
+
+    /**
+     * Showing a user's mood
+     * @param username
+     * @return
+     */
+    public UserPoint showUser(String username){
+        return getMockUser();
     }
 
     /**
      * Returns a mock user for dev purposes.
      * @return
      */
-    public User getMockUser(){
-        User mockUser = new User();
-        mockUser.username = "testUser";
-        return mockUser;
+    public UserPoint getMockUser(){
+        UserPoint mockUserPoint = new UserPoint();
+        mockUserPoint.username = "testuser";
+        mockUserPoint.lon = 113.4938;
+        mockUserPoint.lat = 53.5461;
+        mockUserPoint.moodId = 0;
+        return mockUserPoint;
     }
 
     /**
      * Shows the mood of the user on the map fragment
      * @param User
      */
-    public void showMoodOf(User User){
+    public void showMoodOf(UserPoint User){
 
     }
 
@@ -40,7 +56,7 @@ public class MapFragment extends Fragment {
      * Shows moods of multiple users.
      * @param mood
      */
-    public void showMoods(ArrayList<User> mood){
+    public void showMoods(ArrayList<UserPoint> mood){
 
     }
 
@@ -48,7 +64,6 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         showMoodOf(getMockUser());
-
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.map_fragment, container, false);
