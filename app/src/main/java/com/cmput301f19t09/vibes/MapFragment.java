@@ -2,6 +2,7 @@ package com.cmput301f19t09.vibes;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -21,23 +23,24 @@ import java.util.ArrayList;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
-    private GoogleMap googleMap;
 
-    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+//    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container,false);
-
-        Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
-        }
-
+//
+//        Bundle mapViewBundle = null;
+//        if (savedInstanceState != null) {
+//            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+//        }
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map_view);
+//        mapFragment
 
         mapView = view.findViewById(R.id.map_view);
-        mapView.onCreate(mapViewBundle);
+        mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
 //        if (mapView != null) {
@@ -109,9 +112,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap = googleMap;
-        googleMap.setMinZoomPreference(5);
-        LatLng ny = getMockUser().location;
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
+        Log.d("d", "Map ready");
+
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(0, 0))
+                .title("Marker"));
+//        googleMap.setMinZoomPreference(5);
+//        LatLng ny = getMockUser().location;
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
     }
 }
