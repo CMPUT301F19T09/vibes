@@ -1,70 +1,52 @@
 package com.cmput301f19t09.vibes;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.ArrayList;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private MapView mapView;
 
-//    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    public MapFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container,false);
-//
-//        Bundle mapViewBundle = null;
-//        if (savedInstanceState != null) {
-//            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
-//        }
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map_view);
-//        mapFragment
 
-        mapView = view.findViewById(R.id.map_view);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-
-//        if (mapView != null) {
-//            googleMap = mapView.getMap();
-//            googleMap.addMarker(new MarkerOptions()
-//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_flag))
-//                    .anchor(0.0f, 1.0f)
-//                    .position(new LatLng(55.854049, 13.661331)));
-//            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-//            if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                return view;
-//            }
-//            googleMap.setMyLocationEnabled(true);
-//            googleMap.getUiSettings().setZoomControlsEnabled(true);
-//            MapsInitializer.initialize(this.getActivity());
-//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-//            builder.include(new LatLng(55.854049, 13.661331));
-//            LatLngBounds bounds = builder.build();
-//            int padding = 0;
-//            // Updates the location and zoom of the MapView
-//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-//            googleMap.moveCamera(cameraUpdate);
-//        }
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
+        mapFragment.getMapAsync(this);
         return view;
     }
 
@@ -102,23 +84,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return mockUserPoint;
     }
 
-    /**
-     * Shows moods of multiple users.
-     * @param mood
-     */
-    public void showMoods(ArrayList<UserPoint> mood){
+    @Override
+    public void onMapReady(GoogleMap mMap) {
+        Log.d("DEBUG", "Map ready");
 
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        mMap.clear(); //clear old markers
+
+        CameraPosition googlePlex = CameraPosition.builder()
+                .target(new LatLng(37.4219999,-122.0862462))
+                .zoom(10)
+                .bearing(0)
+                .tilt(45)
+                .build();
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(37.4219999, -122.0862462))
+                .title("Spider Man")
+                .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.spider)));
+
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(37.4629101,-122.2449094))
+                .title("Iron Man")
+                .snippet("His Talent : Plenty of money"));
+
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(37.3092293,-122.1136845))
+                .title("Captain America"));
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Log.d("d", "Map ready");
-
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
-//        googleMap.setMinZoomPreference(5);
-//        LatLng ny = getMockUser().location;
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }
