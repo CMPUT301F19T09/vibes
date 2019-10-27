@@ -1,6 +1,8 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
@@ -10,5 +12,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        User user = new User("testuser");
+        ProfileFragment profileFragment = new ProfileFragment(user);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.view_group, profileFragment);
+        fragmentTransaction.commit();
     }
 }

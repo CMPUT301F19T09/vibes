@@ -24,7 +24,7 @@
         android:layout_marginLeft="16dp"
         android:textSize="24dp"
         android:fontFamily="@font/roboto_thin"
-        app:layout_constraintStart_toEndOf="@+id/profile_picture"
+        app:layout_constraintStart_toEndOf="@+id/profile_mask"
         app:layout_constraintTop_toBottomOf="@+id/firstname_textview"
         tools:text="testuser"
         tools:fontFamily="@font/roboto_thin" />
@@ -38,7 +38,7 @@
         android:layout_marginTop="16dp"
         android:textSize="32dp"
         android:fontFamily="@font/roboto_thin"
-        app:layout_constraintStart_toEndOf="@+id/profile_picture"
+        app:layout_constraintStart_toEndOf="@+id/profile_mask"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Test"
         tools:fontFamily="@font/roboto_thin" />
@@ -70,12 +70,12 @@
         android:elevation="2dp"
         android:fontFamily="@font/roboto_regular"
         android:textColor="#FFFFFF"
+        android:text="F O L L O W"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_picture"
+        app:layout_constraintStart_toEndOf="@+id/profile_mask"
         app:layout_constraintTop_toBottomOf="@+id/username_textview"
-        tools:fontFamily="@font/roboto_regular"
-        tools:text="F O L L O W" />
+        tools:fontFamily="@font/roboto_regular" />
 
     <View
         android:id="@+id/divider"
@@ -89,7 +89,7 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/profile_mask"
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:layout_marginStart="16dp"
