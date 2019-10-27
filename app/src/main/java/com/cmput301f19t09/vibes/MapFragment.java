@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +8,62 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.ArrayList;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
+
+    private MapView mapView;
+    private GoogleMap googleMap;
+
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.map_fragment, container,false);
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+
+
+        mapView = view.findViewById(R.id.map_view);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
+
+//        if (mapView != null) {
+//            googleMap = mapView.getMap();
+//            googleMap.addMarker(new MarkerOptions()
+//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_flag))
+//                    .anchor(0.0f, 1.0f)
+//                    .position(new LatLng(55.854049, 13.661331)));
+//            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+//            if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                return view;
+//            }
+//            googleMap.setMyLocationEnabled(true);
+//            googleMap.getUiSettings().setZoomControlsEnabled(true);
+//            MapsInitializer.initialize(this.getActivity());
+//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//            builder.include(new LatLng(55.854049, 13.661331));
+//            LatLngBounds bounds = builder.build();
+//            int padding = 0;
+//            // Updates the location and zoom of the MapView
+//            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+//            googleMap.moveCamera(cameraUpdate);
+//        }
+
+        return view;
+    }
 
     /**
      * User structure required to display a user.
@@ -18,7 +72,7 @@ public class MapFragment extends Fragment {
         String username;
         double lon;
         double lat;
-        String timestamp;
+        LatLng location;
         int moodId;
     }
 
@@ -27,7 +81,7 @@ public class MapFragment extends Fragment {
      * @param username
      * @return
      */
-    public UserPoint showUser(String username){
+    public UserPoint showMoodOf(String username){
         return getMockUser();
     }
 
@@ -40,16 +94,9 @@ public class MapFragment extends Fragment {
         mockUserPoint.username = "testuser";
         mockUserPoint.lon = 113.4938;
         mockUserPoint.lat = 53.5461;
+        mockUserPoint.location = new LatLng(53.5461, 113.4938);
         mockUserPoint.moodId = 0;
         return mockUserPoint;
-    }
-
-    /**
-     * Shows the mood of the user on the map fragment
-     * @param User
-     */
-    public void showMoodOf(UserPoint User){
-
     }
 
     /**
@@ -61,14 +108,10 @@ public class MapFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        showMoodOf(getMockUser());
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.map_fragment, container, false);
-
-//        events = (ArrayList<HabitEvent>) getIntent().getSerializableExtra("event list");
-//        if (events==null || events.size()<1){finish();}
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap = googleMap;
+        googleMap.setMinZoomPreference(5);
+        LatLng ny = getMockUser().location;
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
     }
 }

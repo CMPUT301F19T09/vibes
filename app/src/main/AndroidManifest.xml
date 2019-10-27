@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDqvjPj18uoo4DgyFEey0dCMhV2UQhmkAI"/>
         <activity android:name="com.cmput301f19t09.vibes.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
