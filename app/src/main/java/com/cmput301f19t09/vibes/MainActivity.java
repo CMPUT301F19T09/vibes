@@ -115,10 +115,15 @@ public class MainActivity extends FragmentActivity
         });
     }
 
+    public void replaceFragment(Class fragmentClass)
+    {
+        replaceFragment(fragmentClass, null);
+    }
+
     /*
     Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
      */
-    public void replaceFragment(Class fragmentClass)
+    public void replaceFragment(Class fragmentClass, Bundle arguments)
     {
         ViewGroup root = findViewById(R.id.main_fragment_root);
         root.removeAllViewsInLayout();
@@ -143,6 +148,10 @@ public class MainActivity extends FragmentActivity
             throw new IllegalArgumentException();
         }
 
+        if (arguments != null)
+        {
+            f.setArguments(arguments);
+        }
         // Get the activity fragment manager and begin a new transaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
