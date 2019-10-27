@@ -1,4 +1,4 @@
-package com.example.vibes;
+package com.cmput301f19t09.vibes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
