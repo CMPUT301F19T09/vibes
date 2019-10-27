@@ -11,9 +11,9 @@ import java.time.LocalTime;
  * @see something?
  */
 public class MoodEvent extends Event {
-    EmotionalState state;
-    int social_situation;
-    Location location;
+    private EmotionalState state;
+    private int social_situation;
+    private Location location;
 
     public MoodEvent(LocalDate date, LocalTime time, String description,
                      EmotionalState state, int social_situation, Location location) {
