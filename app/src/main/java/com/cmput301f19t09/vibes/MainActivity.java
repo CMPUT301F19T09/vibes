@@ -56,7 +56,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                //setMainFragment(AddFragment.class);
+                //replaceFragment(AddFragment.class);
             }
         });
 
@@ -65,7 +65,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                //setMainFragment(SearchFragment.class);
+                //replaceFragment(SearchFragment.class);
             }
         });
 
@@ -74,7 +74,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                //setMainFragment(ProfileFragment.class);
+                //replaceFragment(ProfileFragment.class);
             }
         });
 
@@ -83,7 +83,7 @@ public class MainActivity extends FragmentActivity
             @Override
             public void onClick(View view)
             {
-                //setMainFragment(FollowingFragment.class);
+                //replaceFragment(FollowingFragment.class);
             }
         });
 
@@ -100,12 +100,12 @@ public class MainActivity extends FragmentActivity
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        //setMainFragment(MapFragment.class);
+                        //replaceFragment(MapFragment.class);
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                     default:
-                        //setMainFragment(ListFragment.class);
+                        //replaceFragment(ListFragment.class);
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }
@@ -118,7 +118,7 @@ public class MainActivity extends FragmentActivity
     /*
     Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
      */
-    public void setMainFragment(Class fragmentClass)
+    public void replaceFragment(Class fragmentClass)
     {
         ViewGroup root = findViewById(R.id.main_fragment_root);
         root.removeAllViewsInLayout();
