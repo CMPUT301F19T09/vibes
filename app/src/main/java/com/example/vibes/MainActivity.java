@@ -163,6 +163,32 @@ public class MainActivity extends FragmentActivity
         transaction.commit();
     }
 
+    public void addFragment(Class fragmentClass)
+    {
+        if (!Fragment.class.isAssignableFrom(fragmentClass))
+        {
+            throw new IllegalArgumentException("Argument is not subclass of Fragment!");
+        }
+
+        Fragment f;
+
+        try
+        {
+            f = (Fragment) fragmentClass.newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+        transaction.add(R.id.main_fragment_root, f);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     /*
     Open the DialogFragment specified by dialogClass, with no arguments.
      */

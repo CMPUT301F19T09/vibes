@@ -43,10 +43,11 @@
             app:srcCompat="@drawable/ic_person_white_36dp" />
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/main_fragment_root"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_bar"
         app:layout_constraintTop_toBottomOf="@+id/main_top_bar"
         tools:layout_editor_absoluteX="155dp">
@@ -56,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
             android:text="Fragment Root" />
-    </FrameLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/main_bottom_bar"
