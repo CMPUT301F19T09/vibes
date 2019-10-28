@@ -1,17 +1,19 @@
 package com.example.followinglist;
 
+import android.media.Image;
+
 public class Mood {
     private String name;
-    private int emotion;
+    private EmotionalState emotion;
     private int year;
     private int month;
     private int day;
     private int hour;
     private int minute;
 
-    public Mood(String name, int emotion, int year, int month, int day, int hour, int minute) {
+    public Mood(String name, String emotionName, int year, int month, int day, int hour, int minute) {
         this.name = name;
-        this.emotion = emotion;
+        this.emotion = new EmotionalState(emotionName);
         this.year = year;
         this.month = month;
         this.day = day;
@@ -21,6 +23,10 @@ public class Mood {
 
     public String getName(){
         return this.name;
+    }
+
+    public int getImageFile(){
+        return this.emotion.getImageFile();
     }
 
     public int getYear(){

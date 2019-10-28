@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,9 @@ public class MoodAdapter extends ArrayAdapter<Mood> {
                 ":" + String.format("%02d", mood.getHour()) +
                 ":" + String.format("%02d", mood.getMinute());
         dateText.setText(date);
+
+        ImageView imageView = view.findViewById(R.id.emotion_image);
+        imageView.setImageResource(mood.getImageFile());
 
         return view;
     }

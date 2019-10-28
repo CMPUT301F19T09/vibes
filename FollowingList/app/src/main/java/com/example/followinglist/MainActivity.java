@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-
     private static MoodData dataList;
 
     @Override
@@ -24,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 10; i++){
             //Ref: https://www.mkyong.com/java/java-generate-random-integers-in-a-range/
             dataList.add(new Mood("John Doe",
-                    0,
+                    "HAPPY",
                     random.nextInt(2000) + 0,
                     random.nextInt(11) + 1,
                     random.nextInt(27) + 1,
