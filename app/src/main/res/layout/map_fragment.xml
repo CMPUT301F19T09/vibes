@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapFragment">
+    tools:context=".mapfragment.MapFragment">
 
     <fragment
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/frg"
         android:layout_width="match_parent"
-        android:layout_height="700px"/>
+        android:layout_height="match_parent"/>
+
 </FrameLayout>
