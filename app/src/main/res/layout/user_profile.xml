@@ -7,11 +7,11 @@
 
     <ImageView
         android:id="@+id/profile_picture"
-        android:layout_width="wrap_content"
+        android:layout_width="128dp"
         android:layout_height="128dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -34,14 +34,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:textSize="32dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/roboto_thin"
+        android:textSize="32dp"
         app:layout_constraintStart_toEndOf="@+id/profile_mask"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Test"
-        tools:fontFamily="@font/roboto_thin" />
+        tools:fontFamily="@font/roboto_thin"
+        tools:text="Test" />
 
     <TextView
         android:id="@+id/lastname_textview"
@@ -93,8 +92,7 @@
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/round_mask" />
