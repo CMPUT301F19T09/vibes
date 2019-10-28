@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.mapfragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.widget.Switch;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,51 +27,77 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 public class MapFragment extends Fragment implements OnMapReadyCallback {
-
-    ArrayList<UserPoint> data;
+    MapData data;
     GoogleMap googlemap;
 
+    /**
+     * An example for calling this MapFragment can be found below.
+     * FragmentManager fragmentManager = getSupportFragmentManager();
+     *         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+     *
+     *         MapFragment fragment = new MapFragment();
+     *         Bundle bundle = new Bundle();
+     *         MapData showingUsers = new MapData();
+     *         showingUsers.add(UserPoint.getMockUser());
+     *
+     *         bundle.putSerializable("MapData", showingUsers);
+     *         fragment.setArguments(bundle);
+     *
+     *         fragmentTransaction.add(R.id.map_container, fragment);
+     *         fragmentTransaction.commit();
+     */
     public MapFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Checks for the bundle MapData.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            UserPoint mapPoint = (UserPoint)bundle.getSerializable("MapPoint");
-            if(mapPoint != null){
-                this.data = new ArrayList<UserPoint>();
-                this.data.add(mapPoint);
-            }
+            data = (MapData) bundle.getSerializable("MapData");
         }
     }
 
+    /**
+     * Displays the UserPoint in the map.
+     * @param point
+     */
     public void showUserPoint(UserPoint point){
         if(googlemap != null){
             MarkerOptions options = new MarkerOptions();
-            options.position(point.location);
-            if(point.reason!=null){
-                options.snippet(point.reason);
+            options.position(point.getLocation());
+            if(point.getReason()!=null){
+                options.snippet(point.getReason());
             }
-            if(point.emotion != null){
-                options.title(point.emotion);
+            if(point.getEmotion() != null){
+                options.title(point.getEmotion());
             }
-            switch(point.emotion) {
+            switch(point.getEmotion()) {
                 case "HAPPY":
-                    options.icon(bitmapDescriptorFromVector(getActivity(),R.drawable.happy));
+                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.happy));
                     break;
             }
             googlemap.addMarker(options);
         }
     }
 
+    /**
+     * Making a callback function for when the map object is ready.
+     * As the map is read,
+     * The onMapReady function is called to go throught the given UserPoints.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,16 +108,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-    /**
-     * User structure required to display a user.
-     */
-    static class UserPoint implements Serializable {
-        String username;
-        LatLng location;
-        int moodId;
-        String emotion;
-        String reason;
-}
 
     /**
      * Showing a user's mood
@@ -98,23 +115,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @return
      */
     public UserPoint showMoodOf(String username){
-        return getMockUser();
+        return UserPoint.getMockUser();
     }
 
     /**
-     * Returns a mock user for dev purposes.
-     * @return
+     * This is a callback function. It is called when the map is ready.
+     * It goes throught the data MapData, and and calls showUserPoint(UserPoint) for each item in it.
+     * @param mMap
      */
-    public static UserPoint getMockUser(){
-        UserPoint mockUserPoint = new UserPoint();
-        mockUserPoint.username = "testuser";
-        mockUserPoint.location = new LatLng(53.5461, 113.4938);
-        mockUserPoint.moodId = 0;
-        mockUserPoint.emotion = "HAPPY";
-        mockUserPoint.reason = "I am pregnant";
-        return mockUserPoint;
-    }
-
     @Override
     public void onMapReady(GoogleMap mMap) {
         googlemap = mMap;
@@ -152,6 +160,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 //                .title("Captain America"));
     }
 
+    /**
+     * This is used to convert the drawable object into its bitmap descriptor.
+     * It is used for showing the image of the icon.
+     * @param context
+     * @param vectorResId
+     * @return
+     */
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
