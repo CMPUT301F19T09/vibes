@@ -21,9 +21,16 @@ public class MainActivity extends AppCompatActivity {
 
         Random random = new Random();
         for (int i = 0; i < 10; i++){
+            String mood;
+            if (i % 2 == 0){
+                mood = "HAPPY";
+            } else {
+                mood = "SAD";
+            }
+
             //Ref: https://www.mkyong.com/java/java-generate-random-integers-in-a-range/
             dataList.add(new Mood("John Doe",
-                    "HAPPY",
+                    mood,
                     random.nextInt(2000) + 0,
                     random.nextInt(11) + 1,
                     random.nextInt(27) + 1,

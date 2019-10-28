@@ -12,6 +12,8 @@ public class EmotionalState {
         //Ref: https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values#8229518
         Pair<Integer, String> happy = new Pair<>(R.drawable.happy_emotion, "RED");
         map.put("HAPPY", happy);
+        Pair<Integer, String> sad = new Pair<>(R.drawable.sad_emotion, "BLUE");
+        map.put("SAD", sad);
     }
     private int file;
     private String colour;
