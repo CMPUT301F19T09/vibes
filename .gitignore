@@ -9,3 +9,5 @@
 .cxx
 .gitignore
 /apikey.properties
+app/src/main/java/com/cmput301f19t09/vibes/MainActivity.java
+app/src/main/res/layout/activity_main.xml
