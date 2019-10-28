@@ -1,3 +1,7 @@
+def apikeyPropertiesFile = rootProject.file("apikey.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 apply plugin: 'com.android.application'
 
 android {
@@ -10,7 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
+        resValue "string", "google_maps_key", (apikeyProperties['GOOGLE_MAPS_API_KEY'] ?: "")
 
     }
     buildTypes {
