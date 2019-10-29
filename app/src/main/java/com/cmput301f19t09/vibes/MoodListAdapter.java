@@ -14,13 +14,13 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-public class MoodAdapter extends ArrayAdapter<MoodEvent>
+public class MoodListAdapter extends ArrayAdapter<MoodEvent>
 {
     private Context context;
 
     private List<MoodEvent> data;
 
-    public MoodAdapter(Context context, List<MoodEvent> dataList)
+    public MoodListAdapter(Context context, List<MoodEvent> dataList)
     {
         super(context, 0, dataList);
 

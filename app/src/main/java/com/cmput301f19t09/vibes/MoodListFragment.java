@@ -50,7 +50,7 @@ public class MoodListFragment extends Fragment
         });
 
         data = new ArrayList<MoodEvent>();
-        adapter = new MoodAdapter(getContext(), data);
+        adapter = new MoodListAdapter(getContext(), data);
     }
 
     private void loadData()

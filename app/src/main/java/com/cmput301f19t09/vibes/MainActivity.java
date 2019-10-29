@@ -204,7 +204,7 @@ public class MainActivity extends FragmentActivity
 
     /*
     Open the DialogFragment specified by dialogClass, with the arguments specified by arguments.
-    If arguments is null, this does not pass arguments to the dialog
+    This will always add the key "username", with the value username to the bundle
     @param dialogClass
         The class template of the dialog fragment you want to open. Must be a subclass of DialogFragment
     @param arguments
