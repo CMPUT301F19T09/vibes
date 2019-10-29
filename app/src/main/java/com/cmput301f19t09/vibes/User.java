@@ -17,7 +17,6 @@ public class User {
         this.username = username;
         /*
         Initialize with values from firebase
-        Get moods and followers into arrayList
          */
     }
 
