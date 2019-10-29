@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">vibes</string>
+    <string name="mood_event_title">Mood Event</string>
+    <string name="enter_date">Enter date (yyyy-mm-dd)</string>
+    <string name="enter_time">Enter time (hh:mm)</string>
+    <string name="enter_state">Enter state</string>
+    <string name="enter_context">Enter context (+ decimal)</string>
+    <string name="enter_location">Enter location (lat:long)</string>
+    <string name="enter_reason">Enter reason (20 characters or 3 words)</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
 </resources>
