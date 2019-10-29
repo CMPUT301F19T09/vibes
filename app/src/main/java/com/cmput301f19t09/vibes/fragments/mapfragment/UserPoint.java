@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes.mapfragment;
+package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import com.google.android.gms.maps.model.LatLng;
 
