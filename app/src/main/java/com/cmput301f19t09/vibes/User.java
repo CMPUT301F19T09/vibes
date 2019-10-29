@@ -1,69 +1,82 @@
 package com.cmput301f19t09.vibes;
 
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 public class User {
     private String userName;
     private String firstName;
     private String lastName;
     private String email;
-    private FirebaseFirestore db;
-    private CollectionReference collectionReference;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference collectionReference = db.collection("users");
     private StorageReference storageReference;
     private FirebaseStorage storage;
     private String TAG = "Sample";
     private Uri profileURL;
     private String picturePath;
 
-    public User(String username, String firstName, String lastName, String email) {
-        this.userName = username;
+    public User(String userName, String firstName, String lastName, String email) {
+        this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+
+        Map<String, String> data = new HashMap<>();
+        data.put("first", this.firstName);
+        data.put("last", this.lastName);
+        data.put("email", this.email);
+
+        collectionReference.document(this.userName).set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Data stored in Firestore successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Data failed to store in Firestore");
+                    }
+                });
     }
 
-    public User(String username) {
-        this.userName = username;
+    public User(String userName) {
+        this.userName = userName;
         /*
         Initialize with values from Firebase
         Get moods and followers into arrayList
          */
-        db = FirebaseFirestore.getInstance();
-        collectionReference = db.collection("users");
         collectionReference.document(this.userName).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.d(TAG, "Data retrieved");
+                        Log.d(TAG, "User information retrieved");
                         firstName = documentSnapshot.getString("first");
                         lastName = documentSnapshot.getString("last");
+                        email = documentSnapshot.getString("email");
                         picturePath = documentSnapshot.getString("profile_picture");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Data cannot be retrieved");
+                        Log.d(TAG, "User information cannot be retrieved");
                     }
                 });
 
@@ -76,33 +89,37 @@ public class User {
                 storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        Log.d(TAG, "Profile picture download url retrieved");
                         profileURL = uri;
-                        System.out.println(profileURL);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Cannot retrieve URL");
+                        Log.d(TAG, "Cannot retrieve profile picture download url");
                     }
                 });
             }
-        }, 3000);
+        }, 4000);
     }
 
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     public String getUserName() {
-        return this.userName;
+        return userName;
     }
 
     public Uri getProfileURL() {
-        return this.profileURL;
+        return profileURL;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void setFirstName(String firstName) {
@@ -111,6 +128,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     // getFollowersLatest()

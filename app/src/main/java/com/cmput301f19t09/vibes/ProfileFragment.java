@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.net.URI;
-
 import androidx.fragment.app.Fragment;
 
 public class ProfileFragment extends Fragment {
