@@ -8,5 +8,5 @@
 .externalNativeBuild
 .cxx
 .gitignore
-/apikey.properties
+apikey.properties
 app/google-services.json
