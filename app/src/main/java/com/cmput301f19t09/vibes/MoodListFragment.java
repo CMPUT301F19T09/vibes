@@ -20,10 +20,16 @@ public class MoodListFragment extends Fragment
     private List<MoodEvent> data;
     private final MainActivity parent = (MainActivity) getActivity();
 
+    private String username;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+
+        username = (String) arguments.getSerializable("username");
 
         ListView view = parent.findViewById(R.id.mood_listview);
 
@@ -36,6 +42,7 @@ public class MoodListFragment extends Fragment
 
                 MoodEvent event = (MoodEvent) self.getItemAtPosition(position);
 
+                arguments.putSerializable("edit", true);
                 arguments.putSerializable("mood", event);
 
                 ((MainActivity) parent).replaceFragment(AddFragment.class, arguments);
@@ -44,5 +51,10 @@ public class MoodListFragment extends Fragment
 
         data = new ArrayList<MoodEvent>();
         adapter = new MoodAdapter(getContext(), data);
+    }
+
+    private void loadData()
+    {
+
     }
 }

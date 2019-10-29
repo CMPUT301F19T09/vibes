@@ -29,6 +29,8 @@ public class MainActivity extends FragmentActivity
 
     private ButtonMode currentButtonMode;
 
+    private String username;
+
     /*
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
      */
@@ -148,10 +150,14 @@ public class MainActivity extends FragmentActivity
             throw new IllegalArgumentException();
         }
 
-        if (arguments != null)
+        if (arguments == null)
         {
-            f.setArguments(arguments);
+            arguments = new Bundle();
         }
+
+        arguments.putSerializable("username", username);
+        f.setArguments(arguments);
+
         // Get the activity fragment manager and begin a new transaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
@@ -231,10 +237,13 @@ public class MainActivity extends FragmentActivity
         }
 
         // If arguments were provided put them in a bundle and pass them to the new fragment
-        if (arguments != null)
+        if (arguments == null)
         {
-            dialog.setArguments(arguments);
+            arguments = new Bundle();
         }
+
+        arguments.putSerializable("username", username);
+        dialog.setArguments(arguments);
 
         // Show the dialog using FragmentTransaction
         FragmentManager manager = getSupportFragmentManager();

@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
