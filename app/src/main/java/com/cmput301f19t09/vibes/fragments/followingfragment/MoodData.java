@@ -1,4 +1,6 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.fragments.followingfragment;
+
+import com.cmput301f19t09.vibes.models.Mood;
 
 import java.util.ArrayList;
 

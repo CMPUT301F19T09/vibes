@@ -1,6 +1,8 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.models;
 
 import android.util.Pair;
+
+import com.cmput301f19t09.vibes.R;
 
 import java.util.HashMap;
 import java.util.Map;

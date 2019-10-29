@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.os.Bundle;
 import android.app.Fragment;
@@ -8,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.cmput301f19t09.vibes.MainActivity;
+import com.cmput301f19t09.vibes.models.Mood;
+import com.cmput301f19t09.vibes.R;
+
 import java.util.ArrayList;
 
 
