@@ -1,10 +1,13 @@
-package com.example.followinglist;
+package com.cmput301f19t09.vibes;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.FragmentManager;
-
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
+import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
+import com.cmput301f19t09.vibes.models.Mood;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,11 +21,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dataList = new MoodData();
-
         Random random = new Random();
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             String mood;
-            if (i % 2 == 0){
+            if (i % 2 == 0) {
                 mood = "HAPPY";
             } else {
                 mood = "SAD";
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static ArrayList<Mood> getDataList(){
+    public static ArrayList<Mood> getDataList() {
         return dataList;
     }
 }
