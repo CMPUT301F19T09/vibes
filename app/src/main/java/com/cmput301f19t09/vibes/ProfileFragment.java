@@ -31,17 +31,12 @@ public class ProfileFragment extends Fragment {
     }
 
     public ProfileFragment(User user) {
-        System.out.println(user.getUserName() + user.getFirstName() + user.getLastName() + user.getEmail() + user.getProfileURL());
-        if (user.getFirstName() != null) {
-            setInfo(user);
-        } else {
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    setInfo(user);
-                }
-            });
-        }
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                setInfo(user);
+            }
+        });
     }
 
     public void setInfo(User user) {
