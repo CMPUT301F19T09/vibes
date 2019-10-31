@@ -11,9 +11,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.models.User;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment {
     private TextView firstNameTextView;
@@ -25,6 +27,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_profile, container, false);
+
+        FollowingFragment followingFragment = new FollowingFragment();
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
+
         firstNameTextView = view.findViewById(R.id.firstname_textview);
         lastNameTextView = view.findViewById(R.id.lastname_textview);
         userNameTextView = view.findViewById(R.id.username_textview);

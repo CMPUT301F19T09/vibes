@@ -32,16 +32,14 @@ public class User {
     private String TAG = "Sample";
     private Uri profileURL;
     private String picturePath;
-    private Boolean userNameExists;
     private List<String> followingList;
-    private List<String> moodEvents;
+    private List<Map> moodEvents;
 
     public interface FirebaseCallback {
         void onCallback(User user);
     }
 
     public interface UserExistListener {
-//        void onCallback();
         void onUserExists();
         void onUserNotExists();
     }
@@ -116,6 +114,8 @@ public class User {
                         email = documentSnapshot.getString("email");
                         picturePath = documentSnapshot.getString("profile_picture");
                         followingList = (List<String>) documentSnapshot.get("following_list");
+                        moodEvents = (List<Map>) documentSnapshot.get("moods");
+                        System.out.println(moodEvents);
 
                         storageReference = storage.getReference(picturePath);
                         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -164,7 +164,7 @@ public class User {
         return followingList;
     }
 
-    public Boolean exists(UserExistListener userExistListener) {
+    public void exists(UserExistListener userExistListener) {
         collectionReference.document(userName).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -172,18 +172,13 @@ public class User {
                         if (task.isSuccessful()) {
                             DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot != null && documentSnapshot.exists()) {
-//                                userNameExists = true;
-//                                userExistListener.onCallback();
                                 userExistListener.onUserExists();
                             } else {
-//                                userNameExists = false;
-//                                userExistListener.onCallback();
                                 userExistListener.onUserNotExists();
                             }
                         }
                     }
                 });
-        return userNameExists;
     }
 
     public void setFirstName(String firstName) {
