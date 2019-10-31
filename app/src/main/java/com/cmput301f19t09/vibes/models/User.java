@@ -1,8 +1,9 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.models;
 
 import android.net.Uri;
 import android.util.Log;
 
+import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

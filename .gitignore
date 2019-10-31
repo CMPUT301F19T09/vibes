@@ -7,4 +7,10 @@
 /captures
 .externalNativeBuild
 .cxx
+<<<<<<< HEAD
 app/google-services.json
+=======
+.gitignore
+apikey.properties
+app/google-services.json
+>>>>>>> fcfc5db43736ea9cb14290f47e2d0dafd290f1e3

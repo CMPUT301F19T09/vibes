@@ -6,13 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!--Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio-->
     <LinearLayout
-        android:id="@+id/view_group"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/linear_layout"
+        android:name="com.example.followinglist.FollowingFragment"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="100dp"
+        android:layout_weight="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
