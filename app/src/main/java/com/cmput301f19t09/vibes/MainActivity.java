@@ -1,8 +1,9 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
         FollowingFragment followingFragment = new FollowingFragment();
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.linear_layout, followingFragment);
         fragmentTransaction.commit();
