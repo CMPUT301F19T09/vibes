@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
         User user = new User("testuser");
 //        User user = new User("testuser2", "Test", "User2", "testuser2@example.com");
+//        User user = new User("testuser3", "Test", "User3", "testuser3@example.com");
 
 //        ProfileFragment profileFragment = new ProfileFragment(user);
         ButtonFragment buttonFragment = new ButtonFragment(user);

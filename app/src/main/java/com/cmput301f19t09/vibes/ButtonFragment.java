@@ -27,7 +27,7 @@ public class ButtonFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.view_group, new ProfileFragment(user));
+                fragmentTransaction.replace(R.id.view_group, new ProfileFragment(user)).addToBackStack("button_fragment");
                 fragmentTransaction.commit();
             }
         });

@@ -33,9 +33,16 @@ public class User {
     private String picturePath;
     private Boolean userNameExists;
     private List<String> followingList;
+    private List<String> moodEvents;
 
     public interface FirebaseCallback {
         void onCallback(User user);
+    }
+
+    public interface UserExistListener {
+//        void onCallback();
+        void onUserExists();
+        void onUserNotExists();
     }
 
     public User(String userName, String firstName, String lastName, String email) {
@@ -44,32 +51,49 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
-        checkUserName(userName);
 
-        Map<String, String> data = new HashMap<>();
-        data.put("first", this.firstName);
-        data.put("last", this.lastName);
-        data.put("email", this.email);
-        data.put("profile_picture", this.picturePath);
-
-        collectionReference.document(this.userName).set(data)
-                .addOnFailureListener(new OnFailureListener() {
+        exists(new UserExistListener() {
+            @Override
+            public void onUserExists() {
+                readData(new FirebaseCallback() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Data failed to store in Firestore");
+                    public void onCallback(User user) {
+                        Log.d(TAG, "User information retrieved successfully");
                     }
                 });
+            }
 
-        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-        storageReference = storage.getReference(picturePath);
-        storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Failed to store default profile picture");
+            public void onUserNotExists() {
+                Map<String, String> data = new HashMap<>();
+                data.put("first", firstName);
+                data.put("last", lastName);
+                data.put("email", email);
+                data.put("profile_picture", picturePath);
+
+                collectionReference.document(userName).set(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                                storageReference = storage.getReference(picturePath);
+                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "Failed to store default profile picture");
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "Data failed to store in Firestore");
+                            }
+                        });
             }
         });
     }
-
     public User(String userName) {
         this.userName = userName;
         readData(new FirebaseCallback() {
@@ -135,24 +159,29 @@ public class User {
         return email;
     }
 
-    public Boolean checkUserName(String userName) {
+    public List<String> getFollowingList() {
+        return followingList;
+    }
+
+    public Boolean exists(UserExistListener userExistListener) {
         collectionReference.document(userName).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                userNameExists = true;
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if(documentSnapshot != null && documentSnapshot.exists()) {
+//                                userNameExists = true;
+//                                userExistListener.onCallback();
+                                userExistListener.onUserExists();
                             } else {
-                                userNameExists = false;
+//                                userNameExists = false;
+//                                userExistListener.onCallback();
+                                userExistListener.onUserNotExists();
                             }
-                        } else {
-                            Log.d(TAG, "Failed to retrieve username");
                         }
                     }
                 });
-
         return userNameExists;
     }
 

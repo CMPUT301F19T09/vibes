@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -27,6 +28,13 @@ public class ProfileFragment extends Fragment {
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
+
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "REQUESTED", Toast.LENGTH_LONG).show();
+            }
+        });
         return view;
     }
 
@@ -37,6 +45,7 @@ public class ProfileFragment extends Fragment {
                 setInfo(user);
             }
         });
+//        setInfo(user);
     }
 
     public void setInfo(User user) {
