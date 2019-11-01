@@ -15,6 +15,8 @@ import android.widget.ImageButton;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.User;
 
 /**
  * So here is how things work.
@@ -110,17 +112,27 @@ public class MainActivity extends FragmentActivity {
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(ProfileFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                bundle.putBoolean("my_profile", true);
+                bundle.putSerializable("otherUser", new User("testuser2"));
+                ProfileFragment profileFragment = new ProfileFragment();
+                replaceFragment(ProfileFragment.class, bundle);
             }
         });
 
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(FollowingFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                bundle.putBoolean("my_profile", false);
+                bundle.putSerializable("otherUser", new User("testuser2"));
+                ProfileFragment profileFragment = new ProfileFragment();
+                replaceFragment(ProfileFragment.class, bundle);
             }
         });
 

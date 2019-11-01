@@ -40,6 +40,8 @@ public class ProfileFragment extends Fragment {
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
+        ImageView profileMask = view.findViewById(R.id.profile_mask);
+        profileMask.setImageResource(R.drawable.round_mask);
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
