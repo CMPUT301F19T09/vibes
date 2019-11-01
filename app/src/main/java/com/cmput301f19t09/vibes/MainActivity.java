@@ -20,13 +20,14 @@ import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.models.Mood;
 
 
-public class MainActivity extends FragmentActivity {
-    //private final static Class defaultFragment = MoodListFragment.class;
 
-    private enum ButtonMode {
-        LIST,
-        MAP;
-    }
+/**
+ * So here is how things work.
+ * You press a button
+ */
+public class MainActivity extends FragmentActivity {
+
+    private enum ButtonMode {LIST, MAP}
 
     private ButtonMode currentButtonMode;
     private String username;
