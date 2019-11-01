@@ -4,6 +4,7 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,7 +13,7 @@ import java.time.LocalTime;
  *
  * @see something?
  */
-public class MoodEvent extends Event implements Parcelable {
+public class MoodEvent extends Event implements Serializable {
     private EmotionalState state;
     private int social_situation;
     private Location location;
@@ -25,24 +26,6 @@ public class MoodEvent extends Event implements Parcelable {
         this.location = location;
     }
 
-    protected MoodEvent(Parcel in) {
-        super(in.readSerializable(), in.readSerializable(), in.readString()); // date, time, description
-        social_situation = in.readInt();
-        location = in.readParcelable(Location.class.getClassLoader());
-    }
-
-    public static final Creator<MoodEvent> CREATOR = new Creator<MoodEvent>() {
-        @Override
-        public MoodEvent createFromParcel(Parcel in) {
-            return new MoodEvent(in);
-        }
-
-        @Override
-        public MoodEvent[] newArray(int size) {
-            return new MoodEvent[size];
-        }
-    };
-
     public EmotionalState getState() {
         return state;
     }
@@ -51,11 +34,11 @@ public class MoodEvent extends Event implements Parcelable {
         this.state = state;
     }
 
-    public int getSocial_situation() {
+    public int getSocialSituation() {
         return social_situation;
     }
 
-    public void setSocial_situation(int social_situation) {
+    public void setSocialSituation(int social_situation) {
         this.social_situation = social_situation;
     }
 
@@ -65,20 +48,5 @@ public class MoodEvent extends Event implements Parcelable {
 
     public void setLocation(Location location) {
         this.location = location;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel pc, int flags) {
-        pc.writeSerializable(date);
-        pc.writeSerializable(time);
-        pc.writeString(description);
-        pc.writeParcelable(state, flags); // need EmotionalState to implement Parcelable
-        pc.writeInt(social_situation);
-        pc.writeParcelable(location, flags);
     }
 }
