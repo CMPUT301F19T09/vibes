@@ -1,63 +1,105 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
+import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
+import com.cmput301f19t09.vibes.models.Mood;
 
-import java.io.Serializable;
-import java.util.Map;
 
-public class MainActivity extends FragmentActivity
-{
+public class MainActivity extends FragmentActivity {
     //private final static Class defaultFragment = MoodListFragment.class;
 
-    private enum ButtonMode
-    {
+    private enum ButtonMode {
         LIST,
         MAP;
     }
 
     private ButtonMode currentButtonMode;
-
     private String username;
+    ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
+            viewButton;
 
     /*
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //currentFragment = FragmentType.NONE;
         currentButtonMode = ButtonMode.MAP;
-        updateViewButton();
 
-        ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
-                viewButton;
+        initComponents(); // uses findViewById to set the components above in the class.
+        initListeners(); // Defines onClickListeners for the components defined above in the class.
 
+        updateViewButton(); // Updates the view button only.
+        updateScreen(); // Updates main fragment depending on what it is set to
+    }
+
+    /**
+     * Shows the map fragment in the main fragment container.
+     */
+    public void showMap(){
+        Bundle mapBundle = new Bundle();
+        MapData showingUsers = new MapData();
+        showingUsers.add(UserPoint.getMockUser());
+        mapBundle.putSerializable("MapData", showingUsers);
+        replaceFragment(MapFragment.class, mapBundle);
+    }
+
+    /**
+     * Shows the list fragment in the main fragment contianer.
+     */
+    public void showList(){
+        MoodData dataList = new MoodData();
+        //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("MoodData", dataList);
+        replaceFragment(FollowingFragment.class, bundle);
+    }
+
+    /**
+     * Updates the screen with the selected view mode = MAP | LIST
+     */
+    public void updateScreen(){
+        if(currentButtonMode == ButtonMode.MAP){ // Show the map
+            showMap();
+        }else if(currentButtonMode == ButtonMode.LIST){// show the list fragment.
+            showList();
+        }
+    }
+
+    /**
+     * Inititates the components defined above in the class using findViewById
+     */
+    private void initComponents(){
         addButton = findViewById(R.id.add_button);
         searchButton = findViewById(R.id.search_button);
         profileButton = findViewById(R.id.profile_button);
         followingButton = findViewById(R.id.follow_list_button);
         viewButton = findViewById(R.id.view_button);
+    }
 
-        addButton.setOnClickListener(new View.OnClickListener()
-        {
+    /**
+     * Puts in listeners
+     */
+    private void initListeners(){
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -65,8 +107,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener()
-        {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -74,8 +115,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        profileButton.setOnClickListener(new View.OnClickListener()
-        {
+        profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -83,26 +123,15 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        followingButton.setOnClickListener(new View.OnClickListener()
-        {
+        followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                MoodData dataList = new MoodData();
-                //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
-                FollowingFragment followingFragment = new FollowingFragment();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("MoodData", dataList);
-                followingFragment.setArguments(bundle);
-                android.app.FragmentManager fragmentManager = getFragmentManager();
-                android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_fragment_root, followingFragment);
-                fragmentTransaction.commit();
+                //replaceFragment(FollowingFragment.class);
             }
         });
 
-        viewButton.setOnClickListener(new View.OnClickListener()
-        {
+        viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -125,6 +154,7 @@ public class MainActivity extends FragmentActivity
                 }
 
                 updateViewButton();
+                updateScreen();
             }
         });
     }
@@ -270,7 +300,7 @@ public class MainActivity extends FragmentActivity
      */
     private void updateViewButton()
     {
-        ImageButton viewButton = (ImageButton) findViewById(R.id.view_button);
+        ImageButton viewButton = findViewById(R.id.view_button);
         @DrawableRes int image;
 
         switch (currentButtonMode)
