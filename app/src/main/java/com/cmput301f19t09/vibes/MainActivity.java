@@ -1,42 +1,33 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import java.io.Serializable;
-import java.util.Map;
-
-public class MainActivity extends FragmentActivity
-{
+public class MainActivity extends FragmentActivity {
     //private final static Class defaultFragment = MoodListFragment.class;
 
-    private enum ButtonMode
-    {
+    private enum ButtonMode {
         LIST,
         MAP;
     }
 
     private ButtonMode currentButtonMode;
-
     private String username;
 
     /*
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -53,8 +44,7 @@ public class MainActivity extends FragmentActivity
         followingButton = findViewById(R.id.follow_list_button);
         viewButton = findViewById(R.id.view_button);
 
-        addButton.setOnClickListener(new View.OnClickListener()
-        {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -62,8 +52,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener()
-        {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -71,8 +60,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        profileButton.setOnClickListener(new View.OnClickListener()
-        {
+        profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -80,8 +68,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        followingButton.setOnClickListener(new View.OnClickListener()
-        {
+        followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -89,8 +76,7 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        viewButton.setOnClickListener(new View.OnClickListener()
-        {
+        viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
