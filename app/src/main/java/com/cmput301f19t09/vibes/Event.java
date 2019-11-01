@@ -11,10 +11,10 @@ import java.time.format.DateTimeParseException;
  * @see something?
  */
 public class Event {
-    private LocalDate date; // format yyyy-MM-dd
-    private LocalTime time; // format HH:mm
+    protected LocalDate date; // format yyyy-MM-dd
+    protected LocalTime time; // format HH:mm
     private final static String TIME_FORMAT = "HH:mm";
-    private String description;
+    protected String description;
 
     public Event(LocalDate date, LocalTime time, String description) {
         this.date = date;

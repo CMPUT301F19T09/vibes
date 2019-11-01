@@ -1,16 +1,18 @@
 package com.cmput301f19t09.vibes;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * TODO determine how to handle optional attributes
+ * TODO determine how to handle optional attributes, implenet parcelable interface
  *
  * @see something?
  */
-public class MoodEvent extends Event {
+public class MoodEvent extends Event implements Parcelable {
     private EmotionalState state;
     private int social_situation;
     private Location location;
@@ -22,6 +24,24 @@ public class MoodEvent extends Event {
         this.social_situation = social_situation;
         this.location = location;
     }
+
+    protected MoodEvent(Parcel in) {
+        super(in.readSerializable(), in.readSerializable(), in.readString()); // date, time, description
+        social_situation = in.readInt();
+        location = in.readParcelable(Location.class.getClassLoader());
+    }
+
+    public static final Creator<MoodEvent> CREATOR = new Creator<MoodEvent>() {
+        @Override
+        public MoodEvent createFromParcel(Parcel in) {
+            return new MoodEvent(in);
+        }
+
+        @Override
+        public MoodEvent[] newArray(int size) {
+            return new MoodEvent[size];
+        }
+    };
 
     public EmotionalState getState() {
         return state;
@@ -45,5 +65,20 @@ public class MoodEvent extends Event {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel pc, int flags) {
+        pc.writeSerializable(date);
+        pc.writeSerializable(time);
+        pc.writeString(description);
+        pc.writeParcelable(state, flags); // need EmotionalState to implement Parcelable
+        pc.writeInt(social_situation);
+        pc.writeParcelable(location, flags);
     }
 }
