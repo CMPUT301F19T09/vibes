@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
+import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
+
 public class MainActivity extends FragmentActivity {
     //private final static Class defaultFragment = MoodListFragment.class;
 
@@ -40,6 +44,19 @@ public class MainActivity extends FragmentActivity {
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
         updateViewButton();
+
+        // Showing Map
+        if(currentButtonMode == ButtonMode.MAP){
+            Bundle mapBundle = new Bundle();
+            MapData showingUsers = new MapData();
+            showingUsers.add(UserPoint.getMockUser());
+            mapBundle.putSerializable("MapData", showingUsers);
+            replaceFragment(MapFragment.class, mapBundle);
+        }else if(currentButtonMode == ButtonMode.LIST){
+            // show the list fragment.
+            
+        }
+
     }
 
     private void initComponents(){
