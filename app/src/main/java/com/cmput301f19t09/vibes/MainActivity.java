@@ -41,16 +41,16 @@ public class MainActivity extends AppCompatActivity {
                     random.nextInt(60)));
         }
 
-        //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
+        //Ref: https://stackoverflow.com/questions/15392261/android-pass-dataextras-to-a-fragment#15392591
         FollowingFragment followingFragment = new FollowingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("MoodData", dataList);
+        followingFragment.setArguments(bundle);
+        //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.linear_layout, followingFragment);
         fragmentTransaction.commit();
 
-    }
-
-    public static ArrayList<Mood> getDataList() {
-        return dataList;
     }
 }
