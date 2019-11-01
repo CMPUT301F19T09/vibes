@@ -17,6 +17,9 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
+import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
+import com.cmput301f19t09.vibes.models.Mood;
 
 /**
  * So here is how things work.
@@ -64,8 +67,12 @@ public class MainActivity extends FragmentActivity {
      * Shows the list fragment in the main fragment contianer.
      */
     public void showList(){
-        // Shows the list
-
+        MoodData dataList = new MoodData();
+        dataList.add(new Mood("Joe", "HAPPY", 2000, 12, 12, 0, 0));
+        //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("MoodData", dataList);
+        replaceFragment(FollowingFragment.class, bundle);
     }
 
     /**
