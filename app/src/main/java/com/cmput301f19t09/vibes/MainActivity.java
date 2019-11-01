@@ -54,50 +54,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.linear_layout, followingFragment);
         fragmentTransaction.commit();
 
-//        user.readData(new User.FirebaseCallback() {
-//            @Override
-//            public void onCallback(User user) {
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("user", user);
-//                bundle.putBoolean("my_profile", true);
-//                bundle.putSerializable("otherUser", new User("testuser2"));
-//
-//                ProfileFragment profileFragment = new ProfileFragment();
-//                profileFragment.setArguments(bundle);
-//                FragmentManager fragmentManager = getSupportFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
-//                fragmentTransaction.commit();
-//            }
-//        });
-
-//        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document("testuser");
-//
-//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//                String firstName = documentSnapshot.getString("first");
-//                String lastName = documentSnapshot.getString("last");
-//                String email = documentSnapshot.getString("email");
-//                String picturePath = documentSnapshot.getString("profile_picture");
-//                List<String> followingList = (List<String>) documentSnapshot.get("following_list");
-//                List<Map> moodEvents = (List<Map>) documentSnapshot.get("moods");
-//
-//                User user = new User("testuser", firstName, lastName, email);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("user", user);
-//                bundle.putBoolean("my_profile", true);
-//                bundle.putSerializable("otherUser", new User("testuser2"));
-//
-//                ProfileFragment profileFragment = new ProfileFragment();
-//                profileFragment.setArguments(bundle);
-//                FragmentManager fragmentManager = getSupportFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
-//                fragmentTransaction.commit();
-//            }
-//        });
-
+        // TESTING
         Button test1 = findViewById(R.id.test1);
         Button test2 = findViewById(R.id.test2);
 
@@ -134,19 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.commit();
             }
         });
-
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("user", user);
-//        bundle.putBoolean("my_profile", true);
-//        bundle.putSerializable("otherUser", new User("testuser2"));
-//
-//        ProfileFragment profileFragment = new ProfileFragment();
-//        profileFragment.setArguments(bundle);
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.linear_layout, profileFragment);
-//        fragmentTransaction.commit();
-
     }
 
     public static ArrayList<Mood> getDataList() {

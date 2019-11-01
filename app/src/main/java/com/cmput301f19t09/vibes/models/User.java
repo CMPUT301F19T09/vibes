@@ -33,7 +33,6 @@ public class User implements Serializable {
     private String TAG = "Sample";
     private String picturePath;
     private List<String> followingList;
-    private transient List<Map> moodEvents;
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -43,16 +42,30 @@ public class User implements Serializable {
     private transient FirebaseStorage storage = FirebaseStorage.getInstance();
     private transient StorageReference storageReference;
     private transient Uri profileURL;
+    private transient List<Map> moodEvents;
 
+    /**
+     *
+     */
     public interface FirebaseCallback {
         void onCallback(User user);
     }
 
+    /**
+     *
+     */
     public interface UserExistListener {
         void onUserExists();
         void onUserNotExists();
     }
 
+    /**
+     *
+     * @param userName
+     * @param firstName
+     * @param lastName
+     * @param email
+     */
     public User(String userName, String firstName, String lastName, String email) {
         this.userName = userName;
         this.firstName = firstName;
@@ -102,6 +115,11 @@ public class User implements Serializable {
 //            }
 //        });
     }
+
+    /**
+     *
+     * @param userName
+     */
     public User(String userName) {
         this.userName = userName;
 //        readData(new FirebaseCallback() {
@@ -128,8 +146,13 @@ public class User implements Serializable {
 //        });
     }
 
-
+    /**
+     *
+     * @param firebaseCallback
+     */
     public void readData(FirebaseCallback firebaseCallback) {
+        // Using SnapshotListener helps reduce load times and obtains from local cache
+        // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -146,6 +169,7 @@ public class User implements Serializable {
                     @Override
                     public void onSuccess(Uri uri) {
                         profileURL = uri;
+                        Log.d(TAG, "Loaded profile picture URL");
                         firebaseCallback.onCallback(User.this);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -155,7 +179,7 @@ public class User implements Serializable {
                     }
                 });
 
-                Log.d(TAG, "Finished loading");
+                Log.d(TAG, "Loaded user information");
                 firebaseCallback.onCallback(User.this);
             }
         });
@@ -198,30 +222,58 @@ public class User implements Serializable {
 //                });
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     *
+     * @return
+     */
     public Uri getProfileURL() {
         return profileURL;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getFollowingList() {
         return followingList;
     }
 
+    /**
+     *
+     * @param userExistListener
+     */
     public void exists(UserExistListener userExistListener) {
         collectionReference.document(userName).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -239,18 +291,34 @@ public class User implements Serializable {
                 });
     }
 
+    /**
+     *
+     * @param firstName
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     *
+     * @param lastName
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    /**
+     *
+     * @param userName
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
+    /**
+     *
+     * @param email
+     */
     public void setEmail(String email) {
         this.email = email;
     }

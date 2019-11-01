@@ -24,6 +24,13 @@ public class ProfileFragment extends Fragment {
     private ImageView profilePictureImageView;
     private Button followButton;
 
+    /**
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_profile, container, false);
@@ -74,6 +81,10 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+    /**
+     *
+     * @param user
+     */
     public void setInfo(User user) {
         firstNameTextView.setText(user.getFirstName());
         lastNameTextView.setText(user.getLastName());
