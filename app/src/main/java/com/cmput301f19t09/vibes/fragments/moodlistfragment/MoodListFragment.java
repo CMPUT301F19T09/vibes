@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +8,10 @@ import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
+import com.cmput301f19t09.vibes.MainActivity;
+import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +44,10 @@ public class MoodListFragment extends Fragment
 
                 MoodEvent event = (MoodEvent) self.getItemAtPosition(position);
 
-                arguments.putSerializable("edit", true);
-                arguments.putSerializable("mood", event);
+//                arguments.putSerializable("edit", true);
+//                arguments.putSerializable("mood", event);
 
-                ((MainActivity) parent).replaceFragment(AddFragment.class, arguments);
+//                ((MainActivity) parent).replaceFragment(AddFragment.class, arguments);
             }
         });
 
