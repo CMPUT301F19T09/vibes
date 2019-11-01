@@ -30,16 +30,19 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference collectionReference = db.collection("users");
-    private DocumentReference documentReference;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageReference;
     private String TAG = "Sample";
-    private Uri profileURL;
     private String picturePath;
     private List<String> followingList;
-    private List<Map> moodEvents;
+    private transient List<Map> moodEvents;
+
+    // Objects are not serializable - will crash on switching app if not omitted from serialization
+    // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
+    private transient FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private transient CollectionReference collectionReference = db.collection("users");
+    private transient DocumentReference documentReference;
+    private transient FirebaseStorage storage = FirebaseStorage.getInstance();
+    private transient StorageReference storageReference;
+    private transient Uri profileURL;
 
     public interface FirebaseCallback {
         void onCallback(User user);

@@ -4,7 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/test1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST 1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/test2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST 2"
+        app:layout_constraintStart_toEndOf="@+id/test1"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!--Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio-->
     <LinearLayout
