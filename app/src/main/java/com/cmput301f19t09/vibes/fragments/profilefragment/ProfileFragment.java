@@ -29,24 +29,11 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_profile, container, false);
 
-        User user = (User) getArguments().getSerializable("user");
-        if (user == null) {
-            throw new RuntimeException("YOU DUN GOOFED");
-
-        }
-        System.out.println(user.getEmail());
-
-        FollowingFragment followingFragment = new FollowingFragment();
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
-
         firstNameTextView = view.findViewById(R.id.firstname_textview);
         lastNameTextView = view.findViewById(R.id.lastname_textview);
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
-
-        setInfo(user);
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,30 +41,39 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "REQUESTED", Toast.LENGTH_LONG).show();
             }
         });
+
+        FollowingFragment followingFragment = new FollowingFragment();
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
+
+        User user = (User) getArguments().getSerializable("user");
+        Boolean mode = getArguments().getBoolean("my_profile");
+        User otherUser = (User) getArguments().getSerializable("otherUser");
+
+        if (user == null || mode == null || otherUser == null) {
+            throw new RuntimeException("YOU DUN GOOFED");
+        }
+
+        if (mode) {
+            followButton.setVisibility(View.INVISIBLE);
+            user.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    setInfo(user);
+                }
+            });
+        } else {
+            followButton.setVisibility(View.VISIBLE);
+            otherUser.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    setInfo(user);
+                }
+            });
+        }
+
         return view;
     }
-
-//    public ProfileFragment(User user) {
-//        user.readData(new User.FirebaseCallback() {
-//            @Override
-//            public void onCallback(User user) {
-//                setInfo(user);
-//                followButton.setVisibility(View.INVISIBLE);
-//            }
-//        });
-//        setInfo(user);
-//        followButton.setVisibility(View.INVISIBLE);
-//    }
-
-//    public ProfileFragment(User user, User otherUser) {
-//        otherUser.readData(new User.FirebaseCallback() {
-//            @Override
-//            public void onCallback(User user) {
-//                setInfo(otherUser);
-//                followButton.setVisibility(View.VISIBLE);
-//            }
-//        });
-//    }
 
     public void setInfo(User user) {
         firstNameTextView.setText(user.getFirstName());

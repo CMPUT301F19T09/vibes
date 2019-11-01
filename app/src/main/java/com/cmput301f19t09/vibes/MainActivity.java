@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,8 +12,16 @@ import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.User;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,24 +61,61 @@ public class MainActivity extends AppCompatActivity {
 //        fragmentTransaction.replace(R.id.linear_layout, followingFragment);
 //        fragmentTransaction.commit();
 
-        user.readData(new User.FirebaseCallback() {
-            @Override
-            public void onCallback(User user) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
-                bundle.putBoolean("my_profile", true);
-                bundle.putSerializable("otherUser", new User("testuser2"));
+//        user.readData(new User.FirebaseCallback() {
+//            @Override
+//            public void onCallback(User user) {
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("user", user);
+//                bundle.putBoolean("my_profile", true);
+//                bundle.putSerializable("otherUser", new User("testuser2"));
+//
+//                ProfileFragment profileFragment = new ProfileFragment();
+//                profileFragment.setArguments(bundle);
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
+//                fragmentTransaction.commit();
+//            }
+//        });
 
-                ProfileFragment profileFragment = new ProfileFragment();
-                profileFragment.setArguments(bundle);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
-                fragmentTransaction.commit();
-            }
-        });
+//        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document("testuser");
+//
+//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                String firstName = documentSnapshot.getString("first");
+//                String lastName = documentSnapshot.getString("last");
+//                String email = documentSnapshot.getString("email");
+//                String picturePath = documentSnapshot.getString("profile_picture");
+//                List<String> followingList = (List<String>) documentSnapshot.get("following_list");
+//                List<Map> moodEvents = (List<Map>) documentSnapshot.get("moods");
+//
+//                User user = new User("testuser", firstName, lastName, email);
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("user", user);
+//                bundle.putBoolean("my_profile", true);
+//                bundle.putSerializable("otherUser", new User("testuser2"));
+//
+//                ProfileFragment profileFragment = new ProfileFragment();
+//                profileFragment.setArguments(bundle);
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
+//                fragmentTransaction.commit();
+//            }
+//        });
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        bundle.putBoolean("my_profile", false);
+        bundle.putSerializable("otherUser", new User("testuser2"));
 
+        ProfileFragment profileFragment = new ProfileFragment();
+        profileFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.linear_layout, profileFragment);
+        fragmentTransaction.commit();
 
     }
 

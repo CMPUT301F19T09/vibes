@@ -9,8 +9,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class User implements Serializable {
     private String userName;
@@ -28,6 +32,7 @@ public class User implements Serializable {
     private String email;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("users");
+    private DocumentReference documentReference;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageReference;
     private String TAG = "Sample";
@@ -103,46 +108,91 @@ public class User implements Serializable {
 //
 //            }
 //        });
+
+//        documentReference = collectionReference.document(userName);
+//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                firstName = documentSnapshot.getString("first");
+//                lastName = documentSnapshot.getString("last");
+//                email = documentSnapshot.getString("email");
+//                picturePath = documentSnapshot.getString("profile_picture");
+//                followingList = (List<String>) documentSnapshot.get("following_list");
+//                moodEvents = (List<Map>) documentSnapshot.get("moods");
+//
+//                Log.d(TAG, "Finished loading");
+//            }
+//        });
     }
 
 
     public void readData(FirebaseCallback firebaseCallback) {
-        collectionReference.document(this.userName).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        documentReference = collectionReference.document(userName);
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                firstName = documentSnapshot.getString("first");
+                lastName = documentSnapshot.getString("last");
+                email = documentSnapshot.getString("email");
+                picturePath = documentSnapshot.getString("profile_picture");
+                followingList = (List<String>) documentSnapshot.get("following_list");
+                moodEvents = (List<Map>) documentSnapshot.get("moods");
+
+                storageReference = storage.getReference(picturePath);
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        firstName = documentSnapshot.getString("first");
-                        lastName = documentSnapshot.getString("last");
-                        email = documentSnapshot.getString("email");
-                        picturePath = documentSnapshot.getString("profile_picture");
-                        followingList = (List<String>) documentSnapshot.get("following_list");
-                        moodEvents = (List<Map>) documentSnapshot.get("moods");
-
-                        Log.d(TAG, "Finished Loading");
+                    public void onSuccess(Uri uri) {
+                        profileURL = uri;
                         firebaseCallback.onCallback(User.this);
-
-//                        storageReference = storage.getReference(picturePath);
-//                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri) {
-//                                Log.d(TAG, "Something");
-//                                profileURL = uri;
-//                                firebaseCallback.onCallback(User.this);
-//                            }
-//                        }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.d(TAG, "Cannot retrieve profile picture download url");
-//                            }
-//                        });
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "User information cannot be retrieved");
+                        Log.d(TAG, "Cannot retrieve profile picture download url");
                     }
                 });
+
+                Log.d(TAG, "Finished loading");
+                firebaseCallback.onCallback(User.this);
+            }
+        });
+
+//        collectionReference.document(this.userName).get()
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        firstName = documentSnapshot.getString("first");
+//                        lastName = documentSnapshot.getString("last");
+//                        email = documentSnapshot.getString("email");
+//                        picturePath = documentSnapshot.getString("profile_picture");
+//                        followingList = (List<String>) documentSnapshot.get("following_list");
+//                        moodEvents = (List<Map>) documentSnapshot.get("moods");
+//
+//                        Log.d(TAG, "Finished Loading");
+//                        firebaseCallback.onCallback(User.this);
+//
+////                        storageReference = storage.getReference(picturePath);
+////                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+////                            @Override
+////                            public void onSuccess(Uri uri) {
+////                                Log.d(TAG, "Something");
+////                                profileURL = uri;
+////                                firebaseCallback.onCallback(User.this);
+////                            }
+////                        }).addOnFailureListener(new OnFailureListener() {
+////                            @Override
+////                            public void onFailure(@NonNull Exception e) {
+////                                Log.d(TAG, "Cannot retrieve profile picture download url");
+////                            }
+////                        });
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.d(TAG, "User information cannot be retrieved");
+//                    }
+//                });
     }
 
     public String getFirstName() {
