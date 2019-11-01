@@ -52,11 +52,24 @@ public class MainActivity extends AppCompatActivity {
 //        fragmentTransaction.replace(R.id.linear_layout, followingFragment);
 //        fragmentTransaction.commit();
 
-        ProfileFragment profileFragment = new ProfileFragment(user);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.linear_layout, profileFragment);
-        fragmentTransaction.commit();
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                bundle.putBoolean("my_profile", true);
+                bundle.putSerializable("otherUser", new User("testuser2"));
+
+                ProfileFragment profileFragment = new ProfileFragment();
+                profileFragment.setArguments(bundle);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.linear_layout, profileFragment);
+                fragmentTransaction.commit();
+            }
+        });
+
+
 
     }
 

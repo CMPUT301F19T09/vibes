@@ -14,13 +14,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 
-public class User {
+public class User implements Serializable {
     private String userName;
     private String firstName;
     private String lastName;
@@ -50,57 +51,58 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
-
-        exists(new UserExistListener() {
-            @Override
-            public void onUserExists() {
-                readData(new FirebaseCallback() {
-                    @Override
-                    public void onCallback(User user) {
-                        Log.d(TAG, "User information retrieved successfully");
-                    }
-                });
-            }
-
-            @Override
-            public void onUserNotExists() {
-                Map<String, String> data = new HashMap<>();
-                data.put("first", firstName);
-                data.put("last", lastName);
-                data.put("email", email);
-                data.put("profile_picture", picturePath);
-
-                collectionReference.document(userName).set(data)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                                storageReference = storage.getReference(picturePath);
-                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Failed to store default profile picture");
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Data failed to store in Firestore");
-                            }
-                        });
-            }
-        });
+//
+//        exists(new UserExistListener() {
+//            @Override
+//            public void onUserExists() {
+//                readData(new FirebaseCallback() {
+//                    @Override
+//                    public void onCallback(User user) {
+//                        Log.d(TAG, "User information retrieved successfully");
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onUserNotExists() {
+//                Map<String, String> data = new HashMap<>();
+//                data.put("first", firstName);
+//                data.put("last", lastName);
+//                data.put("email", email);
+//                data.put("profile_picture", picturePath);
+//
+//                collectionReference.document(userName).set(data)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+//                                storageReference = storage.getReference(picturePath);
+//                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        Log.d(TAG, "Failed to store default profile picture");
+//                                    }
+//                                });
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.d(TAG, "Data failed to store in Firestore");
+//                            }
+//                        });
+//            }
+//        });
     }
     public User(String userName) {
         this.userName = userName;
-        readData(new FirebaseCallback() {
-            @Override
-            public void onCallback(User user) {
-                Log.d(TAG, "User information retrieved successfully");
-            }
-        });
+//        readData(new FirebaseCallback() {
+//            @Override
+//            public void onCallback(User user) {
+//                Log.d(TAG, "User information retrieved successfully");
+//
+//            }
+//        });
     }
 
 
@@ -115,21 +117,24 @@ public class User {
                         picturePath = documentSnapshot.getString("profile_picture");
                         followingList = (List<String>) documentSnapshot.get("following_list");
                         moodEvents = (List<Map>) documentSnapshot.get("moods");
-                        System.out.println(moodEvents);
 
-                        storageReference = storage.getReference(picturePath);
-                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                profileURL = uri;
-                                firebaseCallback.onCallback(User.this);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Cannot retrieve profile picture download url");
-                            }
-                        });
+                        Log.d(TAG, "Finished Loading");
+                        firebaseCallback.onCallback(User.this);
+
+//                        storageReference = storage.getReference(picturePath);
+//                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                            @Override
+//                            public void onSuccess(Uri uri) {
+//                                Log.d(TAG, "Something");
+//                                profileURL = uri;
+//                                firebaseCallback.onCallback(User.this);
+//                            }
+//                        }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.d(TAG, "Cannot retrieve profile picture download url");
+//                            }
+//                        });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
