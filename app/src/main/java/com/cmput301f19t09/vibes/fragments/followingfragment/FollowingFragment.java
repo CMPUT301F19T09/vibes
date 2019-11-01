@@ -31,11 +31,11 @@ public class FollowingFragment extends Fragment {
         //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
-
-        dataList = MainActivity.getDataList();
-        moodAdapter = new MoodAdapter(getActivity(), dataList);
-        moodList = view.findViewById(R.id.mood_list);
-        moodList.setAdapter(moodAdapter);
+//      TODO: Use a bundle here
+//        dataList = MainActivity.getDataList();
+//        moodAdapter = new MoodAdapter(getActivity(), dataList);
+//        moodList = view.findViewById(R.id.mood_list);
+//        moodList.setAdapter(moodAdapter);
 
         return view;
     }
