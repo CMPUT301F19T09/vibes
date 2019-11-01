@@ -22,9 +22,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingLeft="8dp"
-            android:text="vibes."
             android:fontFamily="@font/housescript"
+            android:paddingLeft="16dp"
+            android:paddingTop="5dp"
+            android:text="vibes."
             android:textColor="#FFFFFF"
             android:textSize="40sp"
             android:textStyle="normal" />
