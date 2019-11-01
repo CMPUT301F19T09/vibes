@@ -43,22 +43,43 @@ public class MainActivity extends FragmentActivity {
         initComponents(); // uses findViewById to set the components above in the class.
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        updateViewButton();
+        updateViewButton(); // Updates the view button only.
+        updateScreen(); // Updates main fragment depending on what it is set to
+    }
 
-        // Showing Map
-        if(currentButtonMode == ButtonMode.MAP){
-            Bundle mapBundle = new Bundle();
-            MapData showingUsers = new MapData();
-            showingUsers.add(UserPoint.getMockUser());
-            mapBundle.putSerializable("MapData", showingUsers);
-            replaceFragment(MapFragment.class, mapBundle);
-        }else if(currentButtonMode == ButtonMode.LIST){
-            // show the list fragment.
-            
-        }
+    /**
+     * Shows the map fragment in the main fragment container.
+     */
+    public void showMap(){
+        Bundle mapBundle = new Bundle();
+        MapData showingUsers = new MapData();
+        showingUsers.add(UserPoint.getMockUser());
+        mapBundle.putSerializable("MapData", showingUsers);
+        replaceFragment(MapFragment.class, mapBundle);
+    }
+
+    /**
+     * Shows the list fragment in the main fragment contianer.
+     */
+    public void showList(){
+        // Shows the list
 
     }
 
+    /**
+     * Updates the screen with the selected view mode = MAP | LIST
+     */
+    public void updateScreen(){
+        if(currentButtonMode == ButtonMode.MAP){ // Show the map
+            showMap();
+        }else if(currentButtonMode == ButtonMode.LIST){// show the list fragment.
+            showList();
+        }
+    }
+
+    /**
+     * Inititates the components defined above in the class using findViewById
+     */
     private void initComponents(){
         addButton = findViewById(R.id.add_button);
         searchButton = findViewById(R.id.search_button);
@@ -67,6 +88,9 @@ public class MainActivity extends FragmentActivity {
         viewButton = findViewById(R.id.view_button);
     }
 
+    /**
+     * Puts in listeners
+     */
     private void initListeners(){
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +147,7 @@ public class MainActivity extends FragmentActivity {
                 }
 
                 updateViewButton();
+                updateScreen();
             }
         });
     }
