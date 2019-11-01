@@ -10,7 +10,7 @@
         android:id="@+id/main_top_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#3D5AFE"
+        android:background="@color/colorPrimary"
         android:gravity="right"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,23 +23,24 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:paddingLeft="8dp"
-            android:text="vibes"
+            android:text="vibes."
+            android:fontFamily="@font/housescript"
             android:textColor="#FFFFFF"
             android:textSize="40sp"
-            android:textStyle="italic" />
+            android:textStyle="normal" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/follow_list_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="#3D5AFE"
+            android:background="@color/colorPrimary"
             app:srcCompat="@drawable/ic_people_white_36dp" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/profile_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="#3D5AFE"
+            android:background="@color/colorPrimary"
             app:srcCompat="@drawable/ic_person_white_36dp" />
     </LinearLayout>
 
@@ -65,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#3D5AFE"
+            android:background="@color/colorPrimary"
             app:srcCompat="@drawable/ic_list_white_36dp" />
 
         <androidx.appcompat.widget.AppCompatImageButton
@@ -73,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#3D5AFE"
+            android:background="@color/colorPrimary"
             app:srcCompat="@drawable/ic_add_circle_white_36dp" />
 
         <androidx.appcompat.widget.AppCompatImageButton
@@ -81,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#3D5AFE"
+            android:background="@color/colorPrimary"
             app:srcCompat="@drawable/ic_search_white_36dp" />
     </LinearLayout>
 
