@@ -68,6 +68,7 @@ public class MainActivity extends FragmentActivity {
      */
     public void showList(){
         MoodData dataList = new MoodData();
+        dataList.add(new Mood("Joe", "HAPPY", 2000, 12, 12, 0, 0));
         //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
         Bundle bundle = new Bundle();
         bundle.putSerializable("MoodData", dataList);
