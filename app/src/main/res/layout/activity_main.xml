@@ -50,14 +50,7 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_bar"
         app:layout_constraintTop_toBottomOf="@+id/main_top_bar"
-        tools:layout_editor_absoluteX="155dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:text="Fragment Root" />
-    </LinearLayout>
+        tools:layout_editor_absoluteX="155dp"/>
 
     <LinearLayout
         android:id="@+id/main_bottom_bar"

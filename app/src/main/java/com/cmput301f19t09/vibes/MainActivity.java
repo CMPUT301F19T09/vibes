@@ -22,6 +22,8 @@ public class MainActivity extends FragmentActivity {
 
     private ButtonMode currentButtonMode;
     private String username;
+    ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
+            viewButton;
 
     /*
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -33,17 +35,22 @@ public class MainActivity extends FragmentActivity {
 
         //currentFragment = FragmentType.NONE;
         currentButtonMode = ButtonMode.MAP;
+
+        initComponents(); // uses findViewById to set the components above in the class.
+        initListeners(); // Defines onClickListeners for the components defined above in the class.
+
         updateViewButton();
+    }
 
-        ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
-                viewButton;
-
+    private void initComponents(){
         addButton = findViewById(R.id.add_button);
         searchButton = findViewById(R.id.search_button);
         profileButton = findViewById(R.id.profile_button);
         followingButton = findViewById(R.id.follow_list_button);
         viewButton = findViewById(R.id.view_button);
+    }
 
+    private void initListeners(){
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -244,7 +251,7 @@ public class MainActivity extends FragmentActivity {
      */
     private void updateViewButton()
     {
-        ImageButton viewButton = (ImageButton) findViewById(R.id.view_button);
+        ImageButton viewButton = findViewById(R.id.view_button);
         @DrawableRes int image;
 
         switch (currentButtonMode)
