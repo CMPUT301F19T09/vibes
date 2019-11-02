@@ -125,7 +125,6 @@ public class MainActivity extends FragmentActivity {
                 bundle.putSerializable("user", user);
                 bundle.putBoolean("my_profile", true);
                 bundle.putSerializable("otherUser", new User("testuser2"));
-                ProfileFragment profileFragment = new ProfileFragment();
                 replaceFragment(ProfileFragment.class, bundle);
             }
         });
