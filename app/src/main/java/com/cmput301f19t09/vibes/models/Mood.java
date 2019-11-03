@@ -3,8 +3,6 @@ package com.cmput301f19t09.vibes.models;
 
 import com.google.firebase.firestore.GeoPoint;
 
-import java.sql.Timestamp;
-
 public class Mood {
     private String name;
     private EmotionalState emotion;
