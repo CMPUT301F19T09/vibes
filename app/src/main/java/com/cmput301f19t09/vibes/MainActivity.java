@@ -366,9 +366,21 @@ public class MainActivity extends FragmentActivity {
         viewButton.setImageResource(image);
     }
 
+    /**
+     * Updates only the map portion in the main root fragment
+     */
+    public void updateMap(){
+
+    }
+
+    /**
+     * Switches the viewing in the map
+     * @param filter
+     */
     public void switchMapFilter(MapFragment.Filter filter){
         Log.d("DEBUG", "switched");
         this.mapFilter = filter;
+        updateMap();
     }
 }
 
