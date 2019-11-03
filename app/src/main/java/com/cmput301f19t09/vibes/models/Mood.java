@@ -1,6 +1,8 @@
 package com.cmput301f19t09.vibes.models;
 
 
+import java.sql.Timestamp;
+
 public class Mood {
     private String name;
     private EmotionalState emotion;
@@ -19,6 +21,7 @@ public class Mood {
         this.hour = hour;
         this.minute = minute;
     }
+
 
     public String getName(){
         return this.name;
@@ -46,5 +49,10 @@ public class Mood {
 
     public int getMinute(){
         return this.minute;
+    }
+
+    @Override
+    public String toString(){
+        return this.name+":"+this.emotion+","+this.year+","+this.month+","+this.day;
     }
 }

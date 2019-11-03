@@ -8,16 +8,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.model.value.ReferenceValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +188,7 @@ public class User implements Serializable {
                 firebaseCallback.onCallback(User.this);
             }
         });
+    }
 
 //        collectionReference.document(this.userName).get()
 //                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -220,7 +226,7 @@ public class User implements Serializable {
 //                        Log.d(TAG, "User information cannot be retrieved");
 //                    }
 //                });
-    }
+
 
     /**
      *
@@ -323,6 +329,40 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    /**
+     * Returns a List of Mood objects
+     * @return
+     */
+    public List<Mood> getMoods() {
+        List<Mood> result = new ArrayList<Mood>();
+        if(this.moodEvents != null){
+            for(Map mapMood : this.moodEvents){
+                String emotion = (String) mapMood.get("emotion");
+                String reason =(String) mapMood.get("reason");
+                Number social =(Number) mapMood.get("social");
+                Number timestamp = (Number) mapMood.get("timestamp");
+                String username = (String) mapMood.get("username");
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis((long)timestamp);
+
+//                Log.d("DEB", emotion);
+//                Log.d("DEB", reason);
+//                Log.d("DEB", social.toString());
+////                Log.d("DEB", timestamp.toString());
+//                Log.d("DEB", username);
+////                Log.d("MAP", mapMood.toString());
+
+                Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+
+                result.add(newMood);
+            }
+            return result;
+        }else{
+            // Need to do a read from db.
+            throw new RuntimeException("need to update moods from db");
+        }
+    }
     // getFollowersLatest()
 
     // getFollowerLastest(String username)

@@ -8,9 +8,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -20,6 +22,9 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.models.Mood;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * So here is how things work.
@@ -34,9 +39,9 @@ public class MainActivity extends FragmentActivity {
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
 
-    /*
+    /**
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
-     */
+     **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +61,32 @@ public class MainActivity extends FragmentActivity {
      * Shows the map fragment in the main fragment container.
      */
     public void showMap(){
-        Bundle mapBundle = new Bundle();
-        MapData showingUsers = new MapData();
-        showingUsers.add(UserPoint.getMockUser());
-        mapBundle.putSerializable("MapData", showingUsers);
-        replaceFragment(MapFragment.class, mapBundle);
+        // Getting only the user moods
+        User user = new User("testuser");
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                List<Mood> moodsShowing = user.getMoods();
+                for(Mood mood: moodsShowing){
+                    Log.d("Map", mood.toString());
+                }
+                
+
+//                user.readData(new User.FirebaseCallback() {
+//                @Override
+//                public void onCallback(User user) {
+//                    List<Map> moods = user.getFollowingList();
+//
+////                Bundle mapBundle = new Bundle();
+////                MapData showingUsers = new MapData();
+////                showingUsers.add(UserPoint.getMockUser());
+////                mapBundle.putSerializable("MapData", showingUsers);
+////                replaceFragment(MapFragment.class, mapBundle);
+//                }
+//            });
+            }
+        });
+//
     }
 
     /**
