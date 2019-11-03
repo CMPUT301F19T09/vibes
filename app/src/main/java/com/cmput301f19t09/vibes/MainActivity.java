@@ -20,10 +20,11 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.models.Mood;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
 /**
- * So here is how things work.
- * You press a button
+ * MainActivity is the main activity that shows up in the app right now.
  */
 public class MainActivity extends FragmentActivity {
 
@@ -36,7 +37,7 @@ public class MainActivity extends FragmentActivity {
 
     /**
      * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
-     */
+     **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +57,23 @@ public class MainActivity extends FragmentActivity {
      * Shows the map fragment in the main fragment container.
      */
     public void showMap(){
-        Bundle mapBundle = new Bundle();
-        MapData showingUsers = new MapData();
-        showingUsers.add(UserPoint.getMockUser());
-        mapBundle.putSerializable("MapData", showingUsers);
-        replaceFragment(MapFragment.class, mapBundle);
+        // Getting only the user moods
+        User user = new User("testuser");
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                List<Mood> moodsShowing = user.getMoods();
+                MapData mapData = new MapData();
+                for(Mood mood: moodsShowing){
+                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                    mapData.add(userpoint);
+                }
+
+                Bundle mapBundle = new Bundle();
+                mapBundle.putSerializable("MapData", mapData);
+                replaceFragment(MapFragment.class, mapBundle);
+            }
+        });
     }
 
     /**
@@ -125,7 +138,6 @@ public class MainActivity extends FragmentActivity {
                 bundle.putSerializable("user", user);
                 bundle.putBoolean("my_profile", true);
                 bundle.putSerializable("otherUser", new User("testuser2"));
-                ProfileFragment profileFragment = new ProfileFragment();
                 replaceFragment(ProfileFragment.class, bundle);
             }
         });

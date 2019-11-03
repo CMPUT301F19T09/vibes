@@ -22,6 +22,13 @@ public class UserPoint implements Serializable {
         this.reason = reason;
     }
 
+    public UserPoint(String username, LatLng location, String emotion, String reason) {
+        this.username = username;
+        this.location = location;
+        this.emotion = emotion;
+        this.reason = reason;
+    }
+
     /**
      * Returns a mock user for dev purposes.
      * @return Returns the mock user

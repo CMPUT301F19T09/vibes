@@ -3,7 +3,6 @@ package com.cmput301f19t09.vibes.models;
 import android.net.Uri;
 import android.util.Log;
 
-import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -14,11 +13,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +38,19 @@ public class User implements Serializable {
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
-    private transient FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private transient CollectionReference collectionReference = db.collection("users");
+    private transient FirebaseFirestore db;
+    private transient CollectionReference collectionReference ;
     private transient DocumentReference documentReference;
-    private transient FirebaseStorage storage = FirebaseStorage.getInstance();
+    private transient FirebaseStorage storage;
     private transient StorageReference storageReference;
     private transient Uri profileURL;
-    private transient List<Map> moodEvents;
 
+    private transient List<Map> moodEvents;
+    private static boolean connectionStarted;
+
+    // This is the number of elements in the mood map on firebase.
+    // I used it to check if a map is complete to show it on the map.
+    private final int MAP_MOOD_SIZE = 7;
     /**
      *
      */
@@ -60,6 +67,24 @@ public class User implements Serializable {
     }
 
     /**
+     * Constructor for the user class
+     */
+    public User(){
+        if(!connectionStarted){ // Makes sure these definitions are called only once.
+            connectionStarted = true;
+
+            db = FirebaseFirestore.getInstance();
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(false)
+                    .build();
+            db.setFirestoreSettings(settings);
+
+            collectionReference = db.collection("users");
+            storage = FirebaseStorage.getInstance();
+        }
+    }
+
+    /**
      *
      * @param userName
      * @param firstName
@@ -67,11 +92,13 @@ public class User implements Serializable {
      * @param email
      */
     public User(String userName, String firstName, String lastName, String email) {
+        this();
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
+
 //
 //        exists(new UserExistListener() {
 //            @Override
@@ -121,6 +148,7 @@ public class User implements Serializable {
      * @param userName
      */
     public User(String userName) {
+        this();
         this.userName = userName;
 //        readData(new FirebaseCallback() {
 //            @Override
@@ -151,6 +179,10 @@ public class User implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
+        if(userName == null){
+            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
+        }
+
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);
@@ -183,6 +215,7 @@ public class User implements Serializable {
                 firebaseCallback.onCallback(User.this);
             }
         });
+    }
 
 //        collectionReference.document(this.userName).get()
 //                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -220,7 +253,6 @@ public class User implements Serializable {
 //                        Log.d(TAG, "User information cannot be retrieved");
 //                    }
 //                });
-    }
 
     /**
      *
@@ -323,6 +355,50 @@ public class User implements Serializable {
         this.email = email;
     }
 
+    /**
+     * Returns a List of Mood objects using the moods Maps above
+     * @return
+     */
+    public List<Mood> getMoods() {
+        List<Mood> result = new ArrayList<Mood>();
+        if(this.moodEvents != null){
+            for(Map mapMood : this.moodEvents){
+//                Log.d("MAP_MOOD", mapMood.toString());
+
+                // Getting things out of the mood that is in the Map form.
+                String emotion = (String) mapMood.get("emotion");
+                String reason =(String) mapMood.get("reason");
+                Number social =(Number) mapMood.get("social");
+                Long timestamp = (Long) mapMood.get("timestamp");
+                String username = (String) mapMood.get("username");
+                GeoPoint location = (GeoPoint) mapMood.get("location");
+
+                if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
+                    Log.d("INFO", "Mood isn't complete yet");
+                    continue;
+                }
+
+                // Checking if timestamp is defined.
+                if(timestamp == null){
+                    throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
+                }
+
+                // Getting the time elements.
+                // However, it doesn't return the correct values when creating the new mood.
+                Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
+                cal.setTimeInMillis(timestamp); // TODO: The timestamp is something else idk why
+
+                // Creating the Mood
+                Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), location);
+
+                result.add(newMood);
+            }
+            return result;
+        }else{
+            // Need to do a read from db.
+            throw new RuntimeException("need to update moods from db");
+        }
+    }
     // getFollowersLatest()
 
     // getFollowerLastest(String username)
