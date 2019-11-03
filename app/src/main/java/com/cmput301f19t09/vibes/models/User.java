@@ -15,6 +15,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.model.value.ReferenceValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -342,18 +343,14 @@ public class User implements Serializable {
                 Number social =(Number) mapMood.get("social");
                 Number timestamp = (Number) mapMood.get("timestamp");
                 String username = (String) mapMood.get("username");
+                GeoPoint location = (GeoPoint) mapMood.get("location");
 
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis((long)timestamp);
+                // Getting days and stuff
+                Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
+                cal.setTimeInMillis((long)timestamp); // TODO: The timestamp is something else idk why
 
-//                Log.d("DEB", emotion);
-//                Log.d("DEB", reason);
-//                Log.d("DEB", social.toString());
-////                Log.d("DEB", timestamp.toString());
-//                Log.d("DEB", username);
-////                Log.d("MAP", mapMood.toString());
-
-                Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                // Creating the Mood
+                Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), location);
 
                 result.add(newMood);
             }

@@ -1,6 +1,8 @@
 package com.cmput301f19t09.vibes.models;
 
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.sql.Timestamp;
 
 public class Mood {
@@ -12,6 +14,16 @@ public class Mood {
     private int hour;
     private int minute;
 
+    public GeoPoint getLocation() {
+        return location;
+    }
+
+    public void setLocation(GeoPoint location) {
+        this.location = location;
+    }
+
+    private GeoPoint location;
+
     public Mood(String name, String emotionName, int year, int month, int day, int hour, int minute) {
         this.name = name;
         this.emotion = new EmotionalState(emotionName);
@@ -21,6 +33,18 @@ public class Mood {
         this.hour = hour;
         this.minute = minute;
     }
+
+    public Mood(String name, String emotionName, int year, int month, int day, int hour, int minute, GeoPoint location) {
+        this.name = name;
+        this.emotion = new EmotionalState(emotionName);
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.location = location;
+    }
+
 
 
     public String getName(){

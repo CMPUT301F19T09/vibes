@@ -67,10 +67,12 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onCallback(User user) {
                 List<Mood> moodsShowing = user.getMoods();
+                MapData mapData = new MapData();
                 for(Mood mood: moodsShowing){
                     Log.d("Map", mood.toString());
+//                    UserPoint userpoint = new User
                 }
-                
+
 
 //                user.readData(new User.FirebaseCallback() {
 //                @Override
