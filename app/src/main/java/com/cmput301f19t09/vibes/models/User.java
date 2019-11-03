@@ -48,6 +48,8 @@ public class User implements Serializable {
     private transient List<Map> moodEvents;
     private static boolean connectionStarted;
 
+    private final int MAP_MOOD_SIZE = 7;
+
     /**
      *
      */
@@ -370,12 +372,12 @@ public class User implements Serializable {
                 String username = (String) mapMood.get("username");
                 GeoPoint location = (GeoPoint) mapMood.get("location");
 
-                if(mapMood.size() != 7){ // The mood class isn't complete. Then skip it.
+                if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
                     Log.d("INFO", "Mood isn't complete yet");
                     continue;
                 }
 
-                // Checking if variables are defined.
+                // Checking if timestamp is defined.
                 if(timestamp == null){
                     throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
                 }
