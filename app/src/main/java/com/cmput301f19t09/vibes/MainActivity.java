@@ -23,10 +23,8 @@ import com.cmput301f19t09.vibes.models.Mood;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
-
 /**
- * So here is how things work.
- * You press a button
+ * MainActivity is the main activity that shows up in the app right now.
  */
 public class MainActivity extends FragmentActivity {
 
