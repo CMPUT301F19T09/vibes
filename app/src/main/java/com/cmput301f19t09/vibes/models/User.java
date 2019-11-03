@@ -3,28 +3,24 @@ package com.cmput301f19t09.vibes.models;
 import android.net.Uri;
 import android.util.Log;
 
-import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.model.value.ReferenceValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +38,15 @@ public class User implements Serializable {
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
-    private transient FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private transient CollectionReference collectionReference = db.collection("users");
+    private transient FirebaseFirestore db;
+    private transient CollectionReference collectionReference ;
     private transient DocumentReference documentReference;
-    private transient FirebaseStorage storage = FirebaseStorage.getInstance();
+    private transient FirebaseStorage storage;
     private transient StorageReference storageReference;
     private transient Uri profileURL;
+
     private transient List<Map> moodEvents;
+    private static boolean connectionStarted;
 
     /**
      *
@@ -66,6 +64,24 @@ public class User implements Serializable {
     }
 
     /**
+     * Constructor for the user class
+     */
+    public User(){
+        if(!connectionStarted){ // Makes sure these definitions are called only once.
+            connectionStarted = true;
+
+            db = FirebaseFirestore.getInstance();
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(false)
+                    .build();
+            db.setFirestoreSettings(settings);
+
+            collectionReference = db.collection("users");
+            storage = FirebaseStorage.getInstance();
+        }
+    }
+
+    /**
      *
      * @param userName
      * @param firstName
@@ -73,11 +89,13 @@ public class User implements Serializable {
      * @param email
      */
     public User(String userName, String firstName, String lastName, String email) {
+        this();
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
+
 //
 //        exists(new UserExistListener() {
 //            @Override
@@ -127,6 +145,7 @@ public class User implements Serializable {
      * @param userName
      */
     public User(String userName) {
+        this();
         this.userName = userName;
 //        readData(new FirebaseCallback() {
 //            @Override
@@ -227,7 +246,6 @@ public class User implements Serializable {
 //                        Log.d(TAG, "User information cannot be retrieved");
 //                    }
 //                });
-
 
     /**
      *
@@ -331,23 +349,29 @@ public class User implements Serializable {
     }
 
     /**
-     * Returns a List of Mood objects
+     * Returns a List of Mood objects using the moods Maps above
      * @return
      */
     public List<Mood> getMoods() {
         List<Mood> result = new ArrayList<Mood>();
         if(this.moodEvents != null){
             for(Map mapMood : this.moodEvents){
+                Log.d("MAP_MOOD", mapMood.toString());
+
                 String emotion = (String) mapMood.get("emotion");
                 String reason =(String) mapMood.get("reason");
                 Number social =(Number) mapMood.get("social");
-                Number timestamp = (Number) mapMood.get("timestamp");
+                Long timestamp = (Long) mapMood.get("timestamp");
                 String username = (String) mapMood.get("username");
                 GeoPoint location = (GeoPoint) mapMood.get("location");
 
+                if(timestamp == null){
+                    throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
+                }
+
                 // Getting days and stuff
                 Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
-                cal.setTimeInMillis((long)timestamp); // TODO: The timestamp is something else idk why
+                cal.setTimeInMillis(timestamp); // TODO: The timestamp is something else idk why
 
                 // Creating the Mood
                 Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), location);

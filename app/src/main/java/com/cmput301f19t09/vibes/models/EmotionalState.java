@@ -28,6 +28,9 @@ public class EmotionalState {
         this.colour = (String) pair.second;
     }
 
+    public String getEmotion(){
+        return emotion;
+    }
 
     public int getImageFile() {
         return this.file;

@@ -8,11 +8,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -22,9 +20,9 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.models.Mood;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * So here is how things work.
@@ -69,26 +67,15 @@ public class MainActivity extends FragmentActivity {
                 List<Mood> moodsShowing = user.getMoods();
                 MapData mapData = new MapData();
                 for(Mood mood: moodsShowing){
-                    Log.d("Map", mood.toString());
-//                    UserPoint userpoint = new User
+                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                    mapData.add(userpoint);
                 }
 
-
-//                user.readData(new User.FirebaseCallback() {
-//                @Override
-//                public void onCallback(User user) {
-//                    List<Map> moods = user.getFollowingList();
-//
-////                Bundle mapBundle = new Bundle();
-////                MapData showingUsers = new MapData();
-////                showingUsers.add(UserPoint.getMockUser());
-////                mapBundle.putSerializable("MapData", showingUsers);
-////                replaceFragment(MapFragment.class, mapBundle);
-//                }
-//            });
+                Bundle mapBundle = new Bundle();
+                mapBundle.putSerializable("MapData", mapData);
+                replaceFragment(MapFragment.class, mapBundle);
             }
         });
-//
     }
 
     /**

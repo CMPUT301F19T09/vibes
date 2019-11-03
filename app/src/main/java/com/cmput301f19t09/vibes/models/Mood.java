@@ -13,6 +13,20 @@ public class Mood {
     private int day;
     private int hour;
     private int minute;
+    private String reason;
+
+    public String getReason() {
+        if(this.reason == null){
+            return "";
+        }
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+
 
     public GeoPoint getLocation() {
         return location;
@@ -45,8 +59,6 @@ public class Mood {
         this.location = location;
     }
 
-
-
     public String getName(){
         return this.name;
     }
@@ -78,5 +90,9 @@ public class Mood {
     @Override
     public String toString(){
         return this.name+":"+this.emotion+","+this.year+","+this.month+","+this.day;
+    }
+
+    public String getStringEmotion(){
+        return this.emotion.getEmotion();
     }
 }
