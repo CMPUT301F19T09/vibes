@@ -34,8 +34,8 @@ public class MainActivity extends FragmentActivity {
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
 
-    /*
-    Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
+    /**
+     * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,13 +171,17 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
+    /**
+     *
+     * @param fragmentClass
+     */
     public void replaceFragment(Class fragmentClass)
     {
         replaceFragment(fragmentClass, null);
     }
 
-    /*
-    Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
+    /**
+     * Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
      */
     public void replaceFragment(Class fragmentClass, Bundle arguments)
     {
@@ -222,6 +226,10 @@ public class MainActivity extends FragmentActivity {
         transaction.commit();
     }
 
+    /**
+     *
+     * @param fragmentClass
+     */
     public void addFragment(Class fragmentClass)
     {
         if (!Fragment.class.isAssignableFrom(fragmentClass))
@@ -248,23 +256,23 @@ public class MainActivity extends FragmentActivity {
         transaction.commit();
     }
 
-    /*
-    Open the DialogFragment specified by dialogClass, with no arguments.
+    /**
+     * Open the DialogFragment specified by dialogClass, with no arguments.
      */
     public void openDialog(Class dialogClass)
     {
         openDialog(dialogClass, null);
     }
 
-    /*
-    Open the DialogFragment specified by dialogClass, with the arguments specified by arguments.
-    This will always add the key "username", with the value username to the bundle
-    @param dialogClass
-        The class template of the dialog fragment you want to open. Must be a subclass of DialogFragment
-    @param arguments
-        A map of arguments to provide the new dialogClass with.
-        key : argument name
-        value : argument value
+    /**
+     * Open the DialogFragment specified by dialogClass, with the arguments specified by arguments.
+     * This will always add the key "username", with the value username to the bundle
+     * @param dialogClass
+     *   The class template of the dialog fragment you want to open. Must be a subclass of DialogFragment
+     *@param arguments
+     *   A map of arguments to provide the new dialogClass with.
+     *   key : argument name
+     *   value : argument value
      */
     public void openDialog(Class dialogClass, Bundle arguments)
     {
@@ -305,10 +313,10 @@ public class MainActivity extends FragmentActivity {
         dialog.show(transaction, null);
     }
 
-    /*
-    Update the image of the list/map button to reflect the type of fragment it will open if pressed
-    @param fragmentType
-        The type of fragment that the button will open if pressed
+    /**
+     * Update the image of the list/map button to reflect the type of fragment it will open if pressed
+     * @param fragmentType
+     *  The type of fragment that the button will open if pressed
      */
     private void updateViewButton()
     {
@@ -318,11 +326,11 @@ public class MainActivity extends FragmentActivity {
         switch (currentButtonMode)
         {
             case MAP:
-                image = R.drawable.ic_map_white_36dp;
+                image = R.drawable.ic_list_white_36dp;
                 break;
             case LIST:
             default:
-                image = R.drawable.ic_list_white_36dp;
+                image = R.drawable.ic_map_white_36dp;
         }
 
         viewButton.setImageResource(image);
