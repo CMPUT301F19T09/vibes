@@ -34,6 +34,7 @@ public class MainActivity extends FragmentActivity {
     private String username;
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
+    private boolean startedDefault = false;
 
     /**
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -230,7 +231,10 @@ public class MainActivity extends FragmentActivity {
 
         // Set the root of the fragment, replacing any fragment that already exists
         transaction.replace(R.id.main_fragment_root, f);
-        transaction.addToBackStack(null);
+        if(!startedDefault){
+            transaction.addToBackStack(null);
+            startedDefault = true;
+        }
         transaction.commit();
     }
 
