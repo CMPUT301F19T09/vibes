@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
@@ -35,6 +36,7 @@ public class MainActivity extends FragmentActivity {
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
     private boolean startedDefault = false;
+    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_EVERYONE;
 
     /**
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -72,7 +74,12 @@ public class MainActivity extends FragmentActivity {
 
                 Bundle mapBundle = new Bundle();
                 mapBundle.putSerializable("MapData", mapData);
+
+                Fragment filterFragment = new MapFilter();
+
+
                 replaceFragment(MapFragment.class, mapBundle);
+                
             }
         });
     }
@@ -342,6 +349,10 @@ public class MainActivity extends FragmentActivity {
         }
 
         viewButton.setImageResource(image);
+    }
+
+    public void switchMapFilter(MapFragment.Filter filter){
+        this.mapFilter = filter;
     }
 }
 

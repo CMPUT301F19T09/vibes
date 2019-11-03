@@ -26,6 +26,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     GoogleMap googlemap;
 
     /**
+     * This is used to filter out the moods being showed;
+     */
+    public enum Filter{
+        SHOW_MINE,
+        SHOW_EVERYONE
+    }
+
+    /**
      * An example for calling this MapFragment can be found below.
      * FragmentManager fragmentManager = getSupportFragmentManager();
      *         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
