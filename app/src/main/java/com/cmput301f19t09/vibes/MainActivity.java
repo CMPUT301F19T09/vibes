@@ -15,10 +15,14 @@ import android.widget.ImageButton;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
 import com.cmput301f19t09.vibes.models.Mood;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
 /**
  * MainActivity is the main activity that shows up in the app right now.
  */
@@ -31,9 +35,9 @@ public class MainActivity extends FragmentActivity {
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
 
-    /*
+    /**
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
-     */
+     **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +57,23 @@ public class MainActivity extends FragmentActivity {
      * Shows the map fragment in the main fragment container.
      */
     public void showMap(){
-        Bundle mapBundle = new Bundle();
-        MapData showingUsers = new MapData();
-        showingUsers.add(UserPoint.getMockUser());
-        mapBundle.putSerializable("MapData", showingUsers);
-        replaceFragment(MapFragment.class, mapBundle);
+        // Getting only the user moods
+        User user = new User("testuser");
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                List<Mood> moodsShowing = user.getMoods();
+                MapData mapData = new MapData();
+                for(Mood mood: moodsShowing){
+                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                    mapData.add(userpoint);
+                }
+
+                Bundle mapBundle = new Bundle();
+                mapBundle.putSerializable("MapData", mapData);
+                replaceFragment(MapFragment.class, mapBundle);
+            }
+        });
     }
 
     /**
@@ -116,17 +132,26 @@ public class MainActivity extends FragmentActivity {
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(ProfileFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                bundle.putBoolean("my_profile", true);
+                bundle.putSerializable("otherUser", new User("testuser2"));
+                replaceFragment(ProfileFragment.class, bundle);
             }
         });
 
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(FollowingFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                bundle.putBoolean("my_profile", false);
+                bundle.putSerializable("otherUser", new User("testuser2"));
+                ProfileFragment profileFragment = new ProfileFragment();
+                replaceFragment(ProfileFragment.class, bundle);
             }
         });
 

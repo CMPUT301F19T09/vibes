@@ -8,7 +8,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.cmput301f19t09.vibes"
+            applicationId "com.cmput301f19t09.vibes"
         minSdkVersion 26
         targetSdkVersion 28
         versionCode 1
@@ -44,5 +44,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.2.1'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.firebaseui:firebase-ui-storage:4.3.1'
 }
 apply plugin: 'com.google.gms.google-services'
