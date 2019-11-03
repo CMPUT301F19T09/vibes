@@ -38,11 +38,11 @@ public class User implements Serializable {
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
-    private transient FirebaseFirestore db;
-    private transient CollectionReference collectionReference ;
-    private transient DocumentReference documentReference;
-    private transient FirebaseStorage storage;
-    private transient StorageReference storageReference;
+    private transient static FirebaseFirestore db;
+    private transient static CollectionReference collectionReference ;
+    private transient static DocumentReference documentReference;
+    private transient static FirebaseStorage storage;
+    private transient static StorageReference storageReference;
     private transient Uri profileURL;
 
     private transient List<Map> moodEvents;
@@ -98,49 +98,6 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
-
-//
-//        exists(new UserExistListener() {
-//            @Override
-//            public void onUserExists() {
-//                readData(new FirebaseCallback() {
-//                    @Override
-//                    public void onCallback(User user) {
-//                        Log.d(TAG, "User information retrieved successfully");
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onUserNotExists() {
-//                Map<String, String> data = new HashMap<>();
-//                data.put("first", firstName);
-//                data.put("last", lastName);
-//                data.put("email", email);
-//                data.put("profile_picture", picturePath);
-//
-//                collectionReference.document(userName).set(data)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-//                                storageReference = storage.getReference(picturePath);
-//                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//                                        Log.d(TAG, "Failed to store default profile picture");
-//                                    }
-//                                });
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.d(TAG, "Data failed to store in Firestore");
-//                            }
-//                        });
-//            }
-//        });
     }
 
     /**
@@ -150,28 +107,6 @@ public class User implements Serializable {
     public User(String userName) {
         this();
         this.userName = userName;
-//        readData(new FirebaseCallback() {
-//            @Override
-//            public void onCallback(User user) {
-//                Log.d(TAG, "User information retrieved successfully");
-//
-//            }
-//        });
-
-//        documentReference = collectionReference.document(userName);
-//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//                firstName = documentSnapshot.getString("first");
-//                lastName = documentSnapshot.getString("last");
-//                email = documentSnapshot.getString("email");
-//                picturePath = documentSnapshot.getString("profile_picture");
-//                followingList = (List<String>) documentSnapshot.get("following_list");
-//                moodEvents = (List<Map>) documentSnapshot.get("moods");
-//
-//                Log.d(TAG, "Finished loading");
-//            }
-//        });
     }
 
     /**
@@ -179,12 +114,14 @@ public class User implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
+        System.out.println(userName);
         if(userName == null){
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
+        System.out.println(collectionReference);
         documentReference = collectionReference.document(userName);
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -216,43 +153,6 @@ public class User implements Serializable {
             }
         });
     }
-
-//        collectionReference.document(this.userName).get()
-//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                        firstName = documentSnapshot.getString("first");
-//                        lastName = documentSnapshot.getString("last");
-//                        email = documentSnapshot.getString("email");
-//                        picturePath = documentSnapshot.getString("profile_picture");
-//                        followingList = (List<String>) documentSnapshot.get("following_list");
-//                        moodEvents = (List<Map>) documentSnapshot.get("moods");
-//
-//                        Log.d(TAG, "Finished Loading");
-//                        firebaseCallback.onCallback(User.this);
-//
-////                        storageReference = storage.getReference(picturePath);
-////                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-////                            @Override
-////                            public void onSuccess(Uri uri) {
-////                                Log.d(TAG, "Something");
-////                                profileURL = uri;
-////                                firebaseCallback.onCallback(User.this);
-////                            }
-////                        }).addOnFailureListener(new OnFailureListener() {
-////                            @Override
-////                            public void onFailure(@NonNull Exception e) {
-////                                Log.d(TAG, "Cannot retrieve profile picture download url");
-////                            }
-////                        });
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d(TAG, "User information cannot be retrieved");
-//                    }
-//                });
 
     /**
      *
