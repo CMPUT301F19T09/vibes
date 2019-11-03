@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -74,12 +75,26 @@ public class MainActivity extends FragmentActivity {
 
                 Bundle mapBundle = new Bundle();
                 mapBundle.putSerializable("MapData", mapData);
+                Fragment mapFragment = new MapFragment();
+                mapFragment.setArguments(mapBundle);
 
                 Fragment filterFragment = new MapFilter();
 
+                ViewGroup root = findViewById(R.id.main_fragment_root);
+                root.removeAllViewsInLayout();
 
-                replaceFragment(MapFragment.class, mapBundle);
-                
+                // Get the activity fragment manager and begin a new transaction
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+
+                // Set the root of the fragment, replacing any fragment that already exists
+                transaction.add(R.id.main_fragment_root,filterFragment, "filterFragment");
+                transaction.add(R.id.main_fragment_root, mapFragment, "mapFragment");
+                if(!startedDefault){
+                    transaction.addToBackStack(null);
+                    startedDefault = true;
+                }
+                transaction.commit();
             }
         });
     }
@@ -352,6 +367,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void switchMapFilter(MapFragment.Filter filter){
+        Log.d("DEBUG", "switched");
         this.mapFilter = filter;
     }
 }
