@@ -10,3 +10,4 @@
 .gitignore
 apikey.properties
 app/google-services.json
+app/.idea/workspace.xml
