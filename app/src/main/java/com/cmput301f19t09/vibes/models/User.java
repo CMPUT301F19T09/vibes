@@ -48,8 +48,9 @@ public class User implements Serializable {
     private transient List<Map> moodEvents;
     private static boolean connectionStarted;
 
+    // This is the number of elements in the mood map on firebase.
+    // I used it to check if a map is complete to show it on the map.
     private final int MAP_MOOD_SIZE = 7;
-
     /**
      *
      */
