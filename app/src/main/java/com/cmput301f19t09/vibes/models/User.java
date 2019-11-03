@@ -176,6 +176,10 @@ public class User implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
+        if(userName == null){
+            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
+        }
+
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);
@@ -356,8 +360,9 @@ public class User implements Serializable {
         List<Mood> result = new ArrayList<Mood>();
         if(this.moodEvents != null){
             for(Map mapMood : this.moodEvents){
-                Log.d("MAP_MOOD", mapMood.toString());
+//                Log.d("MAP_MOOD", mapMood.toString());
 
+                // Getting things out of the mood that is in the Map form.
                 String emotion = (String) mapMood.get("emotion");
                 String reason =(String) mapMood.get("reason");
                 Number social =(Number) mapMood.get("social");
@@ -365,11 +370,18 @@ public class User implements Serializable {
                 String username = (String) mapMood.get("username");
                 GeoPoint location = (GeoPoint) mapMood.get("location");
 
+                if(mapMood.size() != 7){ // The mood class isn't complete. Then skip it.
+                    Log.d("INFO", "Mood isn't complete yet");
+                    continue;
+                }
+
+                // Checking if variables are defined.
                 if(timestamp == null){
                     throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
                 }
 
-                // Getting days and stuff
+                // Getting the time elements.
+                // However, it doesn't return the correct values when creating the new mood.
                 Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
                 cal.setTimeInMillis(timestamp); // TODO: The timestamp is something else idk why
 
