@@ -34,10 +34,12 @@ public class MainActivity extends FragmentActivity {
 
     private ButtonMode currentButtonMode;
     private String username;
+
     ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
             viewButton;
-    private boolean startedDefault = false;
-    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_EVERYONE;
+
+    private boolean startedDefault = false; // Used to check if the first view is loaded.
+    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_EVERYONE; // The filter of the map.
 
     /**
      * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -61,6 +63,7 @@ public class MainActivity extends FragmentActivity {
      * Stacks two fragments on top of each other. It is different than replaceFragment().
      * You have to define the fragments, combine the fragments with
      * their bundles then send it into this function.
+     * You can later access the fragments using the fragmentTitles you have used.
      * @param fragment1
      * @param fragmentTitle
      * @param fragment2
@@ -372,29 +375,36 @@ public class MainActivity extends FragmentActivity {
      * Shows the map fragment in the main fragment container.
      */
     public void showMap(){
-        // Getting only the user moods
+        // Test user for now. This will be updated
         User user = new User("testuser");
 
-        user.readData(new User.FirebaseCallback() {
-            @Override
-            public void onCallback(User user) {
-                List<Mood> moodsShowing = user.getMoods();
-                MapData mapData = new MapData();
-                for(Mood mood: moodsShowing){
-                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
-                    mapData.add(userpoint);
+        if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
+            user.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    List<Mood> moodsShowing = user.getMoods();
+                    MapData mapData = new MapData();
+                    for(Mood mood: moodsShowing){
+                        UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                        mapData.add(userpoint);
+                    }
+
+                    Bundle mapBundle = new Bundle();
+                    mapBundle.putSerializable("MapData", mapData);
+                    Fragment mapFragment = new MapFragment();
+                    mapFragment.setArguments(mapBundle);
+
+                    Fragment filterFragment = new MapFilter();
+
+                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
                 }
+            });
+        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            // Showing everyone's last moods.
+        }else{
+            throw new RuntimeException("Fragment filter isn't known");
+        }
 
-                Bundle mapBundle = new Bundle();
-                mapBundle.putSerializable("MapData", mapData);
-                Fragment mapFragment = new MapFragment();
-                mapFragment.setArguments(mapBundle);
-
-                Fragment filterFragment = new MapFilter();
-
-                stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
-            }
-        });
     }
 
     /**
