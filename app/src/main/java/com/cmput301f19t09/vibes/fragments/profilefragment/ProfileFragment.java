@@ -24,6 +24,16 @@ public class ProfileFragment extends Fragment {
     private ImageView profilePictureImageView;
     private Button followButton;
 
+    public static ProfileFragment newInstance(User user, Boolean myProfile, User otherUser) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        bundle.putBoolean("my_profile", myProfile);
+        bundle.putSerializable("otherUser", otherUser);
+        profileFragment.setArguments(bundle);
+        return profileFragment;
+    }
+
     /**
      *
      * @param inflater
@@ -53,9 +63,9 @@ public class ProfileFragment extends Fragment {
         /**
          * @// TODO: 2019-11-01 Fix bundling issue.
          */
-        FollowingFragment followingFragment = new FollowingFragment();
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
+//        FollowingFragment followingFragment = new FollowingFragment();
+//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
 
         User user = (User) getArguments().getSerializable("user");
         Boolean mode = getArguments().getBoolean("my_profile");
@@ -82,6 +92,10 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+
+//        MoodListFragment moodListFragment = MoodListFragment.newInstance(this);
+//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.user_mood_list, moodListFragment).commit();
 
         return view;
     }

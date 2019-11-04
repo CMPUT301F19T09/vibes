@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +22,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,8 @@ public class User implements Serializable {
     private String TAG = "Sample";
     private String picturePath;
     private List<String> followingList;
+    private List<Mood> result;
+    private List<MoodEvent> moodEvents;
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -45,7 +49,7 @@ public class User implements Serializable {
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
 
-    private transient List<Map> moodEvents;
+    private transient List<Map> moods;
     private static boolean connectionStarted;
 
     // This is the number of elements in the mood map on firebase.
@@ -131,7 +135,11 @@ public class User implements Serializable {
                 email = documentSnapshot.getString("email");
                 picturePath = documentSnapshot.getString("profile_picture");
                 followingList = (List<String>) documentSnapshot.get("following_list");
-                moodEvents = (List<Map>) documentSnapshot.get("moods");
+                moods = (List<Map>) documentSnapshot.get("moods");
+
+                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
+
+                moodEvents = parseToMoodEvent();
 
                 storageReference = storage.getReference(picturePath);
                 storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -260,9 +268,9 @@ public class User implements Serializable {
      * @return
      */
     public List<Mood> getMoods() {
-        List<Mood> result = new ArrayList<Mood>();
-        if(this.moodEvents != null){
-            for(Map mapMood : this.moodEvents){
+        result = new ArrayList<Mood>();
+        if(this.moods != null){
+            for(Map mapMood : this.moods){
 //                Log.d("MAP_MOOD", mapMood.toString());
 
                 // Getting things out of the mood that is in the Map form.
@@ -296,16 +304,66 @@ public class User implements Serializable {
             return result;
         }else{
             // Need to do a read from db.
-            throw new RuntimeException("need to update moods from db");
+            throw new RuntimeException("Need to update moods from db");
         }
     }
-    // getFollowersLatest()
 
-    // getFollowerLastest(String username)
+    /**
+     *
+     * @return
+     */
+    public List<MoodEvent> parseToMoodEvent() {
+        if (moods != null) {
+            for (Map moodEvent : moods) {
+                String emotion = (String) moodEvent.get("emotion");
+                String reason =(String) moodEvent.get("reason");
+                Number social =(Number) moodEvent.get("social");
+                Long timestamp = (Long) moodEvent.get("timestamp");
+                String username = (String) moodEvent.get("username");
+                GeoPoint location = (GeoPoint) moodEvent.get("location");
+
+                if (moodEvent.size() != MAP_MOOD_SIZE) {
+                    Log.d("INFO", "Mood isn't complete yet");
+                    continue;
+                }
+
+                if (timestamp == null) {
+                    throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
+                }
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(timestamp);
+
+//                MoodEvent newMood = new MoodEvent(date, time, description, state, social_situation, locaation);
+//                moodEvents.add(newMood);
+            }
+        } else {
+            throw new RuntimeException("Need to update moods from DB");
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public MoodEvent getMostRecentMoodEvent() {
+        MoodEvent moodEvent;
+        if (moodEvents != null) {
+            moodEvent = moodEvents.get(moodEvents.size() - 1);
+            return moodEvent;
+        } else {
+            Log.d("INFO", "No mood events");
+            return null;
+        }
+    }
 
     // addMood(MoodEvent moodEvent)
 
     // editMood(MoodEvent moodEvent, Integer index)
 
-    // deleteMood(Integer index)
+    public void deleteMood(Integer index) {
+        documentReference = collectionReference.document(userName);
+        documentReference.update({moods, firebase.firestore.FieldValue.arrayRemove(index)});
+    }
 }
