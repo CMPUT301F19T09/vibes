@@ -7,5 +7,8 @@
 /captures
 .externalNativeBuild
 .cxx
-app/src/main/res/drawable-*
-app/src/main/res/mipmap*
+.gitignore
+apikey.properties
+app/google-services.json
+app/.idea/workspace.xml
+app/local.properties
