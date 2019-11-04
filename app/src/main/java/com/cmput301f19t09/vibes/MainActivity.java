@@ -1,96 +1,101 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.IdRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import java.io.Serializable;
-import java.util.Map;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
+import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.User;
+import com.google.android.gms.maps.model.LatLng;
 
-public class MainActivity extends FragmentActivity
-{
-    //private final static Class defaultFragment = MoodListFragment.class;
+/**
+ * MainActivity is the main activity that shows up in the app right now.
+ */
+public class MainActivity extends FragmentActivity {
 
-    private enum ButtonMode
-    {
-        LIST,
-        MAP;
-    }
+    private enum ButtonMode {LIST, MAP}
 
     private ButtonMode currentButtonMode;
+    private @IdRes int fragment_root;
+    private User user;
 
-    private String username;
-
-    /*
+    /**
     Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
-     */
+     **/
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //currentFragment = FragmentType.NONE;
         currentButtonMode = ButtonMode.MAP;
-        updateViewButton();
 
-        ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
-                viewButton;
+        Intent intent = getIntent();
+        String username = (String) intent.getSerializableExtra("username");
 
-        addButton = findViewById(R.id.add_button);
-        searchButton = findViewById(R.id.search_button);
-        profileButton = findViewById(R.id.profile_button);
-        followingButton = findViewById(R.id.follow_list_button);
-        viewButton = findViewById(R.id.view_button);
+        user = new User(username);
 
-        addButton.setOnClickListener(new View.OnClickListener()
-        {
+        initListeners(); // Defines onClickListeners for the components defined above in the class.
+
+        updateViewButton(); // Updates the view button only.
+    }
+
+
+    /**
+     * Puts in listeners
+     */
+    private void initListeners(){
+        View addButton, searchButton, profileButton, followingButton, viewButton;
+        addButton = findViewById(R.id.main_add_button);
+        profileButton = findViewById(R.id.main_profile_button);
+        followingButton = findViewById(R.id.main_follow_list_button);
+        searchButton = findViewById(R.id.main_search_button);
+        viewButton = findViewById(R.id.main_view_button);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                //replaceFragment(AddFragment.class);
+                setMainFragment(EditFragment.newInstance());
             }
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener()
-        {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                //replaceFragment(SearchFragment.class);
+                //setMainFragment(SearchFragment.newInstance());
             }
         });
 
-        profileButton.setOnClickListener(new View.OnClickListener()
-        {
+        profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(ProfileFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                setMainFragment(ProfileFragment.newInstance(user, true));
             }
         });
 
-        followingButton.setOnClickListener(new View.OnClickListener()
-        {
+        followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                //replaceFragment(FollowingFragment.class);
+            public void onClick(View view) {
+                User user = new User("testuser");
+                setMainFragment(FollowingFragment.newInstance(user));
             }
         });
 
-        viewButton.setOnClickListener(new View.OnClickListener()
-        {
+        viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -99,15 +104,17 @@ public class MainActivity extends FragmentActivity
                 is pressed (i.e. the current fragment)
                  */
 
+                User user = new User("testuser");
+
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        //replaceFragment(MapFragment.class);
+                        setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                     default:
-                        //replaceFragment(ListFragment.class);
+                        setMainFragment(MoodListFragment.newInstance(user));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }
@@ -117,148 +124,38 @@ public class MainActivity extends FragmentActivity
         });
     }
 
-    public void replaceFragment(Class fragmentClass)
-    {
-        replaceFragment(fragmentClass, null);
-    }
-
     /*
-    Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
+    Replace the root fragment shown
      */
-    public void replaceFragment(Class fragmentClass, Bundle arguments)
+    public void setMainFragment(Fragment fragment)
     {
-        ViewGroup root = findViewById(R.id.main_fragment_root);
-        root.removeAllViewsInLayout();
-        if (!Fragment.class.isAssignableFrom(fragmentClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of Fragment!");
-        }
-
-        Fragment f;
-
-        try
-        {
-            // instantiate the fragment
-            f = (Fragment) fragmentClass.newInstance();
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalArgumentException();
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        if (arguments == null)
-        {
-            arguments = new Bundle();
-        }
-
-        arguments.putSerializable("username", username);
-        f.setArguments(arguments);
-
-        // Get the activity fragment manager and begin a new transaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        // Set the root of the fragment, replacing any fragment that already exists
-        transaction.replace(R.id.main_fragment_root, f);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    public void addFragment(Class fragmentClass)
-    {
-        if (!Fragment.class.isAssignableFrom(fragmentClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of Fragment!");
-        }
-
-        Fragment f;
-
-        try
-        {
-            f = (Fragment) fragmentClass.newInstance();
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        transaction.add(R.id.main_fragment_root, f);
+        transaction.replace(fragment_root, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
     /*
-    Open the DialogFragment specified by dialogClass, with no arguments.
+    Open a dialog fragment
      */
-    public void openDialog(Class dialogClass)
+    public void openDialogFragment(DialogFragment fragment)
     {
-        openDialog(dialogClass, null);
-    }
-
-    /*
-    Open the DialogFragment specified by dialogClass, with the arguments specified by arguments.
-    This will always add the key "username", with the value username to the bundle
-    @param dialogClass
-        The class template of the dialog fragment you want to open. Must be a subclass of DialogFragment
-    @param arguments
-        A map of arguments to provide the new dialogClass with.
-        key : argument name
-        value : argument value
-     */
-    public void openDialog(Class dialogClass, Bundle arguments)
-    {
-        // If the dialogClass is not a subclass of DialogFragment throw an exception
-        if (!DialogFragment.class.isAssignableFrom(dialogClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of DialogFragment!");
-        }
-
-        DialogFragment dialog;
-
-        try
-        {
-            // Instantiate a new class of dialogClass
-            dialog = (DialogFragment) dialogClass.newInstance();
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalArgumentException();
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        // If arguments were provided put them in a bundle and pass them to the new fragment
-        if (arguments == null)
-        {
-            arguments = new Bundle();
-        }
-
-        arguments.putSerializable("username", username);
-        dialog.setArguments(arguments);
-
-        // Show the dialog using FragmentTransaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        dialog.show(transaction, null);
+
+        fragment.show(transaction, null);
     }
 
     /*
     Update the image of the list/map button to reflect the type of fragment it will open if pressed
     @param fragmentType
         The type of fragment that the button will open if pressed
-     */
+    */
     private void updateViewButton()
     {
-        ImageButton viewButton = (ImageButton) findViewById(R.id.view_button);
+        ImageButton viewButton = findViewById(R.id.main_view_button);
         @DrawableRes int image;
 
         switch (currentButtonMode)
