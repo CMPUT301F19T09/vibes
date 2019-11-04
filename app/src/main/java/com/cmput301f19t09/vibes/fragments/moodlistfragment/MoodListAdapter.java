@@ -11,8 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.User;
 
 import java.util.List;
 
@@ -21,8 +22,9 @@ public class MoodListAdapter extends ArrayAdapter<MoodEvent>
     private Context context;
 
     private List<MoodEvent> data;
+    private User user;
 
-    public MoodListAdapter(Context context, List<MoodEvent> dataList)
+    public MoodListAdapter(Context context, user)
     {
         super(context, 0, dataList);
 
@@ -45,6 +47,9 @@ public class MoodListAdapter extends ArrayAdapter<MoodEvent>
 
         ImageView userImage, emotionImage;
         TextView fullName, userName, reasonText, timeText;
+
+        userImage = moodView.findViewById(R.id.ml_user_image);
+        userName = moodView.findViewById(R.id.)
 
         return moodView;
     }

@@ -1,5 +1,6 @@
-package com.cmput301f19t09.vibes.models;
+package com.cmput301f19t09.vibes;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -10,11 +11,11 @@ import java.time.format.DateTimeParseException;
  *
  * @see something?
  */
-public class Event {
-    private LocalDate date; // format yyyy-MM-dd
-    private LocalTime time; // format HH:mm
+public class Event implements Serializable {
+    protected LocalDate date; // format yyyy-MM-dd
+    protected LocalTime time; // format HH:mm
     private final static String TIME_FORMAT = "HH:mm";
-    private String description;
+    protected String description;
 
     public Event(LocalDate date, LocalTime time, String description) {
         this.date = date;
