@@ -53,6 +53,10 @@ public class ProfileFragment extends Fragment {
         ImageView profileMask = view.findViewById(R.id.profile_mask);
         profileMask.setImageResource(R.drawable.round_mask);
 
+        User user = (User) getArguments().getSerializable("user");
+        Boolean mode = getArguments().getBoolean("my_profile");
+        User otherUser = (User) getArguments().getSerializable("otherUser");
+
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,10 +70,6 @@ public class ProfileFragment extends Fragment {
 //        FollowingFragment followingFragment = new FollowingFragment();
 //        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
 //        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
-
-        User user = (User) getArguments().getSerializable("user");
-        Boolean mode = getArguments().getBoolean("my_profile");
-        User otherUser = (User) getArguments().getSerializable("otherUser");
 
         if (user == null || mode == null || otherUser == null) {
             throw new RuntimeException("YOU DUN GOOFED");
