@@ -1,6 +1,5 @@
 package com.cmput301f19t09.vibes;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,8 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.example.vibes.R;
+import android.widget.EditText;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,14 +22,17 @@ import com.example.vibes.R;
  * TODO: pull coordinates from gps
  */
 public class EditFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // the fragment initialization parameters
+    public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
+    private MoodEvent moodEvent;
+    private boolean moodSet;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private EditText editDateView;
+    private EditText editTimeView;
+    private EditText editStateView;
+    private EditText editContextView;
+    private EditText editLocationView;
+    private EditText editReasonView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -48,29 +49,55 @@ public class EditFragment extends Fragment {
      * @return A new instance of fragment EditFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EditFragment newInstance(String param1, String param2) {
+    public static EditFragment newInstance(MoodEvent moodEvent) {
+        // called when we pass in a MoodEvent
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(VIBES_MOODEVENT, moodEvent);
         fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static EditFragment newInstance() {
+        // called when we don't pass in a MoodEvent
+        EditFragment fragment = new EditFragment();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getArguments() != null) { // we passed a MoodEvent so set fields based on it
+            moodEvent = (MoodEvent) getArguments().getSerializable(VIBES_MOODEVENT);
+            moodSet = true;
+        }
+        else { // we didn't pass a MoodEvent so we are creating a new one
+            moodSet = false;
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit, container, false);
+
+        editDateView = view.findViewById(R.id.edit_date_view);
+        editTimeView = view.findViewById(R.id.edit_time_view);
+        editStateView = view.findViewById(R.id.edit_state_view);
+        editContextView = view.findViewById(R.id.edit_context_view);
+        editLocationView = view.findViewById(R.id.edit_location_view);
+        editReasonView = view.findViewById(R.id.edit_reason_view);
+
+        if (moodSet) {
+            // populate the EditText's with the MoodEvent attributes
+        }
+        else {
+            // EditText's empty
+        }
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
