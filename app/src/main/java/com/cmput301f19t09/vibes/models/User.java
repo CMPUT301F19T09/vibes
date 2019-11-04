@@ -12,6 +12,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -118,14 +119,12 @@ public class User implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
-        System.out.println(userName);
         if(userName == null){
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
-        System.out.println(collectionReference);
         documentReference = collectionReference.document(userName);
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -157,7 +156,7 @@ public class User implements Serializable {
                 });
 
                 Log.d(TAG, "Loaded user information");
-                firebaseCallback.onCallback(User.this);
+//                firebaseCallback.onCallback(User.this);
             }
         });
     }
@@ -363,7 +362,18 @@ public class User implements Serializable {
     // editMood(MoodEvent moodEvent, Integer index)
 
     public void deleteMood(Integer index) {
+        moods.remove(index.intValue());
         documentReference = collectionReference.document(userName);
-        documentReference.update({moods, firebase.firestore.FieldValue.arrayRemove(index)});
+        documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("INFO", "Removed successfully");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("INFO", "Could not remove from array");
+            }
+        });
     }
 }
