@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import java.util.List;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -86,6 +87,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
+
                 setMainFragment(ProfileFragment.newInstance(user, true));
             }
         });
@@ -123,13 +125,11 @@ public class MainActivity extends FragmentActivity {
                 }
 
                 updateViewButton();
+                updateScreen();
             }
         });
     }
 
-    /*
-    Replace the root fragment shown
-     */
     public void setMainFragment(Fragment fragment)
     {
         FragmentManager manager = getSupportFragmentManager();
