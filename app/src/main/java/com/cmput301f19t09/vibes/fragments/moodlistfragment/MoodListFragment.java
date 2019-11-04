@@ -9,7 +9,7 @@ import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.cmput301f19t09.vibes.EditFragment;
+import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -18,15 +18,14 @@ import com.cmput301f19t09.vibes.models.User;
 public class MoodListFragment extends Fragment
 {
     private ArrayAdapter<MoodEvent> adapter;
-    private List<MoodEvent> data;
     private final MainActivity parent_activity = (MainActivity) getActivity();
 
-    private String username;
+    private User user;
 
     public static MoodListFragment newInstance(User user)
     {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(user);
+        bundle.putSerializable("user", user);
 
         MoodListFragment moodListFragment = new MoodListFragment();
         moodListFragment.setArguments(bundle);
@@ -41,7 +40,7 @@ public class MoodListFragment extends Fragment
 
         Bundle arguments = getArguments();
 
-        username = (String) arguments.getSerializable("username");
+        user = (User) arguments.getSerializable("user");
 
         ListView view = parent_activity.findViewById(R.id.ml_listview);
 
@@ -57,7 +56,6 @@ public class MoodListFragment extends Fragment
             }
         });
 
-        data = new ArrayList<MoodEvent>();
-        adapter = new MoodListAdapter(getContext(), data);
+        adapter = new MoodListAdapter(getContext(), user);
     }
 }

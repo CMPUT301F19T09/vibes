@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
@@ -55,7 +56,9 @@ public class MainActivity extends FragmentActivity {
     /**
      * Puts in listeners
      */
-    private void initListeners(){
+    private void initListeners()
+    {
+
         View addButton, searchButton, profileButton, followingButton, viewButton;
         addButton = findViewById(R.id.main_add_button);
         profileButton = findViewById(R.id.main_profile_button);
@@ -169,6 +172,13 @@ public class MainActivity extends FragmentActivity {
         }
 
         viewButton.setImageResource(image);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.popBackStack();
     }
 }
 

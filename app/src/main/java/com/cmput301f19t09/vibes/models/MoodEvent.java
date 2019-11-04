@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 import android.os.Parcel;

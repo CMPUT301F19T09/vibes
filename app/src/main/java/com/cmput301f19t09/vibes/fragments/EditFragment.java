@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 
 /**
  * A simple {@link Fragment} subclass.

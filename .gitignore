@@ -7,3 +7,5 @@
 /captures
 .externalNativeBuild
 .cxx
+app/src/main/res/drawable-*
+app/src/main/res/mipmap*
