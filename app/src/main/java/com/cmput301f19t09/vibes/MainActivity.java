@@ -58,45 +58,30 @@ public class MainActivity extends FragmentActivity {
     }
 
     /**
-     * Shows the map fragment in the main fragment container.
+     * Stacks two fragments on top of each other. It is different than replaceFragment().
+     * You have to define the fragments, combine the fragments with
+     * their bundles then send it into this function.
+     * @param fragment1
+     * @param fragmentTitle
+     * @param fragment2
+     * @param fragmentTitle2
      */
-    public void showMap(){
-        // Getting only the user moods
-        User user = new User("testuser");
-        user.readData(new User.FirebaseCallback() {
-            @Override
-            public void onCallback(User user) {
-                List<Mood> moodsShowing = user.getMoods();
-                MapData mapData = new MapData();
-                for(Mood mood: moodsShowing){
-                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
-                    mapData.add(userpoint);
-                }
+    public void stackFragment(Fragment fragment1, String fragmentTitle, Fragment fragment2, String fragmentTitle2){
+        ViewGroup root = findViewById(R.id.main_fragment_root);
+        root.removeAllViewsInLayout();
 
-                Bundle mapBundle = new Bundle();
-                mapBundle.putSerializable("MapData", mapData);
-                Fragment mapFragment = new MapFragment();
-                mapFragment.setArguments(mapBundle);
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
 
-                Fragment filterFragment = new MapFilter();
+        transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
+        transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
 
-                ViewGroup root = findViewById(R.id.main_fragment_root);
-                root.removeAllViewsInLayout();
+        if(!startedDefault){
+            transaction.addToBackStack(null);
+            startedDefault = true;
+        }
 
-                // Get the activity fragment manager and begin a new transaction
-                FragmentManager manager = getSupportFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-
-                // Set the root of the fragment, replacing any fragment that already exists
-                transaction.add(R.id.main_fragment_root,filterFragment, "filterFragment");
-                transaction.add(R.id.main_fragment_root, mapFragment, "mapFragment");
-                if(!startedDefault){
-                    transaction.addToBackStack(null);
-                    startedDefault = true;
-                }
-                transaction.commit();
-            }
-        });
+        transaction.commit();
     }
 
     /**
@@ -355,7 +340,6 @@ public class MainActivity extends FragmentActivity {
 
     /**
      * Update the image of the list/map button to reflect the type of fragment it will open if pressed
-     * @param fragmentType
      *  The type of fragment that the button will open if pressed
      */
     private void updateViewButton()
@@ -377,10 +361,40 @@ public class MainActivity extends FragmentActivity {
     }
 
     /**
-     * Updates only the map portion in the main root fragment
+     * Updates only the map portion in the main root fragment.
+     * This is called after having a change in the mapFilter fragment.
      */
     public void updateMap(){
 
+    }
+
+    /**
+     * Shows the map fragment in the main fragment container.
+     */
+    public void showMap(){
+        // Getting only the user moods
+        User user = new User("testuser");
+
+        user.readData(new User.FirebaseCallback() {
+            @Override
+            public void onCallback(User user) {
+                List<Mood> moodsShowing = user.getMoods();
+                MapData mapData = new MapData();
+                for(Mood mood: moodsShowing){
+                    UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                    mapData.add(userpoint);
+                }
+
+                Bundle mapBundle = new Bundle();
+                mapBundle.putSerializable("MapData", mapData);
+                Fragment mapFragment = new MapFragment();
+                mapFragment.setArguments(mapBundle);
+
+                Fragment filterFragment = new MapFilter();
+
+                stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
+            }
+        });
     }
 
     /**
