@@ -125,7 +125,6 @@ public class MainActivity extends FragmentActivity {
                 }
 
                 updateViewButton();
-                updateScreen();
             }
         });
     }
@@ -178,7 +177,11 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed()
     {
         FragmentManager manager = getSupportFragmentManager();
-        manager.popBackStack();
+
+        if (manager.getBackStackEntryCount() > 0)
+        {
+            manager.popBackStack();
+        }
     }
 }
 

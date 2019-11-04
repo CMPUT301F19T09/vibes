@@ -5,8 +5,8 @@ import com.cmput301f19t09.vibes.models.User;
 
 public class MoodListItem
 {
-    private User user;
-    private MoodEvent event;
+    public User user;
+    public MoodEvent event;
 
     public MoodListItem(User user, MoodEvent event)
     {
