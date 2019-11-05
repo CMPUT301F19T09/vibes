@@ -1,7 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -11,16 +10,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class User implements Serializable {
     private String userName;
@@ -387,6 +385,7 @@ public class User implements Serializable {
      * @return
      */
     public List<MoodEvent> parseToMoodEvent() {
+        List<MoodEvent> events = new ArrayList<MoodEvent>();
         if (moods != null) {
             for (Map moodEvent : moods) {
                 String emotion = (String) moodEvent.get("emotion");
@@ -408,13 +407,24 @@ public class User implements Serializable {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(timestamp);
 
+                LocalDateTime time = LocalDateTime.ofEpochSecond(
+                        timestamp,
+                        0,
+                        ZoneOffset.UTC
+                );
+
+                MoodEvent event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, new EmotionalState("HAPPY"), 0, null);
+                events.add(event);
+                //Mood/Event event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, EmotionalState.)
+
 //                MoodEvent newMood = new MoodEvent(date, time, description, state, social_situation, locaation);
 //                moodEvents.add(newMood);
             }
+
+            return events;
         } else {
             throw new RuntimeException("Need to update moods from DB");
         }
-        return null;
     }
 
     /**
@@ -458,6 +468,56 @@ public class User implements Serializable {
                 }
             });
         }
+    }
+
+    public void addMood() {
+//        if (moodEvent == null) {
+//            throw new RuntimeException("Mood not defined");
+//        } else {
+//            Map<String, Object> mood = new HashMap<String, Object>();
+//            mood.put("emotion", "SAD");
+//            mood.put("location", new GeoPoint(53.23, -115.44));
+//            mood.put("photo", null);
+//            mood.put("reason", "Something else");
+//            mood.put("social", 1);
+//            mood.put("timestamp", 1124245623);
+//            mood.put("username", "testuser");
+//
+//            documentReference = collectionReference.document(userName);
+//            documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void aVoid) {
+//                    Log.d("INFO", "Moods list updated");
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    Log.d("INFO", "Cannot add mood to list");
+//                }
+//            });
+//        }
+
+        Map<String, Object> mood = new HashMap<String, Object>();
+        mood.put("emotion", "SAD");
+        mood.put("location", new GeoPoint(53.23, -115.44));
+        mood.put("photo", null);
+        mood.put("reason", "Something else");
+        mood.put("social", 1);
+        mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+        mood.put("username", "testuser");
+
+        documentReference = collectionReference.document(userName);
+        documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("INFO", "Moods list updated");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("INFO", "Cannot add mood to list");
+            }
+        });
     }
 
     // editMood(MoodEvent moodEvent, Integer index)

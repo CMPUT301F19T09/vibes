@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -50,6 +51,7 @@ public class MainActivity extends FragmentActivity {
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
+        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
         updateViewButton(); // Updates the view button only.
     }
 
@@ -59,6 +61,8 @@ public class MainActivity extends FragmentActivity {
      */
     private void initListeners()
     {
+
+        fragment_root = R.id.main_fragment_root;
 
         View addButton, searchButton, profileButton, followingButton, viewButton;
         addButton = findViewById(R.id.main_add_button);
@@ -90,6 +94,8 @@ public class MainActivity extends FragmentActivity {
 //                replaceFragment(ProfileFragment.class);
                 User user = new User("testuser");
                 setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
+//                User user = new User("testuser");
+                //setMainFragment(ProfileFragment.newInstance(user, true));
             }
         });
 
@@ -97,7 +103,8 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
-                setMainFragment(FollowingFragment.newInstance(user));
+                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
+                //setMainFragment(FollowingFragment.newInstance(user));
             }
         });
 
@@ -115,12 +122,13 @@ public class MainActivity extends FragmentActivity {
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        setMainFragment(MapFragment.newInstance(user));
+                        setMainFragment(new MapFragment());
+                        //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                     default:
-                        setMainFragment(MoodListFragment.newInstance(user));
+                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }
@@ -145,7 +153,6 @@ public class MainActivity extends FragmentActivity {
      */
     public void openDialogFragment(DialogFragment fragment)
     {
-
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
@@ -180,7 +187,9 @@ public class MainActivity extends FragmentActivity {
     {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (manager.getBackStackEntryCount() > 0)
+        Log.d("MAINMAINMAINMAINMAINMAINMAIN", manager.getBackStackEntryCount() + "");
+
+        if (manager.getBackStackEntryCount() > 1)
         {
             manager.popBackStack();
         }
