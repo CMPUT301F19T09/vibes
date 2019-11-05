@@ -19,13 +19,10 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import java.util.List;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
-import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.Mood;
-import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -93,7 +90,7 @@ public class MainActivity extends FragmentActivity {
 
         transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
         transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
-
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -158,14 +155,14 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode)
                 {
-                    case MAP:
-                        showMap();
-                        currentButtonMode = ButtonMode.LIST;
-                        break;
                     case LIST:
-                    default:
                         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
+                        break;
+                    case MAP:
+                    default:
+                        showMap();
+                        currentButtonMode = ButtonMode.LIST;
                         break;
                 }
 
