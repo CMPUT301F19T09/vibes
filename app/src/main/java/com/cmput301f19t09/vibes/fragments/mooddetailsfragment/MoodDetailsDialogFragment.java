@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,7 +53,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         ImageView userImage, emotionImage, reasonImage;
         TextView userUsername, userFullName, moodTime, moodReason;
-        Button deleteButton, editButton, confirmButton;
+        Button editButton, confirmButton;
+        ImageButton deleteButton;
 
         userImage = view.findViewById(R.id.user_image);
         emotionImage =  view.findViewById(R.id.emotion_image);
@@ -94,7 +96,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
         }
         else
         {
-            timeString += ( timeSincePost.toDays() / 365.25 ) + "years ago";
+            timeString += ( timeSincePost.toDays() / 365 ) + "years ago";
         }
 
         moodTime.setText(timeString);

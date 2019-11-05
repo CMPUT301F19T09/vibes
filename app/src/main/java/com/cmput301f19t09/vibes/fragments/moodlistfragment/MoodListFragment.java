@@ -52,7 +52,7 @@ public class MoodListFragment extends Fragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 MoodItem item = (MoodItem) parent.getItemAtPosition(position);
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, (displayType == OWN_MOODS)));
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, true));
             }
         });
 

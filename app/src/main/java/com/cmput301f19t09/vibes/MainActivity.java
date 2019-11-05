@@ -53,6 +53,17 @@ public class MainActivity extends FragmentActivity {
 
         setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
         updateViewButton(); // Updates the view button only.
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
+        {
+            @Override
+            public void onBackStackChanged()
+            {
+                //TODO: Add listener to set the view button instead of doing it manually
+            }
+        });
     }
 
 

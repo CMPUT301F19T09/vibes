@@ -100,7 +100,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             }
             else
             {
-                timeString += ( timeSincePost.toDays() / 365.25 ) + "years ago";
+                timeString += ( timeSincePost.toDays() / 365 ) + "years ago";
             }
 
             moodTime.setText(timeString);
