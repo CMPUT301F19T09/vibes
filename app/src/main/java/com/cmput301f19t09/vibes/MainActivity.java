@@ -134,14 +134,14 @@ public class MainActivity extends FragmentActivity {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user = new User("testuser");
 //                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
+//                replaceFragment(ProfileFragment.class);
+                User user = new User("testuser");
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", user);
                 bundle.putBoolean("my_profile", true);
                 bundle.putSerializable("otherUser", new User("testuser2"));
                 replaceFragment(ProfileFragment.class, bundle);
-//                replaceFragment(ProfileFragment.class);
             }
         });
 

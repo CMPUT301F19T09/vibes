@@ -1,7 +1,5 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +11,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment {
     private TextView firstNameTextView;
@@ -35,19 +30,6 @@ public class ProfileFragment extends Fragment {
         bundle.putSerializable("otherUser", otherUser);
         profileFragment.setArguments(bundle);
         return profileFragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        Activity main;
-
-        if (context instanceof Activity) {
-            main = (Activity) context;
-        }
-
-
     }
 
     /**
@@ -103,6 +85,7 @@ public class ProfileFragment extends Fragment {
                     user.addMood();
                 }
             });
+            setInfo(user);
         } else {
             followButton.setVisibility(View.VISIBLE);
             otherUser.readData(new User.FirebaseCallback() {

@@ -112,6 +112,45 @@ public class User implements Serializable {
     public User(String userName) {
         this();
         this.userName = userName;
+
+        if(userName == null){
+            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
+        }
+
+        // Using SnapshotListener helps reduce load times and obtains from local cache
+        // Ref https://firebase.google.com/docs/firestore/query-data/listen
+//        documentReference = collectionReference.document(userName);
+//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                firstName = documentSnapshot.getString("first");
+//                lastName = documentSnapshot.getString("last");
+//                email = documentSnapshot.getString("email");
+//                picturePath = documentSnapshot.getString("profile_picture");
+//                followingList = (List<String>) documentSnapshot.get("following_list");
+//                moods = (List<Map>) documentSnapshot.get("moods");
+//
+//                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
+//
+//                moodEvents = parseToMoodEvent();
+//
+//                storageReference = storage.getReference(picturePath);
+//                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//                        profileURL = uri;
+//                        Log.d(TAG, "Loaded profile picture URL");
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.d(TAG, "Cannot retrieve profile picture download url");
+//                    }
+//                });
+//
+//                Log.d(TAG, "Loaded user information");
+//            }
+//        });
     }
 
     /**
@@ -126,9 +165,41 @@ public class User implements Serializable {
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);
-        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//                firstName = documentSnapshot.getString("first");
+//                lastName = documentSnapshot.getString("last");
+//                email = documentSnapshot.getString("email");
+//                picturePath = documentSnapshot.getString("profile_picture");
+//                followingList = (List<String>) documentSnapshot.get("following_list");
+//                moods = (List<Map>) documentSnapshot.get("moods");
+//
+//                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
+//
+//                moodEvents = parseToMoodEvent();
+//
+//                storageReference = storage.getReference(picturePath);
+//                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//                        profileURL = uri;
+//                        Log.d(TAG, "Loaded profile picture URL");
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.d(TAG, "Cannot retrieve profile picture download url");
+//                    }
+//                });
+//
+//                Log.d(TAG, "Loaded user information");
+//                firebaseCallback.onCallback(User.this);
+//            }
+//        });
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
                 email = documentSnapshot.getString("email");
@@ -156,7 +227,11 @@ public class User implements Serializable {
                 });
 
                 Log.d(TAG, "Loaded user information");
-//                firebaseCallback.onCallback(User.this);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("INFO", "Cannot load info");
             }
         });
     }
