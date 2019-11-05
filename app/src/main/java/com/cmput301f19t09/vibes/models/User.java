@@ -361,7 +361,33 @@ public class User implements Serializable {
         }
     }
 
-    // addMood(MoodEvent moodEvent)
+    public void addMood(MoodEvent moodEvent) {
+        if (moodEvent == null) {
+            throw new RuntimeException("Mood not defined");
+        } else {
+            Map<String, Object> mood = new HashMap<String, Object>();
+            mood.put("emotion", "SAD");
+            mood.put("location", new GeoPoint(53.23, -115.44));
+            mood.put("photo", null);
+            mood.put("reason", "Something else");
+            mood.put("social", 1);
+            mood.put("timestamp", 1124245623);
+            mood.put("username", "testuser");
+
+            documentReference = collectionReference.document(userName);
+            documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("INFO", "Moods list updated");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("INFO", "Cannot add mood to list");
+                }
+            });
+        }
+    }
 
     // editMood(MoodEvent moodEvent, Integer index)
 
