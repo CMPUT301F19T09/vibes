@@ -65,9 +65,6 @@ public class ProfileFragment extends Fragment {
         /**
          * @// TODO: 2019-11-01 Fix bundling issue.
          */
-
-//        MoodListFragment moodListFragment = MoodListFragment.getInstance(user);
-
 //        FollowingFragment followingFragment = new FollowingFragment();
 //        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
 //        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
@@ -82,7 +79,6 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onCallback(User user) {
                     setInfo(user);
-                    user.addMood();
                 }
             });
             setInfo(user);
