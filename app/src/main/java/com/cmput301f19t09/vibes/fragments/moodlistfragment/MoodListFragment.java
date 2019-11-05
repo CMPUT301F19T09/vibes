@@ -1,7 +1,5 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +14,8 @@ import androidx.fragment.app.Fragment;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
+import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
+import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 public class MoodListFragment extends Fragment
@@ -51,8 +51,8 @@ public class MoodListFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                MoodListItem item = (MoodListItem) parent.getItemAtPosition(position);
-                ((MainActivity)getActivity()).setMainFragment(EditFragment.newInstance(item.event));
+                MoodItem item = (MoodItem) parent.getItemAtPosition(position);
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, (displayType == OWN_MOODS)));
             }
         });
 

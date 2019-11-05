@@ -1,8 +1,8 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
-import android.util.Log;
 
+import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter
     @Override
     protected void initializeData()
     {
-        data = new ArrayList<MoodListItem>();
+        data = new ArrayList<MoodItem>();
         for (String followed_username : user.getFollowingList())
         {
             User followed_user = new User(followed_username);
@@ -41,9 +41,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter
 
     private void addUser(User user)
     {
-        //data.add(new MoodListItem(user, null));
+        //data.add(new MoodItem(user, null));
 
-        addMoodItem(new MoodListItem(user, null));
+        addMoodItem(new MoodItem(user, null));
 
         user.readData(new User.FirebaseCallback()
         {
@@ -57,7 +57,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter
 
     private void setMoodEvent(User user)
     {
-        for (MoodListItem item : data)
+        for (MoodItem item : data)
         {
             if (item.user == user)
             {
@@ -66,6 +66,6 @@ public class FollowedMoodListAdapter extends MoodListAdapter
             }
         }
 
-        data.sort(MoodListItem.date_comparator);
+        data.sort(MoodItem.date_comparator);
     }
 }

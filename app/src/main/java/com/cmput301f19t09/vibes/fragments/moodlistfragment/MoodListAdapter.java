@@ -1,8 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +15,17 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
+public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 {
-    protected List<MoodListItem> data;
+    protected List<MoodItem> data;
     protected User user;
     private Context context;
 
@@ -38,7 +36,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
 
         this.context = context;
         this.user = user;
-        this.data = new ArrayList<MoodListItem>();
+        this.data = new ArrayList<MoodItem>();
 
         initialize();
     }
@@ -47,6 +45,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
+        Log.d("MoodListAdapter", "Creating a View for a MoodItem");
         View item = convertView;
 
         if (item == null)
@@ -64,7 +63,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
         userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
-        moodTime = item.findViewById(R.id.time);
+        moodTime = item.findViewById(R.id.mood_time);
 
         User user = data.get(position).user;
         MoodEvent event = data.get(position).event;
@@ -80,8 +79,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
             moodReason.setText(event.getDescription());
             //emotionImage.setImageBitmap();
 
-            LocalDateTime time = LocalDateTime.of(event.getDate(), event.getTime());
-            Duration timeSincePost = Duration.between(time, LocalDateTime.now());
+            Duration timeSincePost = data.get(position).timeSinceEvent();
             String timeString = "~";
 
             if (timeSincePost.getSeconds() < 60)
@@ -96,9 +94,13 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
             {
                 timeString += timeSincePost.toHours() + " hours ago";
             }
-            else
+            else if (timeSincePost.toDays() < 365)
             {
                 timeString += timeSincePost.toDays() + " days ago";
+            }
+            else
+            {
+                timeString += ( timeSincePost.toDays() / 365.25 ) + "years ago";
             }
 
             moodTime.setText(timeString);
@@ -138,7 +140,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
         });
     }
 
-    protected void addMoodItem(MoodListItem item)
+    protected void addMoodItem(MoodItem item)
     {
         data.add(item);
         addAll(data);
