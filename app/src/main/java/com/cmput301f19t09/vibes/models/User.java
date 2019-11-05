@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,8 +22,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -351,14 +355,26 @@ public class User implements Serializable {
      * @return
      */
     public MoodEvent getMostRecentMoodEvent() {
-        MoodEvent moodEvent;
-        if (moodEvents != null) {
-            moodEvent = moodEvents.get(moodEvents.size() - 1);
-            return moodEvent;
-        } else {
-            Log.d("INFO", "No mood events");
-            return null;
-        }
+        Map moodEvent = moods.get(moods.size()-1);
+        String emotion = (String) moodEvent.get("emotion");
+        String reason =(String) moodEvent.get("reason");
+        int social =((Number) moodEvent.get("social")).intValue(); //TODO: We will  fix this part
+        Long timestamp = (Long) moodEvent.get("timestamp");
+        String username = (String) moodEvent.get("username");
+        GeoPoint location = (GeoPoint) moodEvent.get("location");
+
+        // Date conversion
+        Date date = new Date(timestamp);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        LocalDate lDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR));
+        LocalTime lTime = LocalTime.of(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+
+        // Location conversion
+        Location moodLocation = new Location("");//provider name is unnecessary
+        moodLocation.setLatitude(location.getLatitude());//your coords of course
+        moodLocation.setLongitude(location.getLongitude());
+        return new MoodEvent(lDate, lTime, reason, new EmotionalState(emotion), social, moodLocation);
     }
 
     public void addMood(MoodEvent moodEvent) {

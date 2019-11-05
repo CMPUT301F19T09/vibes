@@ -424,5 +424,9 @@ public class MainActivity extends FragmentActivity {
         this.mapFilter = filter;
         updateMap();
     }
+
+    public List<Mood> getFeed(User){
+
+    }
 }
 
