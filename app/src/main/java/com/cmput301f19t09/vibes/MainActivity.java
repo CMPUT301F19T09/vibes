@@ -400,9 +400,17 @@ public class MainActivity extends FragmentActivity {
                 }
             });
         }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
-            // Showing everyone's last moods.
+            // Getting everyone's last moods.
+
+//            user.readData(new User.FirebaseCallback() {
+//                @Override
+//                public void onCallback(User user) {
+//
+//                }
+//            });
+
         }else{
-            throw new RuntimeException("Fragment filter isn't known");
+            throw new RuntimeException("Given map filter isn't known");
         }
 
     }

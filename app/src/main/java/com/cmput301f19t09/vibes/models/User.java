@@ -278,6 +278,8 @@ public class User implements Serializable {
                 Number social =(Number) mapMood.get("social");
                 Long timestamp = (Long) mapMood.get("timestamp");
                 String username = (String) mapMood.get("username");
+
+
                 GeoPoint location = (GeoPoint) mapMood.get("location");
 
                 if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
@@ -306,6 +308,8 @@ public class User implements Serializable {
             throw new RuntimeException("Need to update moods from db");
         }
     }
+
+
 
     /**
      *
