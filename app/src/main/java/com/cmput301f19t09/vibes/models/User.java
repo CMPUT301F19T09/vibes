@@ -367,7 +367,8 @@ public class User implements Serializable {
         Date date = new Date(timestamp);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        LocalDate lDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR));
+//        Log.d("Date", "" + (calendar.get(Calendar.MONTH)-1));
+        LocalDate lDate = LocalDate.of(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, calendar.get(Calendar.DAY_OF_MONTH));
         LocalTime lTime = LocalTime.of(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
 
         // Location conversion
@@ -422,4 +423,8 @@ public class User implements Serializable {
             }
         });
     }
+
+//    public List<Mood> getFeed(User user){
+//
+//    }
 }

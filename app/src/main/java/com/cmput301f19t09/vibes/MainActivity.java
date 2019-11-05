@@ -18,6 +18,7 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
@@ -401,7 +402,13 @@ public class MainActivity extends FragmentActivity {
             });
         }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
             // Getting everyone's last moods.
-
+            user.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    MoodEvent mood = user.getMostRecentMoodEvent();
+                    Log.d("debug", "Last Event" + mood.toString());
+                }
+            });
 //            user.readData(new User.FirebaseCallback() {
 //                @Override
 //                public void onCallback(User user) {
@@ -425,8 +432,5 @@ public class MainActivity extends FragmentActivity {
         updateMap();
     }
 
-    public List<Mood> getFeed(User){
-
-    }
 }
 
