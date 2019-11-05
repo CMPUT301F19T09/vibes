@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
@@ -29,7 +31,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
     protected User user;
     private Context context;
 
-    public MoodListAdapter(Context context, User user) {
+    public MoodListAdapter(Context context, User user)
+    {
+        //super(context, R.layout.mood_list_item);
         super(context, 0);
 
         this.context = context;
@@ -43,13 +47,19 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View item = inflater.inflate(R.layout.mood_list_item, null);
+        View item = convertView;
+
+        if (item == null)
+        {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            item = inflater.inflate(R.layout.mood_list_item, null);
+        }
 
         ImageView userImage, emotionImage;
         TextView userUsername, userFullName, moodReason, moodTime;
 
         userImage = item.findViewById(R.id.user_image);
+        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
         emotionImage = item.findViewById(R.id.emotion_image);
         userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);
@@ -66,6 +76,8 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
 
         if (event != null)
         {
+
+            Log.d("DDDDDDDDDDDDDDDDDDDDDDDDDDD", "" + event.getDescription());
             moodReason.setText(event.getDescription());
             //emotionImage.setImageBitmap();
 
@@ -126,6 +138,12 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
                 throw new RuntimeException("Attempt to create MoodList with invalid user");
             }
         });
+    }
+
+    protected void addMoodItem(MoodListItem item)
+    {
+        data.add(item);
+        addAll(data);
     }
 
     protected abstract void initializeData();

@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,10 +43,9 @@ public class MoodListFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.mood_list, null);
+        View view = inflater.inflate(R.layout.mood_list, container, false);
 
         ListView listView = view.findViewById(R.id.ml_listview);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override

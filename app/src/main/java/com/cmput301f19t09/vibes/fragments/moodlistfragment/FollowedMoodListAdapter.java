@@ -41,7 +41,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter
 
     private void addUser(User user)
     {
-        data.add(new MoodListItem(user, null));
+        //data.add(new MoodListItem(user, null));
+
+        addMoodItem(new MoodListItem(user, null));
 
         user.readData(new User.FirebaseCallback()
         {
@@ -62,10 +64,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter
                 Log.d("BBBBBBBBBBBBBBBBBBBBBBBB", "Added mood evetn");
                 item.event = user.getMostRecentMoodEvent();
                 Log.d("CCCCCCCCCCCCCCCCCCCCCCCC", item.event.getDescription());
-                break;
+
+                notifyDataSetChanged();
             }
         }
 
-        notifyDataSetChanged();
+        data.sort(MoodListItem.date_comparator);
     }
 }

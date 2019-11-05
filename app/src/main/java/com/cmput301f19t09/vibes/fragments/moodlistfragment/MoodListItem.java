@@ -17,6 +17,11 @@ public class MoodListItem
             @Override
             public int compare(MoodListItem item1, MoodListItem item2)
             {
+                if (item1.event == null || item2.event == null)
+                {
+                    return 0;
+                }
+
                 LocalDateTime time1 = LocalDateTime.of(item1.event.getDate(), item1.event.getTime());
                 LocalDateTime time2 = LocalDateTime.of(item2.event.getDate(), item2.event.getTime());
 

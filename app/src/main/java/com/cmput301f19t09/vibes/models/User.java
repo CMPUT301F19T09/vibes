@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -312,6 +317,7 @@ public class User implements Serializable {
      * @return
      */
     public List<MoodEvent> parseToMoodEvent() {
+        List<MoodEvent> events = new ArrayList<MoodEvent>();
         if (moods != null) {
             for (Map moodEvent : moods) {
                 String emotion = (String) moodEvent.get("emotion");
@@ -333,13 +339,24 @@ public class User implements Serializable {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(timestamp);
 
+                LocalDateTime time = LocalDateTime.ofEpochSecond(
+                        timestamp,
+                        0,
+                        ZoneOffset.UTC
+                );
+
+                MoodEvent event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, new EmotionalState("HAPPY"), 0, null);
+                events.add(event);
+                //Mood/Event event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, EmotionalState.)
+
 //                MoodEvent newMood = new MoodEvent(date, time, description, state, social_situation, locaation);
 //                moodEvents.add(newMood);
             }
+
+            return events;
         } else {
             throw new RuntimeException("Need to update moods from DB");
         }
-        return null;
     }
 
     public List<MoodEvent> getMoodEvents() {
@@ -394,7 +411,7 @@ public class User implements Serializable {
         mood.put("photo", null);
         mood.put("reason", "Something else");
         mood.put("social", 1);
-        mood.put("timestamp", 1124245623);
+        mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
         mood.put("username", "testuser");
 
         documentReference = collectionReference.document(userName);
