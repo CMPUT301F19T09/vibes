@@ -96,6 +96,8 @@ public class MainActivity extends FragmentActivity {
                 setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
 //                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
+
+                setMainFragment(ProfileFragment.newInstance(user, true, new User("testuser2")));
             }
         });
 
