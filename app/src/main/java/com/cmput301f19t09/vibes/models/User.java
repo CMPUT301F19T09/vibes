@@ -26,8 +26,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,6 +286,8 @@ public class User implements Serializable {
                 Number social =(Number) mapMood.get("social");
                 Long timestamp = (Long) mapMood.get("timestamp");
                 String username = (String) mapMood.get("username");
+
+
                 GeoPoint location = (GeoPoint) mapMood.get("location");
 
                 if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
@@ -311,6 +316,8 @@ public class User implements Serializable {
             throw new RuntimeException("Need to update moods from db");
         }
     }
+
+
 
     /**
      *

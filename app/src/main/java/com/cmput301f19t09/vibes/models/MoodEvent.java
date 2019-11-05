@@ -49,4 +49,10 @@ public class MoodEvent extends Event implements Serializable {
     public void setLocation(Location location) {
         this.location = location;
     }
+
+
+    @Override // It just returns the description for now.
+    public String toString(){
+        return this.getDescription();
+    }
 }
