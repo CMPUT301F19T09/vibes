@@ -489,18 +489,20 @@ public class User implements Serializable {
     // editMood(MoodEvent moodEvent, Integer index)
 
     public void deleteMood(Integer index) {
-        moods.remove(index.intValue());
-        documentReference = collectionReference.document(userName);
-        documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("INFO", "Removed successfully");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("INFO", "Could not remove from array");
-            }
-        });
+        if (index > moods.size() - 1) {
+            moods.remove(index.intValue());
+            documentReference = collectionReference.document(userName);
+            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("INFO", "Removed successfully");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("INFO", "Could not remove from array");
+                }
+            });
+        }
     }
 }
