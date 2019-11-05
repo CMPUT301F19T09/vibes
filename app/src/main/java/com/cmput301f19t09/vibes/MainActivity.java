@@ -12,14 +12,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import java.util.List;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
+import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.Mood;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -33,6 +39,8 @@ public class MainActivity extends FragmentActivity {
     private ButtonMode currentButtonMode;
     private @IdRes int fragment_root;
     private User user;
+
+    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
 
     /**
      * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -53,6 +61,30 @@ public class MainActivity extends FragmentActivity {
 
         setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
         updateViewButton(); // Updates the view button only.
+//        updateScreen(); // Updates main fragment depending on what it is set to
+    }
+
+    /**
+     * Stacks two fragments on top of each other. It is different than replaceFragment().
+     * You have to define the fragments, combine the fragments with
+     * their bundles then send it into this function.
+     * You can later access the fragments using the fragmentTitles you have used.
+     * @param fragment1
+     * @param fragmentTitle
+     * @param fragment2
+     * @param fragmentTitle2
+     */
+    public void stackFragment(Fragment fragment1, String fragmentTitle, Fragment fragment2, String fragmentTitle2){
+        ViewGroup root = findViewById(R.id.main_fragment_root);
+        root.removeAllViewsInLayout();
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+        transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
+        transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
+
+        transaction.commit();
     }
 
 
@@ -124,12 +156,14 @@ public class MainActivity extends FragmentActivity {
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        setMainFragment(new MapFragment());
+//                        setMainFragment(new MapFragment());
+                        showMap();
                         //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                     default:
+//                        showMap();
                         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
@@ -183,6 +217,92 @@ public class MainActivity extends FragmentActivity {
 
         viewButton.setImageResource(image);
     }
+
+    /**
+     * Updates only the map portion in the main root fragment.
+     * This is called after having a change in the mapFilter fragment.
+     */
+    public void updateMap(){
+        this.showMap();
+    }
+
+    /**
+     * Shows the map fragment in the main fragment container.
+     */
+    public void showMap(){
+        // Test user for now. This will be updated
+        User user = new User("testuser");
+
+        if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
+            user.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    List<Mood> moodsShowing = user.getMoods();
+                    MapData mapData = new MapData();
+                    for(Mood mood: moodsShowing){
+                        UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                        mapData.add(userpoint);
+                    }
+
+                    Bundle mapBundle = new Bundle();
+                    mapBundle.putSerializable("MapData", mapData);
+                    Fragment mapFragment = new MapFragment();
+                    mapFragment.setArguments(mapBundle);
+
+                    Fragment filterFragment = new MapFilter();
+
+                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
+                }
+            });
+        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            // Getting everyone's last moods.
+//            user.readData(new User.FirebaseCallback() {
+//                @Override
+//                public void onCallback(User user) {
+//                    List<String> followingPeople = user.getFollowingList();
+//                    MapData mapData = new MapData();
+//
+//                    for(String person : followingPeople){
+//                        Log.d("D", "Getting Last mood of " + person);
+//                        User newUser = new User(person);
+//                        newUser.readData(new User.FirebaseCallback() {
+//                            @Override
+//                            public void onCallback(User user) {
+//                                Mood mood = user.getMostRecentMood();
+//                                Log.d("D", "Found: " + mood.toString());
+//                                UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+//                                mapData.add(userpoint);
+//
+//                            }
+//                        });
+//                    }
+//                    Bundle mapBundle = new Bundle();
+//                    mapBundle.putSerializable("MapData", mapData);
+//                    Fragment mapFragment = new MapFragment();
+//                    mapFragment.setArguments(mapBundle);
+//
+//                    Fragment filterFragment = new MapFilter();
+//
+//                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
+//                }
+//            });
+
+        }else{
+            throw new RuntimeException("Given map filter isn't known");
+        }
+
+    }
+
+    /**
+     * Switches the viewing in the map
+     * @param filter
+     */
+    public void switchMapFilter(MapFragment.Filter filter){
+        Log.d("DEBUG", "switched");
+        this.mapFilter = filter;
+        updateMap();
+    }
+
 
     @Override
     public void onBackPressed()
