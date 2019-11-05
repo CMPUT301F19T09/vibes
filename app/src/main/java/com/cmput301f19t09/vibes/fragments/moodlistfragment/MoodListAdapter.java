@@ -1,6 +1,9 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.database.DataSetObserver;
+import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,41 +14,137 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.models.User;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MoodListAdapter extends ArrayAdapter<MoodEvent>
+public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
 {
+    protected List<MoodListItem> data;
+    protected User user;
     private Context context;
 
-    private List<MoodEvent> data;
-
-    public MoodListAdapter(Context context, List<MoodEvent> dataList)
+    public MoodListAdapter(Context context, User user)
     {
-        super(context, 0, dataList);
+        //super(context, R.layout.mood_list_item);
+        super(context, 0);
 
-        this.data = dataList;
+        this.context = context;
+        this.user = user;
+        this.data = new ArrayList<MoodListItem>();
+
+        initialize();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        View moodView = convertView;
+        View item = convertView;
 
-        if (moodView == null)
+        if (item == null)
         {
             LayoutInflater inflater = LayoutInflater.from(context);
-            moodView = inflater.inflate(R.layout.mood_list_item, parent, false);
+            item = inflater.inflate(R.layout.mood_list_item, null);
         }
 
-        MoodEvent event = data.get(position);
-
         ImageView userImage, emotionImage;
-        TextView fullName, userName, reasonText, timeText;
+        TextView userUsername, userFullName, moodReason, moodTime;
 
-        return moodView;
+        userImage = item.findViewById(R.id.user_image);
+        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+        emotionImage = item.findViewById(R.id.emotion_image);
+        userUsername = item.findViewById(R.id.username);
+        userFullName = item.findViewById(R.id.full_name);
+        moodReason = item.findViewById(R.id.reason);
+        moodTime = item.findViewById(R.id.time);
+
+        User user = data.get(position).user;
+        MoodEvent event = data.get(position).event;
+
+        //userImage.setImageBitmap()
+
+        userUsername.setText(user.getUserName());
+        userFullName.setText(user.getFirstName() + " " + user.getLastName());
+
+        if (event != null)
+        {
+
+            Log.d("DDDDDDDDDDDDDDDDDDDDDDDDDDD", "" + event.getDescription());
+            moodReason.setText(event.getDescription());
+            //emotionImage.setImageBitmap();
+
+            LocalDateTime time = LocalDateTime.of(event.getDate(), event.getTime());
+            Duration timeSincePost = Duration.between(time, LocalDateTime.now());
+            String timeString = "~";
+
+            if (timeSincePost.getSeconds() < 60)
+            {
+                timeString += timeSincePost.getSeconds() + " seconds ago";
+            }
+            else if (timeSincePost.toMinutes() < 60)
+            {
+                timeString += timeSincePost.toMinutes() + " minutes ago";
+            }
+            else if (timeSincePost.toHours() < 24)
+            {
+                timeString += timeSincePost.toHours() + " hours ago";
+            }
+            else
+            {
+                timeString += timeSincePost.toDays() + " days ago";
+            }
+
+            moodTime.setText(timeString);
+
+        }
+        else
+        {
+            moodReason.setText("");
+            moodTime.setText("");
+        }
+
+        return item;
     }
+
+    private void initialize()
+    {
+        user.exists(new User.UserExistListener()
+        {
+            @Override
+            public void onUserExists()
+            {
+                user.readData(new User.FirebaseCallback()
+                {
+                    @Override
+                    public void onCallback(User user)
+                    {
+                        Log.d("AAAAAAAAAAAAAAAAAAAA", "User First Name: " + user.getFirstName());
+                        initializeData();
+                    }
+                });
+            }
+
+            @Override
+            public void onUserNotExists()
+            {
+                throw new RuntimeException("Attempt to create MoodList with invalid user");
+            }
+        });
+    }
+
+    protected void addMoodItem(MoodListItem item)
+    {
+        data.add(item);
+        addAll(data);
+    }
+
+    protected abstract void initializeData();
 }

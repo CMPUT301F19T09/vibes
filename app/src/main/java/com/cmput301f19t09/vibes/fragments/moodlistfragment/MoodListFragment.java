@@ -1,62 +1,78 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.models.MoodEvent;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.cmput301f19t09.vibes.fragments.EditFragment;
+import com.cmput301f19t09.vibes.models.User;
 
 public class MoodListFragment extends Fragment
 {
-    private ArrayAdapter<MoodEvent> adapter;
-    private List<MoodEvent> data;
-    private final MainActivity parent = (MainActivity) getActivity();
+    public static final int OWN_MOODS = 0;
+    public static final int FOLLOWED_MOODS = 1;
 
-    private String username;
+    MoodListAdapter adapter;
+    private int displayType;
+    private User user;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
+    public static MoodListFragment newInstance(User user, int displayType)
     {
-        super.onCreate(savedInstanceState);
+        MoodListFragment fragment = new MoodListFragment();
+        Bundle arguments = new Bundle();
 
-        Bundle arguments = getArguments();
+        arguments.putSerializable("user", user);
+        arguments.putInt("type", displayType);
+        fragment.setArguments(arguments);
 
-        username = (String) arguments.getSerializable("username");
+        return fragment;
+    }
 
-        ListView view = parent.findViewById(R.id.mood_listview);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.mood_list, container, false);
 
-        view.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        ListView listView = view.findViewById(R.id.ml_listview);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> self, View view, int position, long id)
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Bundle arguments = new Bundle();
-
-                MoodEvent event = (MoodEvent) self.getItemAtPosition(position);
-
-//                arguments.putSerializable("edit", true);
-//                arguments.putSerializable("mood", event);
-
-//                ((MainActivity) parent).replaceFragment(AddFragment.class, arguments);
+                MoodListItem item = (MoodListItem) parent.getItemAtPosition(position);
+                ((MainActivity)getActivity()).setMainFragment(EditFragment.newInstance(item.event));
             }
         });
 
-        data = new ArrayList<MoodEvent>();
-        adapter = new MoodListAdapter(getContext(), data);
-    }
+        Bundle arguments = getArguments();
 
-    private void loadData()
-    {
+        displayType = arguments.getInt("type");
+        user = (User) arguments.getSerializable("user");
 
+        switch (displayType)
+        {
+            case OWN_MOODS:
+                adapter = new OwnMoodListAdapter(getContext(), user);
+                break;
+            case FOLLOWED_MOODS:
+                adapter = new FollowedMoodListAdapter(getContext(), user);
+                break;
+        }
+
+        listView.setAdapter(adapter);
+
+        return view;
     }
 }

@@ -1,12 +1,14 @@
 package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,17 +17,18 @@ import android.widget.ImageButton;
 
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
+import java.util.List;
+import com.cmput301f19t09.vibes.fragments.EditFragment;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
+import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-import com.cmput301f19t09.vibes.fragments.followingfragment.MoodData;
-import com.cmput301f19t09.vibes.models.Mood;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.List;
 /**
  * MainActivity is the main activity that shows up in the app right now.
  */
@@ -34,12 +37,9 @@ public class MainActivity extends FragmentActivity {
     private enum ButtonMode {LIST, MAP}
 
     private ButtonMode currentButtonMode;
-    private String username;
+    private @IdRes int fragment_root;
+    private User user;
 
-    ImageButton addButton, searchButton, filterButton, profileButton, followingButton,
-            viewButton;
-
-    private boolean startedDefault = false; // Used to check if the first view is loaded.
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
 
     /**
@@ -50,14 +50,18 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //currentFragment = FragmentType.NONE;
         currentButtonMode = ButtonMode.MAP;
 
-        initComponents(); // uses findViewById to set the components above in the class.
+        Intent intent = getIntent();
+        String username = (String) intent.getSerializableExtra("username");
+
+        user = new User(username);
+
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
+        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
         updateViewButton(); // Updates the view button only.
-        updateScreen(); // Updates main fragment depending on what it is set to
+//        updateScreen(); // Updates main fragment depending on what it is set to
     }
 
     /**
@@ -80,57 +84,30 @@ public class MainActivity extends FragmentActivity {
         transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
         transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
 
-        if(!startedDefault){
-            transaction.addToBackStack(null);
-            startedDefault = true;
-        }
-
         transaction.commit();
     }
 
-    /**
-     * Shows the list fragment in the main fragment contianer.
-     */
-    public void showList(){
-        MoodData dataList = new MoodData();
-        dataList.add(new Mood("Joe", "HAPPY", 2000, 12, 12, 0, 0));
-        //Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("MoodData", dataList);
-        replaceFragment(FollowingFragment.class, bundle);
-    }
-
-    /**
-     * Updates the screen with the selected view mode = MAP | LIST
-     */
-    public void updateScreen(){
-        if(currentButtonMode == ButtonMode.MAP){ // Show the map
-            showMap();
-        }else if(currentButtonMode == ButtonMode.LIST){// show the list fragment.
-            showList();
-        }
-    }
-
-    /**
-     * Inititates the components defined above in the class using findViewById
-     */
-    private void initComponents(){
-        addButton = findViewById(R.id.add_button);
-        searchButton = findViewById(R.id.search_button);
-        profileButton = findViewById(R.id.profile_button);
-        followingButton = findViewById(R.id.follow_list_button);
-        viewButton = findViewById(R.id.view_button);
-    }
 
     /**
      * Puts in listeners
      */
-    private void initListeners(){
+    private void initListeners()
+    {
+
+        fragment_root = R.id.main_fragment_root;
+
+        View addButton, searchButton, profileButton, followingButton, viewButton;
+        addButton = findViewById(R.id.main_add_button);
+        profileButton = findViewById(R.id.main_profile_button);
+        followingButton = findViewById(R.id.main_follow_list_button);
+        searchButton = findViewById(R.id.main_search_button);
+        viewButton = findViewById(R.id.main_view_button);
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                //replaceFragment(AddFragment.class);
+                setMainFragment(EditFragment.newInstance());
             }
         });
 
@@ -138,7 +115,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view)
             {
-                //replaceFragment(SearchFragment.class);
+                //setMainFragment(SearchFragment.newInstance());
             }
         });
 
@@ -146,13 +123,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
-//                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
-                bundle.putBoolean("my_profile", true);
-                bundle.putSerializable("otherUser", new User("testuser2"));
-                replaceFragment(ProfileFragment.class, bundle);
-//                replaceFragment(ProfileFragment.class);
+                //setMainFragment(ProfileFragment.newInstance(user, true));
             }
         });
 
@@ -160,12 +131,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
-                bundle.putBoolean("my_profile", false);
-                bundle.putSerializable("otherUser", new User("testuser2"));
-                ProfileFragment profileFragment = new ProfileFragment();
-                replaceFragment(ProfileFragment.class, bundle);
+                //setMainFragment(FollowingFragment.newInstance(user));
             }
         });
 
@@ -178,177 +144,58 @@ public class MainActivity extends FragmentActivity {
                 is pressed (i.e. the current fragment)
                  */
 
+                User user = new User("testuser");
+
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        //replaceFragment(MapFragment.class);
+//                        setMainFragment(new MapFragment());
+                        showMap();
+                        //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                     default:
-                        //replaceFragment(ListFragment.class);
+//                        showMap();
+                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }
 
                 updateViewButton();
-                updateScreen();
             }
         });
     }
 
-    /**
-     *
-     * @param fragmentClass
-     */
-    public void replaceFragment(Class fragmentClass)
+    public void setMainFragment(Fragment fragment)
     {
-        replaceFragment(fragmentClass, null);
-    }
-
-    /**
-     * Set the fragment displayed in the main_fragment_root container in the MainActivity layout file
-     */
-    public void replaceFragment(Class fragmentClass, Bundle arguments)
-    {
-        ViewGroup root = findViewById(R.id.main_fragment_root);
-        root.removeAllViewsInLayout();
-        if (!Fragment.class.isAssignableFrom(fragmentClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of Fragment!");
-        }
-
-        Fragment f;
-
-        try
-        {
-            // instantiate the fragment
-            f = (Fragment) fragmentClass.newInstance();
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalArgumentException();
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        if (arguments == null)
-        {
-            arguments = new Bundle();
-        }
-
-        arguments.putSerializable("username", username);
-        f.setArguments(arguments);
-
-        // Get the activity fragment manager and begin a new transaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        // Set the root of the fragment, replacing any fragment that already exists
-        transaction.replace(R.id.main_fragment_root, f);
-        if(!startedDefault){
-            transaction.addToBackStack(null);
-            startedDefault = true;
-        }
-        transaction.commit();
-    }
-
-    /**
-     *
-     * @param fragmentClass
-     */
-    public void addFragment(Class fragmentClass)
-    {
-        if (!Fragment.class.isAssignableFrom(fragmentClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of Fragment!");
-        }
-
-        Fragment f;
-
-        try
-        {
-            f = (Fragment) fragmentClass.newInstance();
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        transaction.add(R.id.main_fragment_root, f);
+        transaction.replace(fragment_root, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
-    /**
-     * Open the DialogFragment specified by dialogClass, with no arguments.
+    /*
+    Open a dialog fragment
      */
-    public void openDialog(Class dialogClass)
+    public void openDialogFragment(DialogFragment fragment)
     {
-        openDialog(dialogClass, null);
-    }
-
-    /**
-     * Open the DialogFragment specified by dialogClass, with the arguments specified by arguments.
-     * This will always add the key "username", with the value username to the bundle
-     * @param dialogClass
-     *   The class template of the dialog fragment you want to open. Must be a subclass of DialogFragment
-     *@param arguments
-     *   A map of arguments to provide the new dialogClass with.
-     *   key : argument name
-     *   value : argument value
-     */
-    public void openDialog(Class dialogClass, Bundle arguments)
-    {
-        // If the dialogClass is not a subclass of DialogFragment throw an exception
-        if (!DialogFragment.class.isAssignableFrom(dialogClass))
-        {
-            throw new IllegalArgumentException("Argument is not subclass of DialogFragment!");
-        }
-
-        DialogFragment dialog;
-
-        try
-        {
-            // Instantiate a new class of dialogClass
-            dialog = (DialogFragment) dialogClass.newInstance();
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalArgumentException();
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalArgumentException();
-        }
-
-        // If arguments were provided put them in a bundle and pass them to the new fragment
-        if (arguments == null)
-        {
-            arguments = new Bundle();
-        }
-
-        arguments.putSerializable("username", username);
-        dialog.setArguments(arguments);
-
-        // Show the dialog using FragmentTransaction
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        dialog.show(transaction, null);
+
+        fragment.show(transaction, null);
     }
 
-    /**
-     * Update the image of the list/map button to reflect the type of fragment it will open if pressed
-     *  The type of fragment that the button will open if pressed
-     */
+    /*
+    Update the image of the list/map button to reflect the type of fragment it will open if pressed
+    @param fragmentType
+        The type of fragment that the button will open if pressed
+    */
     private void updateViewButton()
     {
-        ImageButton viewButton = findViewById(R.id.view_button);
+        ImageButton viewButton = findViewById(R.id.main_view_button);
         @DrawableRes int image;
 
         switch (currentButtonMode)
@@ -402,36 +249,36 @@ public class MainActivity extends FragmentActivity {
             });
         }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
             // Getting everyone's last moods.
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    List<String> followingPeople = user.getFollowingList();
-                    MapData mapData = new MapData();
-
-                    for(String person : followingPeople){
-                        Log.d("D", "Getting Last mood of " + person);
-                        User newUser = new User(person);
-                        newUser.readData(new User.FirebaseCallback() {
-                            @Override
-                            public void onCallback(User user) {
-                                Mood mood = user.getMostRecentMood();
-                                Log.d("D", "Found: " + mood.toString());
-                                UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
-                                mapData.add(userpoint);
-
-                            }
-                        });
-                    }
-                    Bundle mapBundle = new Bundle();
-                    mapBundle.putSerializable("MapData", mapData);
-                    Fragment mapFragment = new MapFragment();
-                    mapFragment.setArguments(mapBundle);
-
-                    Fragment filterFragment = new MapFilter();
-
-                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
-                }
-            });
+//            user.readData(new User.FirebaseCallback() {
+//                @Override
+//                public void onCallback(User user) {
+//                    List<String> followingPeople = user.getFollowingList();
+//                    MapData mapData = new MapData();
+//
+//                    for(String person : followingPeople){
+//                        Log.d("D", "Getting Last mood of " + person);
+//                        User newUser = new User(person);
+//                        newUser.readData(new User.FirebaseCallback() {
+//                            @Override
+//                            public void onCallback(User user) {
+//                                Mood mood = user.getMostRecentMood();
+//                                Log.d("D", "Found: " + mood.toString());
+//                                UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+//                                mapData.add(userpoint);
+//
+//                            }
+//                        });
+//                    }
+//                    Bundle mapBundle = new Bundle();
+//                    mapBundle.putSerializable("MapData", mapData);
+//                    Fragment mapFragment = new MapFragment();
+//                    mapFragment.setArguments(mapBundle);
+//
+//                    Fragment filterFragment = new MapFilter();
+//
+//                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
+//                }
+//            });
 
         }else{
             throw new RuntimeException("Given map filter isn't known");
@@ -449,5 +296,18 @@ public class MainActivity extends FragmentActivity {
         updateMap();
     }
 
+
+    @Override
+    public void onBackPressed()
+    {
+        FragmentManager manager = getSupportFragmentManager();
+
+        Log.d("MAINMAINMAINMAINMAINMAINMAIN", manager.getBackStackEntryCount() + "");
+
+        if (manager.getBackStackEntryCount() > 1)
+        {
+            manager.popBackStack();
+        }
+    }
 }
 

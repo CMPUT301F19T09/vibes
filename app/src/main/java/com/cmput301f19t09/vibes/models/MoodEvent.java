@@ -1,16 +1,19 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * TODO determine how to handle optional attributes
+ * TODO determine how to handle optional attributes, implenet parcelable interface
  *
  * @see something?
  */
-public class MoodEvent extends Event {
+public class MoodEvent extends Event implements Serializable {
     private EmotionalState state;
     private int social_situation;
     private Location location;
@@ -31,11 +34,11 @@ public class MoodEvent extends Event {
         this.state = state;
     }
 
-    public int getSocial_situation() {
+    public int getSocialSituation() {
         return social_situation;
     }
 
-    public void setSocial_situation(int social_situation) {
+    public void setSocialSituation(int social_situation) {
         this.social_situation = social_situation;
     }
 
