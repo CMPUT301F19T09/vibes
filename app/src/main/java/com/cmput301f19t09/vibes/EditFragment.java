@@ -149,7 +149,7 @@ public class EditFragment extends Fragment implements
             timeTextView.setText(time.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // TODO: fix location handling
-            String tmp = "IMPLEMENT ME"
+            String tmp = "IMPLEMENT ME";
             locationTextView.setText(tmp);
 //            // get the current location from GPS
 //            googleApiClient = new GoogleApiClient.Builder(getActivity())
