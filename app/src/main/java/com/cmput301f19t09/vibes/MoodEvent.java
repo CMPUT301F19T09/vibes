@@ -14,16 +14,21 @@ import java.time.LocalTime;
  * @see something?
  */
 public class MoodEvent extends Event implements Serializable {
-    private EmotionalState state;
-    private int social_situation;
-    private Location location;
+    // date not optional
+    // time not optional
+    // description optional
+    private EmotionalState state; // not optional
+    private int socialSituation; // optional
+    private Location location; // optional
+    private User user;
 
     public MoodEvent(LocalDate date, LocalTime time, String description,
-                     EmotionalState state, int social_situation, Location location) {
+                     EmotionalState state, int socialSituation, Location location, User user) {
         super(date, time, description);
         this.state = state;
-        this.social_situation = social_situation;
+        this.socialSituation = socialSituation;
         this.location = location;
+        this.user = user;
     }
 
     public EmotionalState getState() {
@@ -35,18 +40,34 @@ public class MoodEvent extends Event implements Serializable {
     }
 
     public int getSocialSituation() {
-        return social_situation;
+        return socialSituation;
     }
 
     public void setSocialSituation(int social_situation) {
-        this.social_situation = social_situation;
+        this.socialSituation = social_situation;
     }
 
     public Location getLocation() {
         return location;
     }
 
+    public String getLocationString() {
+        return Location.convert(
+                location.getLatitude(), Location.FORMAT_DEGREES)
+                + " "
+                + Location.convert(location.getLongitude(), Location.FORMAT_DEGREES
+        );
+    }
+
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

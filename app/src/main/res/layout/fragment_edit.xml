@@ -31,26 +31,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/edit_date_view"
+    <TextView
+        android:id="@+id/date_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="@string/enter_date"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="date"
-        app:layout_constraintBottom_toTopOf="@+id/edit_time_view"
+        app:layout_constraintBottom_toTopOf="@+id/time_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/edit_time_view"
+    <TextView
+        android:id="@+id/time_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="@string/enter_time"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="time"
         app:layout_constraintBottom_toTopOf="@+id/edit_state_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -75,18 +73,17 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/edit_location_view"
+        app:layout_constraintBottom_toTopOf="@+id/location_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/edit_location_view"
+    <TextView
+        android:id="@+id/location_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_location"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/reason_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -12,9 +12,8 @@ import java.time.format.DateTimeParseException;
  * @see something?
  */
 public class Event implements Serializable {
-    protected LocalDate date; // format yyyy-MM-dd
-    protected LocalTime time; // format HH:mm
-    private final static String TIME_FORMAT = "HH:mm";
+    protected LocalDate date; // format yyyy-MM-dd; ISO_LOCAL_DATE
+    protected LocalTime time; // format HH:mm:ss; ISO_LOCAL_TIME
     protected String description;
 
     public Event(LocalDate date, LocalTime time, String description) {
@@ -32,6 +31,10 @@ public class Event implements Serializable {
      */
     public LocalDate getDate() {
         return date;
+    }
+
+    public String getDateString() {
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     /**
@@ -66,6 +69,10 @@ public class Event implements Serializable {
         return time;
     }
 
+    public String getTimeString() {
+        return time.format(DateTimeFormatter.ISO_LOCAL_TIME);
+    }
+
     /**
      * Sets the time attribute. Time is used to indicate in part when an event
      * occurred. An Event can have only one date.
@@ -77,8 +84,7 @@ public class Event implements Serializable {
      */
     public boolean setTime(String time) {
         try {
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TIME_FORMAT);
-            LocalTime formattedTime = LocalTime.parse(time, dtf);
+            LocalTime formattedTime = LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_TIME);
 
             // if we get here then format of time was correct
             this.time = formattedTime;
@@ -109,4 +115,6 @@ public class Event implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    //
 }
