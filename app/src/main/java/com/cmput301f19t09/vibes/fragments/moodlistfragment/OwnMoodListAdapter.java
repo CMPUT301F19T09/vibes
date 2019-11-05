@@ -19,7 +19,7 @@ public class OwnMoodListAdapter extends MoodListAdapter
     {
         data = new ArrayList<MoodListItem>();
 
-        for (MoodEvent event : user.getMoods())
+        for (MoodEvent event : user.getMoodEvents())
         {
             data.add(new MoodListItem(user, event));
         }

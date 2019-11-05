@@ -60,6 +60,8 @@ public class MainActivity extends FragmentActivity {
     private void initListeners()
     {
 
+        fragment_root = R.id.main_fragment_root;
+
         View addButton, searchButton, profileButton, followingButton, viewButton;
         addButton = findViewById(R.id.main_add_button);
         profileButton = findViewById(R.id.main_profile_button);
@@ -119,7 +121,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case LIST:
                     default:
-                        setMainFragment(MoodListFragment.newInstance(user));
+                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }

@@ -56,14 +56,6 @@ public class MoodListFragment extends Fragment
             }
         });
 
-        return view;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context)
-    {
-        super.onAttach(context);
-
         Bundle arguments = getArguments();
 
         displayType = arguments.getInt("type");
@@ -78,5 +70,9 @@ public class MoodListFragment extends Fragment
                 adapter = new FollowedMoodListAdapter(getContext(), user);
                 break;
         }
+
+        listView.setAdapter(adapter);
+
+        return view;
     }
 }

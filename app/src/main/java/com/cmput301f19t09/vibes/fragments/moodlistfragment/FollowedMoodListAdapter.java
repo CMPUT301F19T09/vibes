@@ -1,8 +1,11 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.User;
+
+import java.util.ArrayList;
 
 public class FollowedMoodListAdapter extends MoodListAdapter
 {
@@ -14,6 +17,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter
     @Override
     protected void initializeData()
     {
+        data = new ArrayList<MoodListItem>();
         for (String followed_username : user.getFollowingList())
         {
             User followed_user = new User(followed_username);
@@ -55,7 +59,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter
         {
             if (item.user == user)
             {
+                Log.d("BBBBBBBBBBBBBBBBBBBBBBBB", "Added mood evetn");
                 item.event = user.getMostRecentMoodEvent();
+                Log.d("CCCCCCCCCCCCCCCCCCCCCCCC", item.event.getDescription());
                 break;
             }
         }

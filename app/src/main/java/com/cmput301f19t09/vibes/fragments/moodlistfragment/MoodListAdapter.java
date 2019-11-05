@@ -2,6 +2,7 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.cmput301f19t09.vibes.models.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
@@ -32,6 +34,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
 
         this.context = context;
         this.user = user;
+        this.data = new ArrayList<MoodListItem>();
 
         initialize();
     }
@@ -111,6 +114,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
                     @Override
                     public void onCallback(User user)
                     {
+                        Log.d("AAAAAAAAAAAAAAAAAAAA", "User First Name: " + user.getFirstName());
                         initializeData();
                     }
                 });
