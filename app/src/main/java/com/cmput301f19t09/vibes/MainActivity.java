@@ -59,8 +59,19 @@ public class MainActivity extends FragmentActivity {
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
+        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
+        {
+            @Override
+            public void onBackStackChanged()
+            {
+                //TODO: Add listener to set the view button instead of doing it manually
+            }
+        });
 //        updateScreen(); // Updates main fragment depending on what it is set to
     }
 
@@ -156,8 +167,8 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case LIST:
                     default:
-//                        showMap();
-                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
+                        showMap();
+//                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                 }
@@ -200,10 +211,10 @@ public class MainActivity extends FragmentActivity {
 
         switch (currentButtonMode)
         {
-            case MAP:
+            case LIST:
                 image = R.drawable.ic_list_white_36dp;
                 break;
-            case LIST:
+            case MAP:
             default:
                 image = R.drawable.ic_map_white_36dp;
         }
@@ -301,8 +312,6 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed()
     {
         FragmentManager manager = getSupportFragmentManager();
-
-        Log.d("MAINMAINMAINMAINMAINMAINMAIN", manager.getBackStackEntryCount() + "");
 
         if (manager.getBackStackEntryCount() > 1)
         {
