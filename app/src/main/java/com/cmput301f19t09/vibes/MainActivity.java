@@ -157,14 +157,13 @@ public class MainActivity extends FragmentActivity {
                 switch (currentButtonMode)
                 {
                     case MAP:
-//                        setMainFragment(new MapFragment());
                         showMap();
-                        //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
                         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
+                        break;
                     default:
                         showMap();
                         currentButtonMode = ButtonMode.LIST;
