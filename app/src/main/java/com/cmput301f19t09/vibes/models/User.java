@@ -351,7 +351,7 @@ public class User implements Serializable {
     }
 
     /**
-     *
+     *  Returns the last MoodEvent
      * @return
      */
     public MoodEvent getMostRecentMoodEvent() {
@@ -377,6 +377,62 @@ public class User implements Serializable {
         moodLocation.setLongitude(location.getLongitude());
         return new MoodEvent(lDate, lTime, reason, new EmotionalState(emotion), social, moodLocation);
     }
+
+    public void updateMoodsMap(){
+
+//        collectionReference.document(userName).get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot documentSnapshot = task.getResult();
+//                            if(documentSnapshot != null && documentSnapshot.exists()) {
+//                                userExistListener.onUserExists();
+//                            } else {
+//                                userExistListener.onUserNotExists();
+//                            }
+//                        }
+//                    }
+//                });
+    }
+
+    /**
+     *  Returns the last MoodEvent
+     * @return
+     */
+    public Mood getMostRecentMood() {
+        Log.d("D", "Getting mood for " + this.getUserName());
+        Map mapMood = moods.get(moods.size()-1);
+        String emotion = (String) mapMood.get("emotion");
+        String reason =(String) mapMood.get("reason");
+        Number social =(Number) mapMood.get("social");
+        Long timestamp = (Long) mapMood.get("timestamp");
+        String username = (String) mapMood.get("username");
+
+
+        GeoPoint location = (GeoPoint) mapMood.get("location");
+
+        if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
+            Log.d("INFO", "Mood isn't complete yet");
+        }
+
+        // Checking if timestamp is defined.
+        if(timestamp == null){
+            throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
+        }
+
+        // Getting the time elements.
+        // However, it doesn't return the correct values when creating the new mood.
+        Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
+        cal.setTimeInMillis(timestamp); // TODO: The timestamp is something else idk why
+
+        // Creating the Mood
+        Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), location);
+
+        return newMood;
+    }
+
+
 
     public void addMood(MoodEvent moodEvent) {
         if (moodEvent == null) {

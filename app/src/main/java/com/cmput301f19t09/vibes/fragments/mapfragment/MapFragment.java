@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             data = (MapData) bundle.getSerializable("MapData");
+            Log.d("MAPFRAGMENT: ", "" + data.size());
         }
     }
 

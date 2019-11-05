@@ -40,7 +40,7 @@ public class MainActivity extends FragmentActivity {
             viewButton;
 
     private boolean startedDefault = false; // Used to check if the first view is loaded.
-    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_EVERYONE; // The filter of the map.
+    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
 
     /**
      * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
@@ -369,7 +369,7 @@ public class MainActivity extends FragmentActivity {
      * This is called after having a change in the mapFilter fragment.
      */
     public void updateMap(){
-
+        this.showMap();
     }
 
     /**
@@ -405,16 +405,33 @@ public class MainActivity extends FragmentActivity {
             user.readData(new User.FirebaseCallback() {
                 @Override
                 public void onCallback(User user) {
-                    MoodEvent mood = user.getMostRecentMoodEvent();
-                    Log.d("debug", "Last Event" + mood.toString());
+                    List<String> followingPeople = user.getFollowingList();
+                    MapData mapData = new MapData();
+
+                    for(String person : followingPeople){
+                        Log.d("D", "Getting Last mood of " + person);
+                        User newUser = new User(person);
+                        newUser.readData(new User.FirebaseCallback() {
+                            @Override
+                            public void onCallback(User user) {
+                                Mood mood = user.getMostRecentMood();
+                                Log.d("D", "Found: " + mood.toString());
+                                UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+                                mapData.add(userpoint);
+
+                            }
+                        });
+                    }
+                    Bundle mapBundle = new Bundle();
+                    mapBundle.putSerializable("MapData", mapData);
+                    Fragment mapFragment = new MapFragment();
+                    mapFragment.setArguments(mapBundle);
+
+                    Fragment filterFragment = new MapFilter();
+
+                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
                 }
             });
-//            user.readData(new User.FirebaseCallback() {
-//                @Override
-//                public void onCallback(User user) {
-//
-//                }
-//            });
 
         }else{
             throw new RuntimeException("Given map filter isn't known");
