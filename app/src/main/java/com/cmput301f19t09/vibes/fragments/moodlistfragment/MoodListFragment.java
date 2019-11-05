@@ -64,7 +64,7 @@ public class MoodListFragment extends Fragment
         switch (displayType)
         {
             case OWN_MOODS:
-                adapter = new OwnMoodListAdapter(getContext(), user);
+//                adapter = new OwnMoodListAdapter(getContext(), user);
                 break;
             case FOLLOWED_MOODS:
                 adapter = new FollowedMoodListAdapter(getContext(), user);

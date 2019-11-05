@@ -125,11 +125,11 @@ public class MainActivity extends FragmentActivity {
 //                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
 //                replaceFragment(ProfileFragment.class);
                 User user = new User("testuser");
-                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
+                setMainFragment(ProfileFragment.newInstance(user));
 //                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
 
-                setMainFragment(ProfileFragment.newInstance(user, true, new User("testuser2")));
+//                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
             }
         });
 

@@ -19,10 +19,10 @@ public class OwnMoodListAdapter extends MoodListAdapter
     {
         data = new ArrayList<MoodListItem>();
 
-        for (MoodEvent event : user.getMoodEvents())
-        {
-            data.add(new MoodListItem(user, event));
-        }
+//        for (MoodEvent event : user.getMoodEvents())
+//        {
+//            data.add(new MoodListItem(user, event));
+//        }
 
         data.sort(MoodListItem.date_comparator);
         notifyDataSetChanged();

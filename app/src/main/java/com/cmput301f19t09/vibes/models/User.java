@@ -114,9 +114,9 @@ public class User implements Serializable {
         this();
         this.userName = userName;
 
-        if(userName == null){
-            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
-        }
+//        if(userName == null){
+//            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
+//        }
 
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
