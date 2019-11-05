@@ -118,7 +118,6 @@ public class MainActivity extends FragmentActivity {
                 {
                     case MAP:
                         setMainFragment(new MapFragment());
-                        //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
@@ -166,10 +165,10 @@ public class MainActivity extends FragmentActivity {
 
         switch (currentButtonMode)
         {
-            case MAP:
+            case LIST:
                 image = R.drawable.ic_list_white_36dp;
                 break;
-            case LIST:
+            case MAP:
             default:
                 image = R.drawable.ic_map_white_36dp;
         }
@@ -181,8 +180,6 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed()
     {
         FragmentManager manager = getSupportFragmentManager();
-
-        Log.d("MAINMAINMAINMAINMAINMAINMAIN", manager.getBackStackEntryCount() + "");
 
         if (manager.getBackStackEntryCount() > 1)
         {

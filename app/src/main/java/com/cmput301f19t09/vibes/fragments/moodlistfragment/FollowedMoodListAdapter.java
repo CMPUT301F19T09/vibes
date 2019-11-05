@@ -61,10 +61,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter
         {
             if (item.user == user)
             {
-                Log.d("BBBBBBBBBBBBBBBBBBBBBBBB", "Added mood evetn");
                 item.event = user.getMostRecentMoodEvent();
-                Log.d("CCCCCCCCCCCCCCCCCCCCCCCC", item.event.getDescription());
-
                 notifyDataSetChanged();
             }
         }

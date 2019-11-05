@@ -77,7 +77,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
         if (event != null)
         {
 
-            Log.d("DDDDDDDDDDDDDDDDDDDDDDDDDDD", "" + event.getDescription());
             moodReason.setText(event.getDescription());
             //emotionImage.setImageBitmap();
 
@@ -126,7 +125,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
                     @Override
                     public void onCallback(User user)
                     {
-                        Log.d("AAAAAAAAAAAAAAAAAAAA", "User First Name: " + user.getFirstName());
                         initializeData();
                     }
                 });
