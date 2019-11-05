@@ -7,6 +7,7 @@ import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OwnMoodListAdapter extends MoodListAdapter
 {
@@ -20,9 +21,13 @@ public class OwnMoodListAdapter extends MoodListAdapter
     {
         data = new ArrayList<MoodItem>();
 
+        List<MoodEvent> eventList = user.getMoodEvents();
+        int index = 0;
         for (MoodEvent event : user.getMoodEvents())
         {
-            data.add(new MoodItem(user, event));
+            //data.add(new MoodItem(user, event));
+            addMoodItem(new MoodItem(user, event, index));
+            index++;
         }
 
         data.sort(MoodItem.date_comparator);

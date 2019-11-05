@@ -24,7 +24,7 @@ public class MoodItem implements Serializable
                 LocalDateTime time1 = LocalDateTime.of(item1.event.getDate(), item1.event.getTime());
                 LocalDateTime time2 = LocalDateTime.of(item2.event.getDate(), item2.event.getTime());
 
-                return time1.compareTo(time2);
+                return -time1.compareTo(time2);
             }
         };
     }

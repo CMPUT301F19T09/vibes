@@ -143,7 +143,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
     protected void addMoodItem(MoodItem item)
     {
         data.add(item);
-        addAll(data);
+        add(item);
     }
 
     protected abstract void initializeData();
