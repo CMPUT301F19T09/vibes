@@ -16,13 +16,15 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
 {
-    private List<MoodListItem> data;
-    private User user;
+    protected List<MoodListItem> data;
+    protected User user;
     private Context context;
 
     public MoodListAdapter(Context context, User user) {
@@ -62,11 +64,36 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodListItem>
         if (event != null)
         {
             moodReason.setText(event.getDescription());
+            //emotionImage.setImageBitmap();
+
             LocalDateTime time = LocalDateTime.of(event.getDate(), event.getTime());
+            Duration timeSincePost = Duration.between(time, LocalDateTime.now());
+            String timeString = "~";
+
+            if (timeSincePost.getSeconds() < 60)
+            {
+                timeString += timeSincePost.getSeconds() + " seconds ago";
+            }
+            else if (timeSincePost.toMinutes() < 60)
+            {
+                timeString += timeSincePost.toMinutes() + " minutes ago";
+            }
+            else if (timeSincePost.toHours() < 24)
+            {
+                timeString += timeSincePost.toHours() + " hours ago";
+            }
+            else
+            {
+                timeString += timeSincePost.toDays() + " days ago";
+            }
+
+            moodTime.setText(timeString);
+
         }
         else
         {
-
+            moodReason.setText("");
+            moodTime.setText("");
         }
 
         return item;

@@ -24,6 +24,16 @@ public class ProfileFragment extends Fragment {
     private ImageView profilePictureImageView;
     private Button followButton;
 
+    public static ProfileFragment newInstance(User user, Boolean myProfile, User otherUser) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        bundle.putBoolean("my_profile", myProfile);
+        bundle.putSerializable("otherUser", otherUser);
+        profileFragment.setArguments(bundle);
+        return profileFragment;
+    }
+
     /**
      *
      * @param inflater
@@ -43,6 +53,10 @@ public class ProfileFragment extends Fragment {
         ImageView profileMask = view.findViewById(R.id.profile_mask);
         profileMask.setImageResource(R.drawable.round_mask);
 
+        User user = (User) getArguments().getSerializable("user");
+        Boolean mode = getArguments().getBoolean("my_profile");
+        User otherUser = (User) getArguments().getSerializable("otherUser");
+
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,13 +64,12 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        FollowingFragment followingFragment = new FollowingFragment();
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
-
-        User user = (User) getArguments().getSerializable("user");
-        Boolean mode = getArguments().getBoolean("my_profile");
-        User otherUser = (User) getArguments().getSerializable("otherUser");
+        /**
+         * @// TODO: 2019-11-01 Fix bundling issue.
+         */
+//        FollowingFragment followingFragment = new FollowingFragment();
+//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
 
         if (user == null || mode == null || otherUser == null) {
             throw new RuntimeException("YOU DUN GOOFED");
@@ -79,6 +92,10 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+
+//        MoodListFragment moodListFragment = MoodListFragment.newInstance(this);
+//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.user_mood_list, moodListFragment).commit();
 
         return view;
     }

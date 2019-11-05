@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity {
     private User user;
 
     /**
-    Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
+     * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
      **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +87,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
-
-                setMainFragment(ProfileFragment.newInstance(user, true));
+                //setMainFragment(ProfileFragment.newInstance(user, true));
             }
         });
 
@@ -96,7 +95,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
-                setMainFragment(FollowingFragment.newInstance(user));
+                //setMainFragment(FollowingFragment.newInstance(user));
             }
         });
 
@@ -114,7 +113,8 @@ public class MainActivity extends FragmentActivity {
                 switch (currentButtonMode)
                 {
                     case MAP:
-                        setMainFragment(MapFragment.newInstance(user));
+                        setMainFragment(new MapFragment());
+                        //setMainFragment(MapFragment.newInstance(user));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                     case LIST:
@@ -163,11 +163,11 @@ public class MainActivity extends FragmentActivity {
         switch (currentButtonMode)
         {
             case MAP:
-                image = R.drawable.ic_map_white_36dp;
+                image = R.drawable.ic_list_white_36dp;
                 break;
             case LIST:
             default:
-                image = R.drawable.ic_list_white_36dp;
+                image = R.drawable.ic_map_white_36dp;
         }
 
         viewButton.setImageResource(image);
