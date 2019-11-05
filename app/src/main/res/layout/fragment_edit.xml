@@ -61,12 +61,12 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:inputType="textCapSentences|textAutoCorrect"
-        app:layout_constraintBottom_toTopOf="@+id/edit_context_view"
+        app:layout_constraintBottom_toTopOf="@+id/edit_situation_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/edit_context_view"
+        android:id="@+id/edit_situation_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_context"

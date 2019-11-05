@@ -1,18 +1,15 @@
 package com.cmput301f19t09.vibes;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -48,11 +42,13 @@ public class EditFragment extends Fragment implements
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
     private MoodEvent moodEvent;
     private boolean moodSet;
+    public static final String VIBES_USER = "com.cmput301f19t09.vibes.USER";
+    private User user;
 
     private TextView dateTextView;
     private TextView timeTextView;
     private EditText editStateView;
-    private EditText editContextView;
+    private EditText editSituationView;
     private TextView locationTextView;
     private EditText editReasonView;
     private Button buttonSubmitView;
@@ -81,18 +77,22 @@ public class EditFragment extends Fragment implements
      * @param param2 Parameter 2.
      * @return A new instance of fragment EditFragment.
      */
-    public static EditFragment newInstance(MoodEvent moodEvent) {
+    public static EditFragment newInstance(MoodEvent moodEvent, User user) {
         // called when we pass in a MoodEvent
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
         args.putSerializable(VIBES_MOODEVENT, moodEvent);
+        args.putSerializable(VIBES_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static EditFragment newInstance() {
+    public static EditFragment newInstance(User user) {
         // called when we don't pass in a MoodEvent
         EditFragment fragment = new EditFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(VIBES_USER, user);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -100,11 +100,20 @@ public class EditFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) { // we passed a MoodEvent so set fields based on it
+        if (getArguments() != null) {
+            user = (User) getArguments().getSerializable(VIBES_USER);
             moodEvent = (MoodEvent) getArguments().getSerializable(VIBES_MOODEVENT);
-            moodSet = true;
-        } else { // we didn't pass a MoodEvent so we are creating a new one
-            moodSet = false;
+
+            if (moodEvent != null) { // a MoodEvent was passed so set fields based on it
+                moodSet = true;
+            }
+            else { // we didn't pass a MoodEvent so we are creating a new one
+                moodSet = false;
+            }
+
+        }
+        else {
+            Log.d("info", "the bundle args was null");
         }
     }
 
@@ -118,13 +127,13 @@ public class EditFragment extends Fragment implements
         // enable buttons
         buttonSubmitView = view.findViewById(R.id.button_submit_view);
         buttonCancelView = view.findViewById(R.id.button_cancel_view);
-        buttonSubmitView.setEnabled(true);
+        buttonSubmitView.setEnabled(false);
         buttonCancelView.setEnabled(true);
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
         editStateView = view.findViewById(R.id.edit_state_view);
-        editContextView = view.findViewById(R.id.edit_context_view);
+        editSituationView = view.findViewById(R.id.edit_situation_view);
         locationTextView = view.findViewById(R.id.location_text_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
@@ -134,7 +143,7 @@ public class EditFragment extends Fragment implements
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
             editStateView.setText(moodEvent.getState().getEmotion());
-            editContextView.setText(moodEvent.getSocialSituation());
+            editSituationView.setText(moodEvent.getSocialSituation());
             locationTextView.setText(moodEvent.getLocationString());
             editReasonView.setText(moodEvent.getDescription());
         } else {
@@ -149,8 +158,20 @@ public class EditFragment extends Fragment implements
             timeTextView.setText(time.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // TODO: fix location handling
-            String tmp = "IMPLEMENT ME";
+            location.setLatitude(53.5461);
+            location.setLongitude(-113.4938);
+            String tmp = Location.convert(
+                                location.getLatitude(), Location.FORMAT_DEGREES)
+                                + " "
+                                + Location.convert(location.getLongitude(), Location.FORMAT_DEGREES
+                        );
+
             locationTextView.setText(tmp);
+
+            // set moodEvent to be an empty new MoodEvent object
+            moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
+
+
 //            // get the current location from GPS
 //            googleApiClient = new GoogleApiClient.Builder(getActivity())
 //                    .addConnectionCallbacks(this)
@@ -174,6 +195,45 @@ public class EditFragment extends Fragment implements
 //                        locationTextView.setText(tmp);
 
         }
+
+        // create textListeners for each required field to validate input
+        // having a textListener polling each field allows to validate input after each change
+        editSituationView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Auto-generated stub; do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // when field has changed (been edited) reverify input in order to (de)activate button
+                checkRequiredFields();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Auto-generated stub; do nothing
+            }
+        });
+
+        buttonSubmitView.setOnClickListener(view1 -> {
+            moodEvent.setDate(dateTextView.getText().toString());
+            moodEvent.setTime(timeTextView.getText().toString());
+            moodEvent.setState(new EmotionalState(editStateView.getText().toString()));
+            moodEvent.setSocialSituation(Integer.parseInt(editStateView.getText().toString()));
+            moodEvent.setLocation(location);
+            moodEvent.setDescription(editReasonView.getText().toString());
+
+            if (!moodSet) {
+                // was adding a new mood
+                user.addMood(moodEvent);
+            }
+            else {
+                // was editing
+                // TODO: replace the moodEvent which was clicked on by using its index
+                user.addMood(moodEvent);
+            }
+        });
 
         return view;
     }
@@ -199,4 +259,16 @@ public class EditFragment extends Fragment implements
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private void checkRequiredFields() {
+        // check if date and time have been set valid and no other field (except comment) is empty
+        if (!editSituationView.getText().toString().isEmpty()) {
+            // then enable button
+            buttonSubmitView.setEnabled(true);
+        } else {
+            // disable button
+            buttonSubmitView.setEnabled(false);
+        }
+    }
+
 }
