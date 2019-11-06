@@ -120,7 +120,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
             @Override
             public void onClick(View v)
             {
-                //Delete the item
+                moodItem.user.deleteMood(moodItem.getIndex());
+
+                dismiss();
             }
         });
 

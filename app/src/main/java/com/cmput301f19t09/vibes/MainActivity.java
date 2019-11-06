@@ -22,6 +22,7 @@ import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.model.LatLng;
@@ -52,11 +53,12 @@ public class MainActivity extends FragmentActivity {
         Intent intent = getIntent();
         String username = (String) intent.getSerializableExtra("username");
 
-        user = new User(username);
+        user = new User("testuser");
+//        user = new User("testuser4", "Test", "User4", "testuser4@example.com");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.OWN_MOODS));
+        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
 
         FragmentManager manager = getSupportFragmentManager();
@@ -141,8 +143,14 @@ public class MainActivity extends FragmentActivity {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
+//                replaceFragment(ProfileFragment.class);
                 User user = new User("testuser");
+                setMainFragment(ProfileFragment.newInstance(user));
+//                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
+
+//                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
             }
         });
 
@@ -150,6 +158,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 User user = new User("testuser");
+                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
                 //setMainFragment(FollowingFragment.newInstance(user));
             }
         });
@@ -162,8 +171,6 @@ public class MainActivity extends FragmentActivity {
                 Set the button to represent which fragment will be opened the NEXT TIME the button
                 is pressed (i.e. the current fragment)
                  */
-
-                User user = new User("testuser");
 
                 switch (currentButtonMode)
                 {
