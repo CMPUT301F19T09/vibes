@@ -1,7 +1,5 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +11,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment {
     private TextView firstNameTextView;
@@ -27,27 +22,21 @@ public class ProfileFragment extends Fragment {
     private ImageView profilePictureImageView;
     private Button followButton;
 
-    public static ProfileFragment newInstance(User user, Boolean myProfile, User otherUser) {
+    public static ProfileFragment newInstance(User user) {
         ProfileFragment profileFragment = new ProfileFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
-        bundle.putBoolean("my_profile", myProfile);
-        bundle.putSerializable("otherUser", otherUser);
         profileFragment.setArguments(bundle);
         return profileFragment;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        Activity main;
-
-        if (context instanceof Activity) {
-            main = (Activity) context;
-        }
-
-
+    public static ProfileFragment newInstance(User user, User otherUser) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        bundle.putSerializable("otherUser", otherUser);
+        profileFragment.setArguments(bundle);
+        return profileFragment;
     }
 
     /**
@@ -70,7 +59,6 @@ public class ProfileFragment extends Fragment {
         profileMask.setImageResource(R.drawable.round_mask);
 
         User user = (User) getArguments().getSerializable("user");
-        Boolean mode = getArguments().getBoolean("my_profile");
         User otherUser = (User) getArguments().getSerializable("otherUser");
 
         followButton.setOnClickListener(new View.OnClickListener() {
@@ -83,24 +71,22 @@ public class ProfileFragment extends Fragment {
         /**
          * @// TODO: 2019-11-01 Fix bundling issue.
          */
-
-//        MoodListFragment moodListFragment = MoodListFragment.getInstance(user);
-
 //        FollowingFragment followingFragment = new FollowingFragment();
 //        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
 //        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
 
-        if (user == null || mode == null || otherUser == null) {
+        if (user == null) {
             throw new RuntimeException("YOU DUN GOOFED");
         }
 
-        if (mode) {
+        if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
             user.readData(new User.FirebaseCallback() {
                 @Override
                 public void onCallback(User user) {
                     setInfo(user);
-                    user.addMood();
+//                    user.deleteMood(2);
+//                    user.addMood();
                 }
             });
         } else {

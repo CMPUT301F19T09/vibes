@@ -22,6 +22,7 @@ import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.model.LatLng;
@@ -141,13 +142,22 @@ public class MainActivity extends FragmentActivity {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
+//                replaceFragment(ProfileFragment.class);
+                User user = new User("testuser");
+                setMainFragment(ProfileFragment.newInstance(user));
+//                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
+
+//                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
             }
         });
 
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                User user = new User("testuser");
+                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
                 //setMainFragment(FollowingFragment.newInstance(user));
             }
         });
