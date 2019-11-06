@@ -71,7 +71,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
+        MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 

@@ -103,7 +103,18 @@ public class User implements Serializable {
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
 
-        
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("first", userName);
+        userData.put("last", lastName);
+        userData.put("email", email);
+        userData.put("profile_picture", picturePath);
+
+//        documentReference = collectionReference.document(userName).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                Log.d("INFO", "Added user to DB");
+//            }
+//        });
     }
 
     /**
