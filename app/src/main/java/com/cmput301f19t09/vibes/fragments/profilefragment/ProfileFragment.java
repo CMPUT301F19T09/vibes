@@ -11,10 +11,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
-<<<<<<< HEAD
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-=======
->>>>>>> c2cc3892e3e3ca8488c1966523e7c1718681e532
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
