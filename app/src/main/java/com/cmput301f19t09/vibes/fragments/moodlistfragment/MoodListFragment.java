@@ -60,7 +60,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 MoodItem item = (MoodItem) parent.getItemAtPosition(position);
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, true));
+                boolean editable = item.user == user;
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, editable));
             }
         });
 

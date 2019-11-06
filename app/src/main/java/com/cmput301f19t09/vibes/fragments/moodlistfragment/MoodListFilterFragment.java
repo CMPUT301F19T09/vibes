@@ -74,7 +74,6 @@ public class MoodListFilterFragment extends Fragment
             {
                 for (MoodFilterListener listener : listeners)
                 {
-                    Log.d("AAAAAAAAAAAAAAA", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
                     listener.showFollowedMoods();
                 }
             }

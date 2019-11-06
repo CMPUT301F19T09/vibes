@@ -66,7 +66,19 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onBackStackChanged()
             {
-                //TODO: Add listener to set the view button instead of doing it manually
+                List<Fragment> fragments = manager.getFragments();
+                Fragment currentFragment = fragments.get(fragments.size() - 1);
+
+                if (currentFragment == null || currentFragment.getClass().equals(MoodListFragment.class))
+                {
+                    currentButtonMode = ButtonMode.MAP;
+                }
+                else
+                {
+                    currentButtonMode = ButtonMode.LIST;
+                }
+
+                updateViewButton();
             }
         });
     }
@@ -165,8 +177,6 @@ public class MainActivity extends FragmentActivity {
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
-
-                updateViewButton();
             }
         });
     }
