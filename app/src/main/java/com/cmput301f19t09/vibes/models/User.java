@@ -4,6 +4,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -107,16 +108,31 @@ public class User implements Serializable {
         userData.put("first", userName);
         userData.put("last", lastName);
         userData.put("email", email);
+        userData.put("following_list", new ArrayList<>());
+        userData.put("moods", new ArrayList<>());
         userData.put("profile_picture", picturePath);
 
-//        documentReference = collectionReference.document(userName).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void aVoid) {
-//                Log.d("INFO", "Added user to DB");
-//            }
-//        });
+        collectionReference.document(userName).set(userData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                                storageReference = storage.getReference(picturePath);
+                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "Failed to store default profile picture");
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "Data failed to store in Firestore");
+                            }
+                        });
     }
-
     /**
      *
      * @param userName
