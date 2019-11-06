@@ -269,6 +269,7 @@ public class MainActivity extends FragmentActivity {
                 }
             });
         }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            Log.d("D", "Everyone isn't developed yet. So, it won't go to that screen rn.");
             // Getting everyone's last moods.
 //            user.readData(new User.FirebaseCallback() {
 //                @Override
