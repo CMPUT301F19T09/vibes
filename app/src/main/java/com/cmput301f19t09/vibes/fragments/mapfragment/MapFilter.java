@@ -36,14 +36,20 @@ public class MapFilter extends Fragment {
         youButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
+                if (((MainActivity) getActivity()).getMapFilter() == MapFragment.Filter.SHOW_EVERYONE) {
+                    // Setting it to be mine if it is everyone
+                    ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
+                }
             }
         });
 
         everyoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
+                if(((MainActivity) getActivity()).getMapFilter() == MapFragment.Filter.SHOW_MINE){
+                    // Setting it to be everyone if it is only mine.
+                    ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
+                }
             }
         });
 

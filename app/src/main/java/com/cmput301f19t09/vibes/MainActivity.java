@@ -301,9 +301,22 @@ public class MainActivity extends FragmentActivity {
     public void switchMapFilter(MapFragment.Filter filter){
         Log.d("DEBUG", "switched");
         this.mapFilter = filter;
+        if(this.mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            Log.d("D", "Showing everyone on the map");
+        }else if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
+            Log.d("D", "Showing mine on the map");
+        }
+
         updateMap();
     }
 
+    /**
+     * Returns the filter we have for the map. It is used in filter.
+     * @return
+     */
+    public MapFragment.Filter getMapFilter(){
+        return this.mapFilter;
+    }
 
     @Override
     public void onBackPressed()
