@@ -7,3 +7,8 @@
 /captures
 .externalNativeBuild
 .cxx
+.gitignore
+apikey.properties
+app/google-services.json
+app/.idea/workspace.xml
+app/local.properties

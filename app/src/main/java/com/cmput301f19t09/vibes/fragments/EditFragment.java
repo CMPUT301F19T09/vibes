@@ -1,4 +1,4 @@
-package com.cmput301f19t09.vibes;
+package com.cmput301f19t09.vibes.fragments;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,6 +22,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+
+import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 
 /**
  * A simple {@link Fragment} subclass.
