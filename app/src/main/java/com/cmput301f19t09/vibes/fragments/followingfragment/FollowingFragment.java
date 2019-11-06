@@ -23,6 +23,14 @@ import java.util.ArrayList;
  */
 public class FollowingFragment extends Fragment {
 
+    public static FollowingFragment newInstance(User user) {
+        FollowingFragment followingFragment = new FollowingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        followingFragment.setArguments(bundle);
+        return followingFragment;
+    }
+
     private ListView followingListView;
     private FollowingAdapter followingAdapter;
     private UserData followingList;
@@ -38,20 +46,14 @@ public class FollowingFragment extends Fragment {
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
         //Ref: https://stackoverflow.com/questions/15392261/android-pass-dataextras-to-a-fragment#15392591
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            followingList = (UserData) bundle.getSerializable("FollowingData");
-            requestedList = (UserData) bundle.getSerializable("RequestedData");
-        }
-        else{
-            Log.d("ERROR", "Bundle object passed was NULL.");
-        }
 
-        UserData userData = new UserData();
-        userData.add(new User("a", "a", "a", "a"));
-        followingList = userData;
-        requestedList = userData;
 
+
+
+        User user = (User) getArguments().getSerializable("user");
+
+        followingList = user.getFollowingList();
+        requestedList = user.getRequestedList();
 
         followingAdapter = new FollowingAdapter(getActivity(), followingList);
         followingListView = view.findViewById(R.id.following_list);

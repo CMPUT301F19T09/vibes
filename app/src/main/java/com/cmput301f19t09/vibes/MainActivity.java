@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import java.util.List;
@@ -157,9 +158,10 @@ public class MainActivity extends FragmentActivity {
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user = new User("testuser");
-                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
-                //setMainFragment(FollowingFragment.newInstance(user));
+                //User user = new User("testuser");
+                //setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
+                User user = new User("sabet");
+                setMainFragment(FollowingFragment.newInstance(user));
             }
         });
 
