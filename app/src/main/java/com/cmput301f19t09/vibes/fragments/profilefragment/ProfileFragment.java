@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
@@ -71,10 +70,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
-
         if (user == null) {
             throw new RuntimeException("YOU DUN GOOFED");
         }
@@ -87,6 +82,10 @@ public class ProfileFragment extends Fragment {
                     setInfo(user);
 //                    user.deleteMood(2);
 //                    user.addMood();
+                    // TODO: Remove Everyone vs You Radio Button
+                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
+                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                    fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
                 }
             });
         } else {
@@ -95,6 +94,10 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onCallback(User user) {
                     setInfo(user);
+                    // TODO: Remove Everyone vs You Radio Button
+                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
+                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                    fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
                 }
             });
         }
