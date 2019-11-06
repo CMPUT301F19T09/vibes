@@ -85,6 +85,8 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onCallback(User user) {
                     setInfo(user);
+//                    user.deleteMood(2);
+//                    user.addMood();
                 }
             });
         } else {

@@ -187,6 +187,7 @@ public class User implements Serializable {
 //                    public void onSuccess(Uri uri) {
 //                        profileURL = uri;
 //                        Log.d(TAG, "Loaded profile picture URL");
+//                        mooodlist.notifyDataSetChanged();
 //                    }
 //                }).addOnFailureListener(new OnFailureListener() {
 //                    @Override
@@ -538,7 +539,11 @@ public class User implements Serializable {
     // editMood(MoodEvent moodEvent, Integer index)
 
     public void deleteMood(Integer index) {
+        System.out.println(moods.size());
+        System.out.println(index);
         if (index > moods.size() - 1) {
+            return;
+        } else {
             moods.remove(index.intValue());
             documentReference = collectionReference.document(userName);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {

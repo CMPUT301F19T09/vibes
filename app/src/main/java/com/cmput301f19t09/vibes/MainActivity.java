@@ -171,8 +171,6 @@ public class MainActivity extends FragmentActivity {
                 is pressed (i.e. the current fragment)
                  */
 
-                User user = new User("testuser");
-
                 switch (currentButtonMode)
                 {
                     case LIST:
