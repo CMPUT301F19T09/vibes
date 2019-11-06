@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.cmput301f19t09.vibes.models.EmotionalState;
+import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.time.LocalDate;
@@ -37,9 +39,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
  * TODO: handle limiting the reason
  * TODO: pull coordinates from gps
  */
-public class EditFragment extends Fragment implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class EditFragment extends Fragment {
 
     // the fragment initialization parameters
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
@@ -60,12 +60,6 @@ public class EditFragment extends Fragment implements
     private OnFragmentInteractionListener mListener;
 
     // location services
-    // https://demonuts.com/current-gps-location/
-    // https://www.toptal.com/android/android-developers-guide-to-google-location-services-api
-    // https://www.vogella.com/tutorials/AndroidLocationAPI/article.html
-    private static int REQUEST_CODE_RECOVER_PLAY_SERVICES = 100;
-    private GoogleApiClient googleApiClient;
-    LocationManager locationManager;
     private Location location;
 
     public EditFragment() {
@@ -139,6 +133,8 @@ public class EditFragment extends Fragment implements
         editSituationView = view.findViewById(R.id.edit_situation_view);
         locationTextView = view.findViewById(R.id.location_text_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
+
+        location = new Location("");
 
         if (moodSet) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent

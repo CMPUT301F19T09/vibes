@@ -128,7 +128,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view)
             {
-                setMainFragment(EditFragment.newInstance());
+                setMainFragment(EditFragment.newInstance(user));
             }
         });
 

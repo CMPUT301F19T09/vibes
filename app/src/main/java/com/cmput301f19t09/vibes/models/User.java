@@ -455,7 +455,8 @@ public class User implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
-                        location);
+                        location,
+                        this);
                 events.add(event);
             }
 
