@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -57,11 +58,14 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         User user = data.get(position).user;
         MoodEvent event = data.get(position).event;
 
-        ImageView userImage, emotionImage;
+        ImageView userImage, emotionImage, userMask;
         TextView userUsername, userFullName, moodReason, moodTime;
 
         userImage = item.findViewById(R.id.user_image);
+        userMask = item.findViewById(R.id.user_image_mask);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+        userMask.setImageResource(R.drawable.round_mask);
+
         emotionImage = item.findViewById(R.id.emotion_image);
         userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);

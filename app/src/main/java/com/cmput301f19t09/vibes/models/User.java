@@ -21,11 +21,8 @@ import com.google.firebase.storage.StorageReference;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +102,19 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("first", userName);
+        userData.put("last", lastName);
+        userData.put("email", email);
+        userData.put("profile_picture", picturePath);
+
+//        documentReference = collectionReference.document(userName).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                Log.d("INFO", "Added user to DB");
+//            }
+//        });
     }
 
     /**

@@ -85,7 +85,7 @@ public class MoodListFilterFragment extends Fragment
         }
         else
         {
-            getView().findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
         }
 
         return view;

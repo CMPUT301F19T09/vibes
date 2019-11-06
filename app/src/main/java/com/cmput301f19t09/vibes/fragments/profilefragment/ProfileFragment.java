@@ -11,9 +11,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
+import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment {
     private TextView firstNameTextView;
@@ -68,12 +71,9 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        /**
-         * @// TODO: 2019-11-01 Fix bundling issue.
-         */
-//        FollowingFragment followingFragment = new FollowingFragment();
-//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-//        fragmentTransaction.replace(R.id.user_mood_list, followingFragment).commit();
+        MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
         if (user == null) {
             throw new RuntimeException("YOU DUN GOOFED");
