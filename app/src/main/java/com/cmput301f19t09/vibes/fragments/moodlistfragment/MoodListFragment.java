@@ -26,6 +26,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
+    public static final int OWN_MOODS_LOCKED = 2;
 
     MoodListAdapter adapter;
     private int displayType;
@@ -73,6 +74,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         switch (displayType)
         {
             case OWN_MOODS:
+            case OWN_MOODS_LOCKED:
                 adapter = new OwnMoodListAdapter(getContext(), user);
                 break;
             case FOLLOWED_MOODS:
@@ -83,6 +85,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         listView.setAdapter(adapter);
 
         filterFragment = MoodListFilterFragment.newInstance();
+
+        if (displayType == OWN_MOODS_LOCKED)
+        {
+            filterFragment.disableRadioButtons();
+        }
 
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
