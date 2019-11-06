@@ -54,6 +54,7 @@ public class MainActivity extends FragmentActivity {
         String username = (String) intent.getSerializableExtra("username");
 
         user = new User("testuser");
+//        user = new User("testuser4", "Test", "User4", "testuser4@example.com");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
