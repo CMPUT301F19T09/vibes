@@ -171,29 +171,6 @@ public class EditFragment extends Fragment implements
             // set moodEvent to be an empty new MoodEvent object
             moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
 
-
-//            // get the current location from GPS
-//            googleApiClient = new GoogleApiClient.Builder(getActivity())
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//
-//            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-//
-//            // set criteria for how to select location provider
-//            Criteria criteria = new Criteria();
-
-
-//                    if (location != null) {
-//                        String tmp = Location.convert(
-//                                location.getLatitude(), Location.FORMAT_DEGREES)
-//                                + " "
-//                                + Location.convert(location.getLongitude(), Location.FORMAT_DEGREES
-//                        );
-//                        // set the current location
-//                        locationTextView.setText(tmp);
-
         }
 
         // create textListeners for each required field to validate input
