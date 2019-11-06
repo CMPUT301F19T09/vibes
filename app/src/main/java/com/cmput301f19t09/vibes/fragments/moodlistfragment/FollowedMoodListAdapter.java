@@ -7,6 +7,9 @@ import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
 
+/*
+    Subclass of
+ */
 public class FollowedMoodListAdapter extends MoodListAdapter
 {
     public FollowedMoodListAdapter(Context context, User user)
@@ -67,5 +70,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter
         }
 
         data.sort(MoodItem.date_comparator);
+        //TODO MAKE A BETTER FIX THAN THIS
+        clear();
+        addAll(data);
+        notifyDataSetChanged();
     }
 }

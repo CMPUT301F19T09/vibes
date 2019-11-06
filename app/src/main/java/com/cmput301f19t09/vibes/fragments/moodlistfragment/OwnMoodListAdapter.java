@@ -31,6 +31,9 @@ public class OwnMoodListAdapter extends MoodListAdapter
         }
 
         data.sort(MoodItem.date_comparator);
+        //TODO MAKE A BETTER FIX THAN THIS
+        clear();
+        addAll(data);
         notifyDataSetChanged();
     }
 }

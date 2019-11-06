@@ -5,6 +5,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
+/*
+    A class to wrap MoodEvent, User, and that MoodEvent's index in User.
+    Useful for link
+ */
 public class MoodItem implements Serializable
 {
     public static final Comparator<MoodItem> date_comparator;

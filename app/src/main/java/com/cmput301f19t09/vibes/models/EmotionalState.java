@@ -4,10 +4,11 @@ import android.util.Pair;
 
 import com.cmput301f19t09.vibes.R;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EmotionalState {
+public class EmotionalState implements Serializable {
 
     private static final Map<String, Pair> map = new HashMap<>();
     static {
@@ -38,5 +39,9 @@ public class EmotionalState {
 
     public String getColour() {
         return this.colour;
+    }
+
+    public static Map<String, Pair> getMap(){
+        return map;
     }
 }
