@@ -22,6 +22,7 @@ import java.util.List;
 public class MoodListFilterFragment extends Fragment
 {
     private List<MoodFilterListener> listeners;
+    private boolean locked;
 
     public static MoodListFilterFragment newInstance()
     {
@@ -31,6 +32,7 @@ public class MoodListFilterFragment extends Fragment
     public MoodListFilterFragment()
     {
         listeners = new ArrayList<MoodFilterListener>();
+        locked = false;
     }
 
     @Nullable
@@ -55,36 +57,43 @@ public class MoodListFilterFragment extends Fragment
             }
         });
 
-        ownMoodsButton.setOnClickListener(new View.OnClickListener()
+        if (!locked)
         {
-            @Override
-            public void onClick(View v)
+            ownMoodsButton.setOnClickListener(new View.OnClickListener()
             {
-                for (MoodFilterListener listener : listeners)
+                @Override
+                public void onClick(View v)
                 {
-                    listener.showOwnMoods();
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showOwnMoods();
+                    }
                 }
-            }
-        });
+            });
 
-        followedMoodsButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
+            followedMoodsButton.setOnClickListener(new View.OnClickListener()
             {
-                for (MoodFilterListener listener : listeners)
+                @Override
+                public void onClick(View v)
                 {
-                    listener.showFollowedMoods();
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showFollowedMoods();
+                    }
                 }
-            }
-        });
+            });
+        }
+        else
+        {
+            getView().findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
+        }
 
         return view;
     }
 
     public void disableRadioButtons()
     {
-        getView().findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
+        locked = true;
     }
 
     public void addOnFilterListener(MoodFilterListener listener)

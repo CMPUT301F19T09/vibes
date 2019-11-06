@@ -75,6 +75,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         {
             case OWN_MOODS:
             case OWN_MOODS_LOCKED:
+                Log.d("TTTTTTTTTTTTTTTTTTTTTTTTTTTT", "Creating own moods adapter");
                 adapter = new OwnMoodListAdapter(getContext(), user);
                 break;
             case FOLLOWED_MOODS:
@@ -86,11 +87,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
         filterFragment = MoodListFilterFragment.newInstance();
 
-        if (displayType == OWN_MOODS_LOCKED)
-        {
-            filterFragment.disableRadioButtons();
-        }
-
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.filter_root, filterFragment);
@@ -98,6 +94,10 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
         filterFragment.addOnFilterListener(this);
 
+        if (displayType == OWN_MOODS_LOCKED)
+        {
+            filterFragment.disableRadioButtons();
+        }
         return view;
     }
 
