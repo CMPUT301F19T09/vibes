@@ -1,11 +1,11 @@
 package com.example.vibes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,12 +16,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.functions.FirebaseFunctions;
 
-public class LoginActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     private TextView emailTextView;
     private TextView passwordTextView;
+    private TextView confirmPasswordTextView;
+    private Button signUpButton;
     private Button loginButton;
     private FirebaseAuth mAuth;
     final private String TAG = "authentication";
@@ -29,49 +29,57 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_signup);
 
         mAuth = FirebaseAuth.getInstance();
 
         emailTextView = findViewById(R.id.email_field);
         passwordTextView = findViewById(R.id.password_field);
+        confirmPasswordTextView = findViewById(R.id.confirm_password_field);
+        signUpButton = findViewById(R.id.sign_up_button);
         loginButton = findViewById(R.id.login_button);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = emailTextView.getText().toString();
                 String password = passwordTextView.getText().toString();
+                String confirmPassword = confirmPasswordTextView.getText().toString();
 
-                loginUser(email, password);
+                if (validatePasswordMatch(password, confirmPassword)) {
+                    createUser(email, password);
+                } else {
+                    // TOAST for mismatching passwords
+                }
+            }
+        });
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startLoginActivity();
             }
         });
     }
 
-    public void loginUser(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
+    public void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+    }
+
+    public boolean validatePasswordMatch(String password, String confirmPassword) {
+        return password != confirmPassword;
+    }
+
+    public void createUser(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "signInWithEmail:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
-
-//                            User user = new User();
-
-//                            FirebaseDatabase.getInstance().getReference("Users")
-//                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_LONG).show();
-//                                    }
-//                                }
-//                            });
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
                         } else {
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
                     }
                 });
