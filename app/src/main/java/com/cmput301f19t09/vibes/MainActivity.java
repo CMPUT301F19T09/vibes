@@ -19,13 +19,11 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import java.util.List;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.Mood;
-import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -55,13 +53,35 @@ public class MainActivity extends FragmentActivity {
         Intent intent = getIntent();
         String username = (String) intent.getSerializableExtra("username");
 
-        user = new User(username);
+        user = new User("testuser");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(new User("testuser"), MoodListFragment.FOLLOWED_MOODS));
+        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
-//        updateScreen(); // Updates main fragment depending on what it is set to
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
+        {
+            @Override
+            public void onBackStackChanged()
+            {
+                List<Fragment> fragments = manager.getFragments();
+                Fragment currentFragment = fragments.get(fragments.size() - 1);
+
+                if (currentFragment == null || currentFragment.getClass().equals(MoodListFragment.class))
+                {
+                    currentButtonMode = ButtonMode.MAP;
+                }
+                else
+                {
+                    currentButtonMode = ButtonMode.LIST;
+                }
+
+                updateViewButton();
+            }
+        });
     }
 
     /**
@@ -83,7 +103,7 @@ public class MainActivity extends FragmentActivity {
 
         transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
         transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
-
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -155,21 +175,16 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode)
                 {
-                    case MAP:
-//                        setMainFragment(new MapFragment());
-                        showMap();
-                        //setMainFragment(MapFragment.newInstance(user));
-                        currentButtonMode = ButtonMode.LIST;
-                        break;
                     case LIST:
-                    default:
-//                        showMap();
-                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.FOLLOWED_MOODS));
+                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
+                    case MAP:
+                    default:
+                        showMap();
+                        currentButtonMode = ButtonMode.LIST;
+                        break;
                 }
-
-                updateViewButton();
             }
         });
     }
@@ -207,10 +222,10 @@ public class MainActivity extends FragmentActivity {
 
         switch (currentButtonMode)
         {
-            case MAP:
+            case LIST:
                 image = R.drawable.ic_list_white_36dp;
                 break;
-            case LIST:
+            case MAP:
             default:
                 image = R.drawable.ic_map_white_36dp;
         }
@@ -308,8 +323,6 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed()
     {
         FragmentManager manager = getSupportFragmentManager();
-
-        Log.d("MAINMAINMAINMAINMAINMAINMAIN", manager.getBackStackEntryCount() + "");
 
         if (manager.getBackStackEntryCount() > 1)
         {

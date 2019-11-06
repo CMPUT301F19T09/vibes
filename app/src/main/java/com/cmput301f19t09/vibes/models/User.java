@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
@@ -385,8 +386,6 @@ public class User implements Serializable {
         }
     }
 
-
-
     /**
      *
      * @return
@@ -400,7 +399,7 @@ public class User implements Serializable {
                 Number social =(Number) moodEvent.get("social");
                 Long timestamp = (Long) moodEvent.get("timestamp");
                 String username = (String) moodEvent.get("username");
-                GeoPoint location = (GeoPoint) moodEvent.get("location");
+                GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
 
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
                     Log.d("INFO", "Mood isn't complete yet");
@@ -420,18 +419,27 @@ public class User implements Serializable {
                         ZoneOffset.UTC
                 );
 
-                MoodEvent event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, new EmotionalState("HAPPY"), 0, null);
-                events.add(event);
-                //Mood/Event event = new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, EmotionalState.)
+                Location location = new Location("");
+                location.setLatitude(locationGeoPoint.getLatitude());
+                location.setLongitude(locationGeoPoint.getLongitude());
 
-//                MoodEvent newMood = new MoodEvent(date, time, description, state, social_situation, locaation);
-//                moodEvents.add(newMood);
+                MoodEvent event = new MoodEvent(time.toLocalDate(),
+                        time.toLocalTime(),
+                        reason,
+                        new EmotionalState(emotion),
+                        social.intValue(),
+                        location);
+                events.add(event);
             }
 
             return events;
         } else {
             throw new RuntimeException("Need to update moods from DB");
         }
+    }
+
+    public List<MoodEvent> getMoodEvents() {
+        return moodEvents;
     }
 
     /**

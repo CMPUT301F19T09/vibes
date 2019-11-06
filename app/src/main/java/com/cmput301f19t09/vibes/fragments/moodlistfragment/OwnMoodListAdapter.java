@@ -3,9 +3,11 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 import android.content.Context;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OwnMoodListAdapter extends MoodListAdapter
 {
@@ -17,14 +19,18 @@ public class OwnMoodListAdapter extends MoodListAdapter
     @Override
     protected void initializeData()
     {
-        data = new ArrayList<MoodListItem>();
+        data = new ArrayList<MoodItem>();
 
-//        for (MoodEvent event : user.getMoodEvents())
-//        {
-//            data.add(new MoodListItem(user, event));
-//        }
+        List<MoodEvent> eventList = user.getMoodEvents();
+        int index = 0;
+        for (MoodEvent event : user.getMoodEvents())
+        {
+            //data.add(new MoodItem(user, event));
+            addMoodItem(new MoodItem(user, event, index));
+            index++;
+        }
 
-        data.sort(MoodListItem.date_comparator);
+        data.sort(MoodItem.date_comparator);
         notifyDataSetChanged();
     }
 }
