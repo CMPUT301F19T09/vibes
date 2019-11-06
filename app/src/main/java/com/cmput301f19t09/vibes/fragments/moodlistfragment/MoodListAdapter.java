@@ -54,6 +54,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             item = inflater.inflate(R.layout.mood_list_item, null);
         }
 
+        User user = data.get(position).user;
+        MoodEvent event = data.get(position).event;
+
         ImageView userImage, emotionImage;
         TextView userUsername, userFullName, moodReason, moodTime;
 
@@ -64,11 +67,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
-
-        User user = data.get(position).user;
-        MoodEvent event = data.get(position).event;
-
-        //userImage.setImageBitmap()
 
         userUsername.setText(user.getUserName());
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
@@ -117,11 +115,13 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
     private void initialize()
     {
+            /*
         user.exists(new User.UserExistListener()
         {
             @Override
             public void onUserExists()
             {
+            */
                 user.readData(new User.FirebaseCallback()
                 {
                     @Override
@@ -130,6 +130,8 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
                         initializeData();
                     }
                 });
+
+            /*
             }
 
             @Override
@@ -138,6 +140,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
                 throw new RuntimeException("Attempt to create MoodList with invalid user");
             }
         });
+             */
     }
 
     protected void addMoodItem(MoodItem item)
