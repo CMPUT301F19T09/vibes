@@ -18,7 +18,7 @@ import androidx.fragment.app.DialogFragment;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.EditFragment;
+import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.models.MoodItem;
 
 import java.time.Duration;

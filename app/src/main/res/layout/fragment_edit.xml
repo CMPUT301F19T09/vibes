@@ -55,22 +55,21 @@
         android:layout_height="wrap_content"
         android:hint="@string/enter_time"
         android:ems="10"
-        app:layout_constraintBottom_toTopOf="@+id/edit_state_view"
+        app:layout_constraintBottom_toTopOf="@+id/state_grid_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/date_text_view"/>
 
-    <EditText
-        android:id="@+id/edit_state_view"
-        android:layout_width="0dp"
+    <GridView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_state"
-        android:ems="10"
-        android:inputType="textCapSentences|textAutoCorrect"
+        android:id="@+id/state_grid_view"
+        android:numColumns="4"
         app:layout_constraintBottom_toTopOf="@+id/edit_situation_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/time_text_view"/>
+        app:layout_constraintTop_toBottomOf="@id/time_text_view" />
+
 
     <EditText
         android:id="@+id/edit_situation_view"
@@ -82,7 +81,7 @@
         app:layout_constraintBottom_toTopOf="@+id/location_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_state_view"/>
+        app:layout_constraintTop_toBottomOf="@id/state_grid_view"/>
 
     <TextView
         android:id="@+id/location_text_view"
