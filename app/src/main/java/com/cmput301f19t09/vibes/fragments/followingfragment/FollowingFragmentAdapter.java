@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.User;
-
 import java.util.ArrayList;
 
-public class RequestedAdapter extends ArrayAdapter<User> {
+public class FollowingFragmentAdapter extends ArrayAdapter<User> {
     private ArrayList<User> userList;
     private Context context;
+    private int layout;
 
-    public RequestedAdapter(Context context, ArrayList<User> userList){
+    public FollowingFragmentAdapter(Context context, ArrayList<User> userList){
         super(context, 0, userList);
         this.userList = userList;
         this.context = context;
@@ -27,7 +28,7 @@ public class RequestedAdapter extends ArrayAdapter<User> {
         View view = convertView;
 
         if (view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.requested_list, parent, false);
+            view = LayoutInflater.from(context).inflate(this.layout, parent, false);
         }
 
         User user = userList.get(position);
@@ -42,4 +43,9 @@ public class RequestedAdapter extends ArrayAdapter<User> {
 
         return view;
     }
+
+    public void setLayout(int layout){
+        this.layout = layout;
+    }
+
 }
