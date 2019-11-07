@@ -23,6 +23,7 @@ public class EmotionalState implements Serializable {
     private String emotion;
 
     public EmotionalState(String emotion) {
+        if (!map.containsKey(emotion)) throw new IllegalArgumentException("invalid emotion");
         this.emotion = emotion;
         Pair pair = map.get(this.emotion);
         this.file = (int) pair.first;

@@ -478,7 +478,8 @@ public class User extends Observable implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
-                        location);
+                        location,
+                        this);
                 events.add(event);
             }
 
