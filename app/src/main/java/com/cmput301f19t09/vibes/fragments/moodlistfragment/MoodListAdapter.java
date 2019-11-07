@@ -23,15 +23,37 @@ import com.cmput301f19t09.vibes.models.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Observer;
 
 /*
     This class is responsible for displ
  */
-public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
+public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
 {
-    protected List<MoodItem> data;
-    protected List<MoodEvent> mood_data;
+    //protected List<MoodItem> data;
+    protected static final Comparator<MoodEvent> COMPARE_BY_DATE;
+
+    static {
+        COMPARE_BY_DATE = new Comparator<MoodEvent>() {
+            @Override
+            public int compare(MoodEvent o1, MoodEvent o2)
+            {
+                if (o1 == null || o2 == null)
+                {
+                    return 0;
+                }
+
+                LocalDateTime t1 = LocalDateTime.of(o1.getDate(), o1.getTime());
+                LocalDateTime t2 = LocalDateTime.of(o2.getDate(), o2.getTime());
+
+                return t2.compareTo(t1);
+            }
+        };
+    }
+
+    protected List<MoodEvent> data;
     protected User user;
     private Context context;
 
@@ -42,7 +64,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
         this.context = context;
         this.user = user;
-        this.data = new ArrayList<MoodItem>();
+        this.data = new ArrayList<MoodEvent>();
 
         initialize();
     }
@@ -60,8 +82,17 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             item = inflater.inflate(R.layout.mood_list_item, null);
         }
 
-        User user = data.get(position).user;
-        MoodEvent event = data.get(position).event;
+        //User user = data.get(position).user;
+        //MoodEvent event = data.get(position).event;
+
+        MoodEvent event = data.get(position);
+
+        if (event == null)
+        {
+            return item;
+        }
+
+        User user = event.getUser();
 
         ImageView userImage, emotionImage, userMask;
         TextView userUsername, userFullName, moodReason, moodTime;
@@ -89,7 +120,11 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             emotionColour.setBackgroundResource(R.drawable.circle);
             //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
-            Duration timeSincePost = data.get(position).timeSinceEvent();
+            //Duration timeSincePost = data.get(position).timeSinceEvent();
+
+            LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
+            Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
+
             String timeString = "~";
 
             if (timeSincePost.getSeconds() < 60)
@@ -130,6 +165,5 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         user.readData();
     }
 
-    protected abstract void initializeData();
     public abstract void refreshData();
 }

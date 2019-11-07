@@ -19,20 +19,23 @@ import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.MoodItem;
+import com.cmput301f19t09.vibes.models.User;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class MoodDetailsDialogFragment extends DialogFragment
 {
-    private MoodItem moodItem;
+    private MoodEvent event;
 
-    public static MoodDetailsDialogFragment newInstance(MoodItem moodItem, boolean editable)
+    public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
     {
         Bundle bundle = new Bundle();
         MoodDetailsDialogFragment fragment = new MoodDetailsDialogFragment();
 
-        bundle.putSerializable("item", moodItem);
+        bundle.putSerializable("event", event);
         bundle.putBoolean("editable", editable);
         fragment.setArguments(bundle);
 
@@ -45,7 +48,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
     {
         Bundle arguments = getArguments();
 
-        moodItem = (MoodItem) arguments.getSerializable("item");
+        event = (MoodEvent) arguments.getSerializable("event");
+        User user = event.getUser();
         boolean editable = arguments.getBoolean("editable");
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -67,8 +71,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
         editButton = view.findViewById(R.id.edit_button);
         confirmButton = view.findViewById(R.id.confirm_button);
 
-        Glide.with(getContext()).load(moodItem.user.getProfileURL()).into(userImage);
-        emotionImage.setImageResource(moodItem.event.getState().getImageFile());
+        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+        emotionImage.setImageResource(event.getState().getImageFile());
 
         userImage.setClipToOutline(true);
         emotionImage.setClipToOutline(true);
@@ -77,10 +81,11 @@ public class MoodDetailsDialogFragment extends DialogFragment
         //Glide.with(getContext()).load(moodItem.event.getReasonImage()).into(reasonImage);
         //Glide.with(getContext()).load(moodItem.event.getEmotion().getImage()).into(emotionImage);
 
-        userUsername.setText(moodItem.user.getUserName());
-        userFullName.setText(moodItem.user.getFirstName() + " " + moodItem.user.getLastName());
+        userUsername.setText(user.getUserName());
+        userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
-        Duration timeSincePost = moodItem.timeSinceEvent();
+        LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
+        Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
 
         String timeString = "~";
 
@@ -106,7 +111,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
         }
 
         moodTime.setText(timeString);
-        moodReason.setText(moodItem.event.getDescription());
+        moodReason.setText(event.getDescription());
 
         if (editable)
         {
@@ -126,7 +131,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
             @Override
             public void onClick(View v)
             {
-                moodItem.user.deleteMood(moodItem.getIndex());
+                //moodItem.user.deleteMood(moodItem.getIndex());
+                user.deleteMood(0);
 
                 dismiss();
             }
@@ -142,7 +148,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     @Override
                     public void onDismiss(DialogInterface dialog)
                     {
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(moodItem.event, moodItem.user));
+                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event,user));
                     }
                 });
 

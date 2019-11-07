@@ -19,13 +19,14 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class MoodListFragment extends Fragment implements MoodFilterListener, Observer
+public class MoodListFragment extends Fragment implements MoodFilterListener//, Observer
 {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
@@ -40,7 +41,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
     public static MoodListFragment newInstance(User user, int displayType)
     {
         MoodListFragment fragment = new MoodListFragment();
-        user.addObserver(fragment);
+        //user.addObserver(fragment);
         Bundle arguments = new Bundle();
 
         arguments.putSerializable("user", user);
@@ -64,9 +65,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                MoodItem item = (MoodItem) parent.getItemAtPosition(position);
-                boolean editable = item.user == user;
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(item, editable));
+                //MoodItem item = (MoodItem) parent.getItemAtPosition(position);
+                MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
+                boolean editable = event.getUser() == user;
+
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
             }
         });
 
@@ -87,6 +90,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
         }
 
         listView.setAdapter(adapter);
+        user.addObserver(adapter);
 
         filterFragment = MoodListFilterFragment.newInstance();
 
@@ -107,9 +111,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
 
     private void setAdapter(MoodListAdapter adapter)
     {
+        user.deleteObserver(adapter);
         this.adapter = adapter;
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
+        user.addObserver(adapter);
     }
 
     public void showOwnMoods()
@@ -149,16 +155,20 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
         this.filter &= 0;
     }
 
+    /*
     public void update(Observable observable, Object object)
     {
         Log.d("TEST", "MoodListFragment notified");
         adapter.initializeData();
     }
+     */
 
+    /*
     @Override
     public void onDestroy()
     {
         user.deleteObserver(this);
         super.onDestroy();
     }
+     */
 }
