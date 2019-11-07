@@ -53,7 +53,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private GridView stateGridView;
     private EmotionalState emotionalState = null;
     private EditText editSituationView;
-    private TextView locationTextView;
     private EditText editReasonView;
     private Button buttonSubmitView;
     private Button buttonCancelView;
@@ -136,7 +135,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
         editSituationView = view.findViewById(R.id.edit_situation_view);
-        locationTextView = view.findViewById(R.id.location_text_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         location = new Location("");
@@ -147,7 +145,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
             editSituationView.setText(moodEvent.getSocialSituation());
-            locationTextView.setText(moodEvent.getLocationString());
             editReasonView.setText(moodEvent.getDescription());
         }
         else {
@@ -164,13 +161,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // TODO: fix location handling
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
-            String tmp = Location.convert(
-                                location.getLatitude(), Location.FORMAT_DEGREES)
-                                + " "
-                                + Location.convert(location.getLongitude(), Location.FORMAT_DEGREES
-                        );
-
-            locationTextView.setText(tmp);
 
             // set moodEvent to be an empty new MoodEvent object
             moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
@@ -233,6 +223,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     break;
                 }
             }
+            
             checkRequiredFields();
         }
     }
