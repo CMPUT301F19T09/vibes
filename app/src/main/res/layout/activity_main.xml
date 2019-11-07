@@ -31,6 +31,12 @@
             android:textSize="40sp"
             android:textStyle="normal" />
 
+        <Button
+            android:id="@+id/debug_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PRESS ME" />
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/main_follow_list_button"
             android:layout_width="50dp"
@@ -53,7 +59,9 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_bar"
         app:layout_constraintTop_toBottomOf="@+id/main_top_bar"
-        tools:layout_editor_absoluteX="155dp"/>
+        tools:layout_editor_absoluteX="155dp">
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/main_bottom_bar"

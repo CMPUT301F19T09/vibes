@@ -150,6 +150,7 @@ public class User extends Observable implements Serializable {
      */
     public User(String userName) {
         this();
+        Log.d("TEST", "Creating user with username " + userName);
         this.userName = userName;
 
 //        if(userName == null){
@@ -312,6 +313,7 @@ public class User extends Observable implements Serializable {
      * @return
      */
     public String getUserName() {
+        Log.d("TEST", "returning username " + userName);
         return userName;
     }
 
@@ -533,7 +535,7 @@ public class User extends Observable implements Serializable {
             mood.put("photo", null);
             mood.put("reason", "Something else");
             mood.put("social", 1);
-            mood.put("timestamp", time.toEpochSecond(ZoneOffset.from(time)));
+            mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
             mood.put("username", "testuser");
 
             documentReference = collectionReference.document(userName);

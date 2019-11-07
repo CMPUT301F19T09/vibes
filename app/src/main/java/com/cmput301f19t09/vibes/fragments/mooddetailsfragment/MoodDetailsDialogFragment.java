@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -132,7 +133,10 @@ public class MoodDetailsDialogFragment extends DialogFragment
             public void onClick(View v)
             {
                 //moodItem.user.deleteMood(moodItem.getIndex());
-                user.deleteMood(0);
+                int mood_index = user.getMoodEvents().indexOf(event);
+                Log.d("TEST", "Trying to remove event from user " + user.getUserName());
+                Log.d("TEST", "Trying to remove mood with index " + mood_index);
+                user.deleteMood(mood_index);
 
                 dismiss();
             }
