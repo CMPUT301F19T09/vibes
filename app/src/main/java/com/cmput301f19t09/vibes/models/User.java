@@ -530,13 +530,13 @@ public class User extends Observable implements Serializable {
         } else {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
-            mood.put("emotion", "SAD");
+            mood.put("emotion", moodEvent.getState().getEmotion());
             mood.put("location", new GeoPoint(53.23, -115.44));
             mood.put("photo", null);
-            mood.put("reason", "Something else");
-            mood.put("social", 1);
             mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
-            mood.put("username", "testuser");
+            mood.put("reason", moodEvent.getDescription());
+            mood.put("social", moodEvent.getSocialSituation());
+            mood.put("username", moodEvent.getUser().getUserName());
 
             documentReference = collectionReference.document(userName);
             documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
