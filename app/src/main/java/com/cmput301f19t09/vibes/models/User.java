@@ -198,11 +198,13 @@ public class User extends Observable implements Serializable {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Log.d("TEST", "User event");
+                userName = documentSnapshot.getString("username");
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
                 email = documentSnapshot.getString("email");
                 picturePath = documentSnapshot.getString("profile_picture");
                 followingList = (List<String>) documentSnapshot.get("following_list");
+                requestedList = (List<String>) documentSnapshot.get("requested_list");
                 moods = (List<Map>) documentSnapshot.get("moods");
 
                 List<Map> moods = (List<Map>) documentSnapshot.get("moods");
@@ -251,6 +253,7 @@ public class User extends Observable implements Serializable {
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                userName = documentSnapshot.getString("username");
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
                 email = documentSnapshot.getString("email");
