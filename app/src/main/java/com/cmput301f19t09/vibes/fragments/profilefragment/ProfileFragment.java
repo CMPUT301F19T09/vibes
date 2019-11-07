@@ -111,5 +111,6 @@ public class ProfileFragment extends Fragment implements Observer {
         lastNameTextView.setText(user.getLastName());
         userNameTextView.setText(user.getUserName());
         Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+        profilePictureImageView.setClipToOutline(true);
     }
 }
