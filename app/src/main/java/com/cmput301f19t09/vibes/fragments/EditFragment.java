@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.fragments;
 
+import android.app.Activity;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.cmput301f19t09.vibes.MainActivity;
+import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,6 +28,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -70,8 +75,8 @@ public class EditFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param
+     * @param
      * @return A new instance of fragment EditFragment.
      */
     public static EditFragment newInstance(MoodEvent moodEvent, User user) {
@@ -145,7 +150,8 @@ public class EditFragment extends Fragment {
             editSituationView.setText(moodEvent.getSocialSituation());
             locationTextView.setText(moodEvent.getLocationString());
             editReasonView.setText(moodEvent.getDescription());
-        } else {
+        }
+        else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
 
             // set the current date
@@ -174,7 +180,7 @@ public class EditFragment extends Fragment {
 
         // create textListeners for each required field to validate input
         // having a textListener polling each field allows to validate input after each change
-        editSituationView.addTextChangedListener(new TextWatcher() {
+        editStateView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 // Auto-generated stub; do nothing
@@ -182,7 +188,6 @@ public class EditFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // when field has changed (been edited) reverify input in order to (de)activate button
                 checkRequiredFields();
             }
 
@@ -195,8 +200,10 @@ public class EditFragment extends Fragment {
         buttonSubmitView.setOnClickListener(view1 -> {
             moodEvent.setDate(dateTextView.getText().toString());
             moodEvent.setTime(timeTextView.getText().toString());
-            moodEvent.setState(new EmotionalState(editStateView.getText().toString()));
-            moodEvent.setSocialSituation(Integer.parseInt(editStateView.getText().toString()));
+            moodEvent.setState(new EmotionalState(editStateView.getText().toString().toUpperCase()));
+            if (!editSituationView.getText().toString().isEmpty()) {
+                moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
+            }
             moodEvent.setLocation(location);
             moodEvent.setDescription(editReasonView.getText().toString());
 
@@ -208,6 +215,17 @@ public class EditFragment extends Fragment {
                 // was editing
                 // TODO: replace the moodEvent which was clicked on by using its index
                 user.addMood(moodEvent);
+            }
+            MainActivity main = (MainActivity) getActivity();
+            MoodListFragment moodList = MoodListFragment.newInstance(user, 0);
+            main.setMainFragment(moodList);
+        });
+
+        // cancel button listener
+        buttonCancelView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
             }
         });
 
@@ -238,7 +256,9 @@ public class EditFragment extends Fragment {
 
     private void checkRequiredFields() {
         // check if date and time have been set valid and no other field (except comment) is empty
-        if (!editSituationView.getText().toString().isEmpty()) {
+        if (    !editStateView.getText().toString().isEmpty() &&
+                EmotionalState.getMap().containsKey(editStateView.getText().toString().toUpperCase())) {
+
             // then enable button
             buttonSubmitView.setEnabled(true);
         } else {
