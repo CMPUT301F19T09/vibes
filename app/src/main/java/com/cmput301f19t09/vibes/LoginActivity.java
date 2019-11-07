@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,15 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     private TextView emailTextView;
     private TextView passwordTextView;
     private Button loginButton;
+    private Button signUpButton;
     private FirebaseAuth mAuth;
     final private String TAG = "authentication";
 
@@ -33,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         emailTextView = findViewById(R.id.email_field);
         passwordTextView = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
+        signUpButton = findViewById(R.id.sign_up_button);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +48,18 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(email, password);
             }
         });
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startSignUpActivity();
+            }
+        });
+    }
+
+    public void startSignUpActivity() {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
     }
 
     public void loginUser(String email, String password) {
@@ -52,20 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
-
-//                            User user = new User();
-
-//                            FirebaseDatabase.getInstance().getReference("Users")
-//                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_LONG).show();
-//                                    }
-//                                }
-//                            });
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();

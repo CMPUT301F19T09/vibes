@@ -35,11 +35,11 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    private String TAG = "Sample";
     private String picturePath;
     private List<String> followingList;
     private List<Mood> result;
     private List<MoodEvent> moodEvents;
+    private String TAG = "Sample";
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -74,20 +74,20 @@ public class User implements Serializable {
     /**
      * Constructor for the user class
      */
-    public User(){
-        if(!connectionStarted){ // Makes sure these definitions are called only once.
-            connectionStarted = true;
-
-            db = FirebaseFirestore.getInstance();
+//    public User(){
+//        if(!connectionStarted){ // Makes sure these definitions are called only once.
+//            connectionStarted = true;
+//
+//            db = FirebaseFirestore.getInstance();
             FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                     .setPersistenceEnabled(false)
                     .build();
-            db.setFirestoreSettings(settings);
-
-            collectionReference = db.collection("users");
-            storage = FirebaseStorage.getInstance();
-        }
-    }
+//            db.setFirestoreSettings(settings);
+//
+//            collectionReference = db.collection("users");
+//            storage = FirebaseStorage.getInstance();
+//        }
+//    }
 
     /**
      *
@@ -97,48 +97,19 @@ public class User implements Serializable {
      * @param email
      */
     public User(String userName, String firstName, String lastName, String email) {
-        this();
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
-
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("first", userName);
-        userData.put("last", lastName);
-        userData.put("email", email);
-        userData.put("following_list", new ArrayList<>());
-        userData.put("moods", new ArrayList<>());
-        userData.put("profile_picture", picturePath);
-
-        collectionReference.document(userName).set(userData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                                storageReference = storage.getReference(picturePath);
-                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Failed to store default profile picture");
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Data failed to store in Firestore");
-                            }
-                        });
+        this.followingList = new ArrayList<>();
+        this.moodEvents = new ArrayList<>();
     }
     /**
      *
      * @param userName
      */
     public User(String userName) {
-        this();
         this.userName = userName;
 
 //        if(userName == null){
@@ -287,6 +258,14 @@ public class User implements Serializable {
      */
     public String getUserName() {
         return userName;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getPicturePath() {
+        return picturePath;
     }
 
     /**
