@@ -22,7 +22,10 @@ import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogF
 import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
-public class MoodListFragment extends Fragment implements MoodFilterListener
+import java.util.Observable;
+import java.util.Observer;
+
+public class MoodListFragment extends Fragment implements MoodFilterListener, Observer
 {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
@@ -37,6 +40,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     public static MoodListFragment newInstance(User user, int displayType)
     {
         MoodListFragment fragment = new MoodListFragment();
+        user.addObserver(fragment);
         Bundle arguments = new Bundle();
 
         arguments.putSerializable("user", user);
@@ -143,5 +147,18 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     public void clearFilter()
     {
         this.filter &= 0;
+    }
+
+    public void update(Observable observable, Object object)
+    {
+        Log.d("TEST", "MoodListFragment notified");
+        adapter.initializeData();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        user.deleteObserver(this);
+        super.onDestroy();
     }
 }
