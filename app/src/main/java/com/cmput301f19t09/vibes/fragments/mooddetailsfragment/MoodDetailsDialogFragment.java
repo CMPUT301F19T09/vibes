@@ -159,6 +159,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
             }
         });
 
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.circle);
+
         return dialog;
     }
 }

@@ -23,6 +23,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -465,6 +466,9 @@ public class User extends Observable implements Serializable {
                         ZoneOffset.UTC
                 );
 
+                Log.d("TEST", "The UTC time is " + time.toString());
+
+
                 Location location = new Location("");
                 location.setLatitude(locationGeoPoint.getLatitude());
                 location.setLongitude(locationGeoPoint.getLongitude());
@@ -508,12 +512,13 @@ public class User extends Observable implements Serializable {
             throw new RuntimeException("Mood not defined");
         } else {
             Map<String, Object> mood = new HashMap<String, Object>();
+            LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", "SAD");
             mood.put("location", new GeoPoint(53.23, -115.44));
             mood.put("photo", null);
             mood.put("reason", "Something else");
             mood.put("social", 1);
-            mood.put("timestamp", 1124245623);
+            mood.put("timestamp", time.toEpochSecond(ZoneOffset.from(time)));
             mood.put("username", "testuser");
 
             documentReference = collectionReference.document(userName);
