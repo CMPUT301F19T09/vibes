@@ -68,6 +68,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
         confirmButton = view.findViewById(R.id.confirm_button);
 
         Glide.with(getContext()).load(moodItem.user.getProfileURL()).into(userImage);
+        emotionImage.setImageResource(R.drawable.sad_emotion);
+
+        userImage.setClipToOutline(true);
+        emotionImage.setClipToOutline(true);
+        deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
+
         //Glide.with(getContext()).load(moodItem.event.getReasonImage()).into(reasonImage);
         //Glide.with(getContext()).load(moodItem.event.getEmotion().getImage()).into(emotionImage);
 

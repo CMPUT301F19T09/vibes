@@ -93,6 +93,10 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    public void readData() {
+        addSnapshotListener();
+    }
+
     /**
      *
      * @param userName
@@ -144,7 +148,6 @@ public class User extends Observable implements Serializable {
     public User(String userName) {
         this();
         this.userName = userName;
-        this.addSnapshotListener();
 
 //        if(userName == null){
 //            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
@@ -209,6 +212,8 @@ public class User extends Observable implements Serializable {
                     public void onSuccess(Uri uri) {
                         profileURL = uri;
                         Log.d(TAG, "Loaded profile picture URL");
+                        setChanged();
+                        notifyObservers();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -221,8 +226,7 @@ public class User extends Observable implements Serializable {
 
                 int i = countObservers();
                 Log.d("TEST", i + " observers");
-                setChanged();
-                notifyObservers();
+
             }
         });
     }
@@ -236,6 +240,7 @@ public class User extends Observable implements Serializable {
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
+        Log.d("TEST", "Reading in ALL data");
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);

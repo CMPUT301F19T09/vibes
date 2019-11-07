@@ -127,39 +127,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
     private void initialize()
     {
-            /*
-        user.exists(new User.UserExistListener()
-        {
-            @Override
-            public void onUserExists()
-            {
-            */
-                user.readData(new User.FirebaseCallback()
-                {
-                    @Override
-                    public void onCallback(User user)
-                    {
-                        initializeData();
-                    }
-                });
-
-            /*
-            }
-
-            @Override
-            public void onUserNotExists()
-            {
-                throw new RuntimeException("Attempt to create MoodList with invalid user");
-            }
-        });
-             */
-    }
-
-    protected void addMoodItem(MoodItem item)
-    {
-        data.add(item);
-        add(item);
+        user.readData();
     }
 
     protected abstract void initializeData();
+    public abstract void refreshData();
 }

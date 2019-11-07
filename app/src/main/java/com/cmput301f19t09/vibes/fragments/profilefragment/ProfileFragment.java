@@ -83,7 +83,7 @@ public class ProfileFragment extends Fragment {
 //                    user.deleteMood(2);
 //                    user.addMood();
                     // TODO: Remove Everyone vs You Radio Button
-                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
+                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
                     FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                     fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
                 }
@@ -95,7 +95,7 @@ public class ProfileFragment extends Fragment {
                 public void onCallback(User user) {
                     setInfo(user);
                     // TODO: Remove Everyone vs You Radio Button
-                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
+                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
                     FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                     fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
                 }

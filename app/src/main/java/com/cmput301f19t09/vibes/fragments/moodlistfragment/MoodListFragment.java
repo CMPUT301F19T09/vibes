@@ -41,9 +41,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
     {
         MoodListFragment fragment = new MoodListFragment();
         user.addObserver(fragment);
-        Log.d("TEST", "=================");
-        user.notifyObservers();
-        Log.d("TEST", "=================");
         Bundle arguments = new Bundle();
 
         arguments.putSerializable("user", user);
@@ -156,5 +153,12 @@ public class MoodListFragment extends Fragment implements MoodFilterListener, Ob
     {
         Log.d("TEST", "MoodListFragment notified");
         adapter.initializeData();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        user.deleteObserver(this);
+        super.onDestroy();
     }
 }
