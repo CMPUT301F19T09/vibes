@@ -40,6 +40,7 @@ public class User implements Serializable {
     private List<String> followingList;
     private List<Mood> result;
     private List<MoodEvent> moodEvents;
+    private List<String> requestedList;
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -111,27 +112,28 @@ public class User implements Serializable {
         userData.put("following_list", new ArrayList<>());
         userData.put("moods", new ArrayList<>());
         userData.put("profile_picture", picturePath);
+        userData.put("requested_list", new ArrayList<>());
 
         collectionReference.document(userName).set(userData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                                storageReference = storage.getReference(picturePath);
-                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Failed to store default profile picture");
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                        storageReference = storage.getReference(picturePath);
+                        storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Data failed to store in Firestore");
+                                Log.d(TAG, "Failed to store default profile picture");
                             }
                         });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Data failed to store in Firestore");
+                    }
+                });
     }
     /**
      *
@@ -234,6 +236,7 @@ public class User implements Serializable {
                 email = documentSnapshot.getString("email");
                 picturePath = documentSnapshot.getString("profile_picture");
                 followingList = (List<String>) documentSnapshot.get("following_list");
+                requestedList = (List<String>) documentSnapshot.get("requested_list");
                 moods = (List<Map>) documentSnapshot.get("moods");
 
                 List<Map> moods = (List<Map>) documentSnapshot.get("moods");
@@ -311,6 +314,14 @@ public class User implements Serializable {
      */
     public List<String> getFollowingList() {
         return followingList;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<String> getRequestedList() {
+        return requestedList;
     }
 
     /**
