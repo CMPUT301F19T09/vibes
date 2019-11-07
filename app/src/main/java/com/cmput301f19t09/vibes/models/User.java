@@ -39,7 +39,9 @@ public class User implements Serializable {
     private List<String> followingList;
     private List<Mood> result;
     private List<MoodEvent> moodEvents;
+    private List<String> requestedList;
     private String TAG = "Sample";
+
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -205,6 +207,7 @@ public class User implements Serializable {
                 email = documentSnapshot.getString("email");
                 picturePath = documentSnapshot.getString("profile_picture");
                 followingList = (List<String>) documentSnapshot.get("following_list");
+                requestedList = (List<String>) documentSnapshot.get("requested_list");
                 moods = (List<Map>) documentSnapshot.get("moods");
 
                 List<Map> moods = (List<Map>) documentSnapshot.get("moods");
@@ -290,6 +293,14 @@ public class User implements Serializable {
      */
     public List<String> getFollowingList() {
         return followingList;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<String> getRequestedList() {
+        return requestedList;
     }
 
     /**
@@ -434,7 +445,8 @@ public class User implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
-                        location);
+                        location,
+                        this);
                 events.add(event);
             }
 
