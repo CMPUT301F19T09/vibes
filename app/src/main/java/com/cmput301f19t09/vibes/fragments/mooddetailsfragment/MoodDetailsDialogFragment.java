@@ -142,7 +142,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     @Override
                     public void onDismiss(DialogInterface dialog)
                     {
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(moodItem.event));
+                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(moodItem.event, moodItem.user));
                     }
                 });
 

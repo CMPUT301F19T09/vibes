@@ -124,25 +124,25 @@ public class User extends Observable implements Serializable {
         userData.put("requested_list", new ArrayList<>());
 
         collectionReference.document(userName).set(userData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                                storageReference = storage.getReference(picturePath);
-                                storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "Failed to store default profile picture");
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                        storageReference = storage.getReference(picturePath);
+                        storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Data failed to store in Firestore");
+                                Log.d(TAG, "Failed to store default profile picture");
                             }
                         });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Data failed to store in Firestore");
+                    }
+                });
     }
     /**
      *
@@ -489,7 +489,8 @@ public class User extends Observable implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
-                        location);
+                        location,
+                        this);
                 events.add(event);
             }
 
