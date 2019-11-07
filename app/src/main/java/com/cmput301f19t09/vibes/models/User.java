@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.cmput301f19t09.vibes.R;
-import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -488,7 +487,7 @@ public class User extends Observable implements Serializable {
      */
     public MoodEvent getMostRecentMoodEvent() {
         MoodEvent moodEvent;
-        if (moodEvents != null) {
+        if (moodEvents.size() != 0) {
             moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {
