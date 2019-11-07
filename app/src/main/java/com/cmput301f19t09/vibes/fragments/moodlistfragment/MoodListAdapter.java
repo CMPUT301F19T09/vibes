@@ -67,27 +67,22 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
         userImage = item.findViewById(R.id.user_image);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-        //userMask = item.findViewById(R.id.user_image_mask);
-        //userMask.setImageResource(R.drawable.round_mask);
 
         userImage.setClipToOutline(true);
 
         emotionImage = item.findViewById(R.id.emotion_image);
-        //userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
 
-        //userUsername.setText(user.getUserName());
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
         if (event != null)
         {
 
             moodReason.setText(event.getDescription());
-            emotionImage.setImageResource(R.drawable.ic_launcher_foreground);
+            emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
-            //emotionImage.setImageBitmap();
 
             Duration timeSincePost = data.get(position).timeSinceEvent();
             String timeString = "~";
