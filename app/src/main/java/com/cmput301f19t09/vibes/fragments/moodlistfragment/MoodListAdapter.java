@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
         ImageView userImage, emotionImage, userMask;
         TextView userUsername, userFullName, moodReason, moodTime;
+        View emotionColour;
 
         userImage = item.findViewById(R.id.user_image);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
@@ -74,6 +76,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
+        emotionColour = item.findViewById(R.id.emotion_colour);
 
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
@@ -83,6 +86,8 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
+            emotionColour.setBackgroundResource(R.drawable.circle);
+            //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
             Duration timeSincePost = data.get(position).timeSinceEvent();
             String timeString = "~";

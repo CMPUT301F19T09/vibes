@@ -83,8 +83,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 
         data.sort(MoodItem.date_comparator);
         //TODO MAKE A BETTER FIX THAN THIS
-        clear();
-        addAll(data);
+        //clear();
+        //addAll(data);
         notifyDataSetChanged();
     }
 

@@ -69,6 +69,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/emotion_colour"
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:background="@drawable/circle"
+            android:backgroundTint="#3D5AFE"
+            app:layout_constraintBottom_toBottomOf="@+id/emotion_image"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="@+id/emotion_image"
+            app:layout_constraintStart_toStartOf="@+id/emotion_image"
+            app:layout_constraintTop_toTopOf="@+id/emotion_image" />
+
         <ImageView
             android:id="@+id/emotion_image"
             android:layout_width="0dp"
@@ -77,7 +89,7 @@
             android:layout_marginEnd="8dp"
             android:adjustViewBounds="true"
             android:background="@drawable/circle"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
