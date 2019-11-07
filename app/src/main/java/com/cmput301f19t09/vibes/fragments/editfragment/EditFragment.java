@@ -51,6 +51,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView dateTextView;
     private TextView timeTextView;
     private GridView stateGridView;
+    private TextView stateTextView;
     private EmotionalState emotionalState = null;
     private EditText editSituationView;
     private EditText editReasonView;
@@ -131,13 +132,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         stateGridView = view.findViewById(R.id.state_grid_view);
         stateGridView.setAdapter(new ImageAdapter(getActivity()));
         stateGridView.setOnItemClickListener(this);
+        stateTextView = view.findViewById(R.id.state_text_view);
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
         editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
-        location = new Location("");
+        location = new Location(""); // empty provider when not pulling from a location service
 
         if (moodSet) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
@@ -223,7 +225,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     break;
                 }
             }
-            
+            // update the state text view
+            stateTextView.setText(emotionalState.getEmotion());
             checkRequiredFields();
         }
     }
