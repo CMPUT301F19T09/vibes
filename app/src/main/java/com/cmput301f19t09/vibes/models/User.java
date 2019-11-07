@@ -601,7 +601,35 @@ public class User extends Observable implements Serializable {
         });
     }
 
-    // editMood(MoodEvent moodEvent, Integer index)
+    public void editMood(MoodEvent moodEvent, Integer index) {
+        if (index > moods.size() - 1) {
+            return;
+        } else {
+            Map<String, Object> mood = new HashMap<String, Object>();
+            LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
+            mood.put("emotion", moodEvent.getState().getEmotion());
+            mood.put("location", new GeoPoint(53.23, -115.44));
+            mood.put("photo", null);
+            mood.put("reason", moodEvent.getDescription());
+            mood.put("social", moodEvent.getSocialSituation());
+            mood.put("timestamp", time.toEpochSecond(ZoneOffset.from(time)));
+            mood.put("username", moodEvent.getUser().getUserName());
+
+            moods.set(index.intValue(), mood);
+            documentReference = collectionReference.document(userName);
+            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("INFO", "Moods list updated");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("INFO", "Cannot add mood to list");
+                }
+            });
+        }
+    }
 
     public void deleteMood(Integer index) {
         System.out.println(moods.size());
