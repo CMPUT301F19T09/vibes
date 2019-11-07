@@ -81,7 +81,7 @@ public class ProfileFragment extends Fragment {
                 public void onCallback(User user) {
                     setInfo(user);
 //                    user.deleteMood(2);
-//                    user.addMood();
+                    user.addMood();
                     // TODO: Remove Everyone vs You Radio Button
                     MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS);
                     FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();

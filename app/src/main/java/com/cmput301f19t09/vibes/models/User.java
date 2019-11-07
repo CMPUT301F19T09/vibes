@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.cmput301f19t09.vibes.R;
+import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,10 +28,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 import androidx.annotation.NonNull;
 
-public class User implements Serializable {
+public class User extends Observable implements Serializable {
     private String userName;
     private String firstName;
     private String lastName;
@@ -317,7 +319,7 @@ public class User implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<String> getRequestedList() {
@@ -552,9 +554,9 @@ public class User implements Serializable {
 
         Map<String, Object> mood = new HashMap<String, Object>();
         mood.put("emotion", "SAD");
-        mood.put("location", new GeoPoint(53.23, -115.44));
+        mood.put("location", new GeoPoint(55.55, -114.44));
         mood.put("photo", null);
-        mood.put("reason", "Something else");
+        mood.put("reason", "Cause");
         mood.put("social", 1);
         mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
         mood.put("username", "testuser");
