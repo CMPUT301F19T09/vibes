@@ -41,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
+        android:fontFamily="@font/roboto_thin"
         app:layout_constraintStart_toStartOf="@+id/full_name"
         app:layout_constraintTop_toBottomOf="@+id/full_name"
         tools:text="\@johnnyjj" />
@@ -50,6 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
+        android:fontFamily="@font/roboto_thin"
         app:layout_constraintBottom_toBottomOf="@+id/user_image"
         app:layout_constraintStart_toStartOf="@+id/full_name"
         tools:text="Want to kill myself!" />
@@ -73,7 +75,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="TextView"
+        android:fontFamily="@font/roboto_thin"
+        tools:text="~4 m"
         app:layout_constraintBottom_toTopOf="@+id/confirm_button"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -90,20 +93,26 @@
     <Button
         android:id="@+id/confirm_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:fontFamily="@font/roboto_regular"
         android:text="@android:string/ok"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/edit_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:fontFamily="@font/roboto_regular"
         android:text="EDIT"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/confirm_button" />
 
@@ -114,6 +123,7 @@
         android:layout_marginStart="8dp"
         android:backgroundTint="#FF3D00"
         android:scaleType="fitCenter"
+        android:background="@drawable/rounded_button"
         app:layout_constraintBottom_toBottomOf="@+id/edit_button"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintStart_toStartOf="parent"

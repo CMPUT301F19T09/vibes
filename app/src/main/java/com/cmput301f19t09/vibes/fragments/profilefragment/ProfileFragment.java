@@ -14,10 +14,13 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements Observer {
     private TextView firstNameTextView;
     private TextView lastNameTextView;
     private TextView userNameTextView;
@@ -26,6 +29,7 @@ public class ProfileFragment extends Fragment {
 
     public static ProfileFragment newInstance(User user) {
         ProfileFragment profileFragment = new ProfileFragment();
+        user.addObserver(profileFragment);
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
         profileFragment.setArguments(bundle);
@@ -34,6 +38,8 @@ public class ProfileFragment extends Fragment {
 
     public static ProfileFragment newInstance(User user, User otherUser) {
         ProfileFragment profileFragment = new ProfileFragment();
+        user.addObserver(profileFragment);
+        otherUser.addObserver(profileFragment);
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
         bundle.putSerializable("otherUser", otherUser);
@@ -57,8 +63,8 @@ public class ProfileFragment extends Fragment {
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
-        ImageView profileMask = view.findViewById(R.id.profile_mask);
-        profileMask.setImageResource(R.drawable.round_mask);
+//        ImageView profileMask = view.findViewById(R.id.profile_mask);
+//        profileMask.setImageResource(R.drawable.round_mask);
 
         User user = (User) getArguments().getSerializable("user");
         User otherUser = (User) getArguments().getSerializable("otherUser");
@@ -76,37 +82,24 @@ public class ProfileFragment extends Fragment {
 
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    setInfo(user);
-//                    user.deleteMood(2);
-//                    user.addMood();
-                    // TODO: Remove Everyone vs You Radio Button
-                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
-                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-                    fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
-                }
-            });
+            user.readData();
+            user.addMood();
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
+            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+
         } else {
             followButton.setVisibility(View.VISIBLE);
-            otherUser.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    setInfo(user);
-                    // TODO: Remove Everyone vs You Radio Button
-                    MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
-                    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-                    fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
-                }
-            });
+            otherUser.readData();
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
+            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
         }
-
-//        MoodListFragment moodListFragment = MoodListFragment.newInstance(this);
-//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-//        fragmentTransaction.replace(R.id.user_mood_list, moodListFragment).commit();
-
         return view;
+    }
+
+    public void update(Observable user, Object object) {
+        setInfo((User) user);
     }
 
     /**
@@ -118,5 +111,6 @@ public class ProfileFragment extends Fragment {
         lastNameTextView.setText(user.getLastName());
         userNameTextView.setText(user.getUserName());
         Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+        profilePictureImageView.setClipToOutline(true);
     }
 }

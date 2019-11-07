@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -16,7 +18,7 @@
             <ImageView
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:src="@drawable/empty_circle">
+                tools:src="@tools:sample/avatars">
             </ImageView>
 
         </LinearLayout>
@@ -29,16 +31,18 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NAME"
+                tools:text="Full Name"
                 android:textSize="30dp"
-                android:id="@+id/fullName">
+                android:id="@+id/fullName"
+                android:fontFamily="@font/roboto_thin">
             </TextView>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="USERNAME"
+                tools:text="username"
                 android:textSize="15dp"
-                android:id="@+id/username">
+                android:id="@+id/username"
+                android:fontFamily="@font/roboto_thin">
             </TextView>
 
         </LinearLayout>
@@ -52,7 +56,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Following">
+                android:text="Following"
+                android:fontFamily="@font/roboto_thin">
 
             </TextView>
         </LinearLayout>

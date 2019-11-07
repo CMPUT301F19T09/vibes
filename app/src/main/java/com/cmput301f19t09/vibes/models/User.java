@@ -198,11 +198,13 @@ public class User extends Observable implements Serializable {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Log.d("TEST", "User event");
+                userName = documentSnapshot.getString("username");
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
                 email = documentSnapshot.getString("email");
                 picturePath = documentSnapshot.getString("profile_picture");
                 followingList = (List<String>) documentSnapshot.get("following_list");
+                requestedList = (List<String>) documentSnapshot.get("requested_list");
                 moods = (List<Map>) documentSnapshot.get("moods");
 
                 List<Map> moods = (List<Map>) documentSnapshot.get("moods");
@@ -251,6 +253,7 @@ public class User extends Observable implements Serializable {
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                userName = documentSnapshot.getString("username");
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
                 email = documentSnapshot.getString("email");
@@ -510,7 +513,7 @@ public class User extends Observable implements Serializable {
      */
     public MoodEvent getMostRecentMoodEvent() {
         MoodEvent moodEvent;
-        if (moodEvents != null) {
+        if (moodEvents.size() != 0) {
             moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {
@@ -577,9 +580,9 @@ public class User extends Observable implements Serializable {
 
         Map<String, Object> mood = new HashMap<String, Object>();
         mood.put("emotion", "SAD");
-        mood.put("location", new GeoPoint(53.23, -115.44));
+        mood.put("location", new GeoPoint(55.55, -114.44));
         mood.put("photo", null);
-        mood.put("reason", "Something else");
+        mood.put("reason", "Cause");
         mood.put("social", 1);
         mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
         mood.put("username", "testuser");
