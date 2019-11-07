@@ -24,9 +24,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    This class is responsible for displ
+ */
 public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 {
     protected List<MoodItem> data;
+    protected List<MoodEvent> mood_data;
     protected User user;
     private Context context;
 
@@ -62,23 +66,27 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         TextView userUsername, userFullName, moodReason, moodTime;
 
         userImage = item.findViewById(R.id.user_image);
-        userMask = item.findViewById(R.id.user_image_mask);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-        userMask.setImageResource(R.drawable.round_mask);
+        //userMask = item.findViewById(R.id.user_image_mask);
+        //userMask.setImageResource(R.drawable.round_mask);
+
+        userImage.setClipToOutline(true);
 
         emotionImage = item.findViewById(R.id.emotion_image);
-        userUsername = item.findViewById(R.id.username);
+        //userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
 
-        userUsername.setText(user.getUserName());
+        //userUsername.setText(user.getUserName());
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
         if (event != null)
         {
 
             moodReason.setText(event.getDescription());
+            emotionImage.setImageResource(R.drawable.ic_launcher_foreground);
+            emotionImage.setClipToOutline(true);
             //emotionImage.setImageBitmap();
 
             Duration timeSincePost = data.get(position).timeSinceEvent();
@@ -86,23 +94,23 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
             if (timeSincePost.getSeconds() < 60)
             {
-                timeString += timeSincePost.getSeconds() + " seconds ago";
+                timeString += timeSincePost.getSeconds() + " s";
             }
             else if (timeSincePost.toMinutes() < 60)
             {
-                timeString += timeSincePost.toMinutes() + " minutes ago";
+                timeString += timeSincePost.toMinutes() + " m";
             }
             else if (timeSincePost.toHours() < 24)
             {
-                timeString += timeSincePost.toHours() + " hours ago";
+                timeString += timeSincePost.toHours() + " h";
             }
             else if (timeSincePost.toDays() < 365)
             {
-                timeString += timeSincePost.toDays() + " days ago";
+                timeString += timeSincePost.toDays() + " d";
             }
             else
             {
-                timeString += ( timeSincePost.toDays() / 365 ) + "years ago";
+                timeString += ( timeSincePost.toDays() / 365 ) + " y";
             }
 
             moodTime.setText(timeString);

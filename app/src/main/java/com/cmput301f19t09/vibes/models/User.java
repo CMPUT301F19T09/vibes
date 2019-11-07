@@ -12,8 +12,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
@@ -27,10 +29,12 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class User implements Serializable {
+public class User extends Observable implements Serializable {
     private String userName;
     private String firstName;
     private String lastName;
@@ -140,6 +144,7 @@ public class User implements Serializable {
     public User(String userName) {
         this();
         this.userName = userName;
+        this.addSnapshotListener();
 
 //        if(userName == null){
 //            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
@@ -181,6 +186,47 @@ public class User implements Serializable {
 //        });
     }
 
+    private void addSnapshotListener() {
+        documentReference = collectionReference.document(userName);
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                Log.d("TEST", "User event");
+                firstName = documentSnapshot.getString("first");
+                lastName = documentSnapshot.getString("last");
+                email = documentSnapshot.getString("email");
+                picturePath = documentSnapshot.getString("profile_picture");
+                followingList = (List<String>) documentSnapshot.get("following_list");
+                moods = (List<Map>) documentSnapshot.get("moods");
+
+                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
+
+                moodEvents = parseToMoodEvent();
+
+                storageReference = storage.getReference(picturePath);
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        profileURL = uri;
+                        Log.d(TAG, "Loaded profile picture URL");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Cannot retrieve profile picture download url");
+                    }
+                });
+
+                Log.d(TAG, "Loaded user information");
+
+                int i = countObservers();
+                Log.d("TEST", i + " observers");
+                setChanged();
+                notifyObservers();
+            }
+        });
+    }
+
     /**
      *
      * @param firebaseCallback
@@ -193,39 +239,7 @@ public class User implements Serializable {
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(userName);
-//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//                firstName = documentSnapshot.getString("first");
-//                lastName = documentSnapshot.getString("last");
-//                email = documentSnapshot.getString("email");
-//                picturePath = documentSnapshot.getString("profile_picture");
-//                followingList = (List<String>) documentSnapshot.get("following_list");
-//                moods = (List<Map>) documentSnapshot.get("moods");
-//
-//                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
-//
-//                moodEvents = parseToMoodEvent();
-//
-//                storageReference = storage.getReference(picturePath);
-//                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        profileURL = uri;
-//                        Log.d(TAG, "Loaded profile picture URL");
-//                        mooodlist.notifyDataSetChanged();
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d(TAG, "Cannot retrieve profile picture download url");
-//                    }
-//                });
-//
-//                Log.d(TAG, "Loaded user information");
-//                firebaseCallback.onCallback(User.this);
-//            }
-//        });
+
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
