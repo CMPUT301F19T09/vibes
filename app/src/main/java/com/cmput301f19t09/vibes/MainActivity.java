@@ -160,7 +160,7 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View view) {
                 //User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
-                User user = new User("sabet");
+                User user = new User("testuser4");
                 setMainFragment(FollowingFragment.newInstance(user));
             }
         });
