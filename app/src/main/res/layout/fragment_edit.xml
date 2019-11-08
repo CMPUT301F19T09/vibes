@@ -71,7 +71,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/state_grid_view"
-        android:numColumns="4"
+        android:numColumns="3"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toTopOf="@+id/state_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +119,7 @@
         app:layout_constraintTop_toBottomOf="@id/edit_situation_view" />
 
     <Switch
-        android:id="@+id/location_checkbox"
+        android:id="@+id/location_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -138,7 +139,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_checkbox">
+        app:layout_constraintTop_toBottomOf="@id/location_switch">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_reason_view"
