@@ -95,8 +95,7 @@ public class ProfileFragment extends Fragment implements Observer {
         } else {
             if (user.getFollowingList().contains(otherUser.getUid())) {
                 followButton.setVisibility(View.INVISIBLE);
-            } else {
-                followButton.setVisibility(View.VISIBLE);
+                
                 if (otherUser.isLoaded()) {
                     Log.d("TEST", "Other user loaded");
                     setInfo(otherUser);
@@ -116,6 +115,8 @@ public class ProfileFragment extends Fragment implements Observer {
                     transaction.commit();
                 });
                 setInfo(otherUser);
+            } else {
+                followButton.setVisibility(View.VISIBLE);
             }
         }
         return view;
