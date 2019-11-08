@@ -133,35 +133,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        mMap.clear(); //clear old markers
-
-//        CameraPosition googlePlex = CameraPosition.builder()
-//                .target(new LatLng(37.4219999,-122.0862462))
-//                .zoom(10)
-//                .bearing(0)
-//                .tilt(45)
-//                .build();
-//
-//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
-
+        mMap.clear(); 
             if(this.data != null){
                     for (UserPoint p:this.data) {
                         this.showUserPoint(p);
                     }
         }
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.4219999, -122.0862462))
-//                .title("Spider Man")
-//                .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.happy)));
-//
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.4629101,-122.2449094))
-//                .title("Iron Man")
-//                .snippet("His Talent : Plenty of money"));
-//
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.3092293,-122.1136845))
-//                .title("Captain America"));
     }
 
     /**
