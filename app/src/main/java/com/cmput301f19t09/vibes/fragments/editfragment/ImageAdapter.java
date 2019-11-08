@@ -1,23 +1,31 @@
 package com.cmput301f19t09.vibes.fragments.editfragment;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.EmotionalState;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private ArrayList<String> stateKeys;
+    private Map<String, Pair> stateMap;
 
     public ImageAdapter(Context c) {
         mContext = c;
+        stateKeys = EmotionalState.getColorList();
+        stateMap = EmotionalState.getMap();
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return stateKeys.length;
     }
 
     public Object getItem(int position) {
@@ -39,21 +47,9 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageResource(mThumbIds[position]);
+        Pair<Integer, Integer> state = stateMap.get(stateKeys[position]);
+        imageView.setImageResource((int) state.first);
+        imageView.setColorFilter((int) state.second);
         return imageView;
     }
-
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.emotion_image_happiness,
-            R.drawable.emotion_image_trust,
-            R.drawable.emotion_image_fear,
-            R.drawable.emotion_image_surprise,
-            R.drawable.emotion_image_sadness,
-            R.drawable.emotion_image_disgust,
-            R.drawable.emotion_image_anger,
-            R.drawable.emotion_image_anticipation,
-            R.drawable.emotion_image_love
-    };
 }
