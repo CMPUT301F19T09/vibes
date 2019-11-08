@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
@@ -26,6 +28,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
     private ArrayList<User> userList;
     private Context context;
     private int layout;
+    private FragmentActivity activity;
 
     /**
      * @param context
@@ -65,12 +68,33 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
         userImage.setClipToOutline(true);
 
+        userImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment;
+                profileFragment = ProfileFragment.newInstance(user.getUid());
+                ((MainActivity) activity).setMainFragment(profileFragment);
+            }
+        });
+
         return view;
     }
+
+
 
     // Sets the layout to the passed layout for every item in the ArrayAdapter
     public void setLayout(int layout){
         this.layout = layout;
+    }
+
+    public void setActivity(FragmentActivity activity){
+        this.activity = activity;
+
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
     }
 
 }
