@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
@@ -32,12 +33,13 @@ public class OwnMoodListAdapter extends MoodListAdapter
         List<MoodEvent> events = user.getMoodEvents();
         if (events == null)
         {
+            Log.d("TEST/OwnMoodListAdapter", "null MoodEvent list");
             return;
         }
 
         for (MoodEvent event : events)
         {
-            //data.add(event);
+            data.add(event);
         }
 
         //Collections.sort(data);
