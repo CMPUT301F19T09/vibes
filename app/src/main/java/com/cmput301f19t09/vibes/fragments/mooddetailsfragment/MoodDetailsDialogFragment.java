@@ -235,7 +235,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     dialog.dismiss();
                 });
 
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.vibes_logo_round);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.circle);
 
         return dialog;
     }

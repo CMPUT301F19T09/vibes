@@ -1,0 +1,147 @@
+@startuml
+
+package com.cmput201f10t09.vibes <<Rectangle>> {
+    class LoginActivity {
+    }
+
+    class MainActivity {
+    }
+
+    class SignUpActivity {
+    }
+
+    class SplashActivity {
+    }
+
+    SplashActivity -- LoginActivity
+    SplashActivity -- SignUpActivity
+    SplashActivity -- MainActivity
+    LoginActivity -- SignUpActivity
+
+    package dialogs <<Rectangle>> {
+        class MoodFilterDialog
+    }
+
+    package fragments <<Rectangle>> {
+        package editfragment <<Rectangle>> {
+            class EditFragment {
+            }
+            class ImageAdapter {
+            }
+
+            ImageAdapter "1" -- "1" EditFragment
+        }
+        package followingfragment <<Rectangle>> {
+            class FollowingFragment {
+            }
+            class FollowingFragmentAdatper {
+            }
+
+            FollowingFragment "1" o-- "1" FollowingFragmentAdatper
+        }
+        package mapfragment <<Rectangle>> {
+            class MapFilter {
+            }
+            class MapFragment {
+            }
+            class UserPoint {
+            }
+
+            MapFragment "1" o-- "1" MapFilter
+            MapFragment "1" -- "0..*" UserPoint
+        }
+        package mooddetailsfragment <<Rectangle>> {
+            class MoodDetailsDialogFragment {
+            }
+            class MoodDetailsFragment {
+            }
+        }
+        package moodlistfragment <<Rectangle>> {
+            class FollowedMoodListAdapter {
+            }
+            class OwnMoodListAdapter {
+            }
+            class MoodListAdapter {
+            }
+            class MoodListFilter {
+            }
+            interface MoodListFilterListener {
+            }
+            class MoodListFilterFragment {
+            }
+            class MoodListFragment {
+            }
+
+            MoodListAdapter <|-- FollowedMoodListAdapter
+            MoodListAdapter <|-- OwnMoodListAdapter
+            MoodListFragment "1" *-- "1" MoodListAdapter
+            MoodListFilterListener <|-- MoodListFragment
+            MoodListFilterFragment "1" o-- "1..*" MoodListFilterListener
+            MoodListFilterFragment -- MoodListFilter
+            MoodListFragment "1" -- "1" MoodListFilter
+            MoodListFragment "1" *-- "1" MoodListFilterFragment
+        }
+        package profilefragment <<Rectangle>> {
+            class ProfileFragment {
+            }
+        }
+
+        ProfileFragment "1" *-- "0..1" MoodListFragment
+        ProfileFragment "1" *-- "0..1" MoodDetailsFragment
+        ProfileFragment -- MoodDetailsDialogFragment
+        ProfileFragment -- FollowingFragment
+
+        MoodDetailsDialogFragment -- MapFragment
+        MoodDetailsDialogFragment -- MoodListFragment
+
+        EditFragment -- MoodDetailsDialogFragment
+    }
+
+    package models <<Rectangle>> {
+        class EmotionalState {
+        }
+
+        class Event {
+        }
+
+        class MoodEvent {
+        }
+
+        class User {
+        }
+
+        class UserManager {
+        }
+
+        Event <|-- MoodEvent
+        MoodEvent "1" *-- "1" EmotionalState
+        UserManager "1" o-- "0..*" User
+        User "1" *-- "0..*" MoodEvent
+
+    }
+
+    ProfileFragment -- User
+    MoodListFragment -- User
+    MoodListAdapter -- User
+    MoodListAdapter -- MoodEvent
+    MapFragment -- User
+    MapFragment -- MoodEvent
+
+
+    MainActivity "1" o-- "0..1" ProfileFragment
+    MainActivity "1" o-- "0..1" MoodListFragment
+    MainActivity "1" o-- "0..1" MapFragment
+    MainActivity "1" o-- "0..1" EditFragment
+    MainActivity "1" o-- "0..1" MoodDetailsDialogFragment
+
+}
+abstract class Observable {
+}
+interface Observer {
+}
+
+Observable <|-- User
+Observer <|-- MoodListAdapter
+Observer <|-- ProfileFragment
+Observer <|-- MapFragment
+@enduml

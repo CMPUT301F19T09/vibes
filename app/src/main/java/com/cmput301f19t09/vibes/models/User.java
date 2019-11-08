@@ -78,57 +78,7 @@ public class User extends Observable implements Serializable {
         void onUserNotExists();
     }
 
-    /**
-     *
-     * @param userName
-     * @param firstName
-     * @param lastName
-     * @param email
-     */
-    public User(String userName, String firstName, String lastName, String email) {
-        this();
-        this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.picturePath = "image/" + this.userName + ".png";
-        this.loadedData = true;
-
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("first", userName);
-        userData.put("last", lastName);
-        userData.put("email", email);
-        userData.put("following_list", new ArrayList<>());
-        userData.put("moods", new ArrayList<>());
-        userData.put("profile_picture", picturePath);
-        userData.put("requested_list", new ArrayList<>());
-
-        collectionReference.document(userName).set(userData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                        storageReference = storage.getReference(picturePath);
-                        storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                //Log.d("INFO", "Failed to store default profile picture");
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //Log.d("INFO", "Data failed to store in Firestore");
-                    }
-                });
-    }
-
-    /**
-     *
-     */
-    public User(){
+    public User(String uid) {
         if(!connectionStarted){ // Makes sure these definitions are called only once.
             connectionStarted = true;
 
@@ -141,20 +91,8 @@ public class User extends Observable implements Serializable {
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
         }
-    }
-
-    public User(String uid) {
-        this.uid = uid;
-        //Log.d("TEST", "Creating user from id " + uid);
-        if(!connectionStarted){ // Makes sure these definitions are called only once.
-            connectionStarted = true;
-
-            db = FirebaseFirestore.getInstance();
-            collectionReference = db.collection("users");
-            storage = FirebaseStorage.getInstance();
-        }
-
         this.loadedData = false;
+        this.uid = uid;
     }
 
     public ListenerRegistration getSnapshotListener() {
