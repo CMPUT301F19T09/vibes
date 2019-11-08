@@ -38,13 +38,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class User extends Observable implements Serializable {
+    private String uid;
     private String userName;
     private String firstName;
     private String lastName;
     private String email;
-    private String TAG = "Sample";
     private String picturePath;
-    private boolean isListening;
     private List<String> followingList;
     private List<String> requestedList;
 
@@ -56,25 +55,22 @@ public class User extends Observable implements Serializable {
     private transient static FirebaseStorage storage;
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
+
     private transient List<MoodEvent> moodEvents;
     private static int count;
-
     private transient List<Map> moods;
+
     private static boolean connectionStarted;
 
     // This is the number of elements in the mood map on firebase.
     // I used it to check if a map is complete to show it on the map.
-    private final int MAP_MOOD_SIZE = 7;
-    /**
-     *
-     */
+    final private int MAP_MOOD_SIZE = 7;
+    final private String TAG = "Sample";
+
     public interface FirebaseCallback {
         void onCallback(User user);
     }
 
-    /**
-     *
-     */
     public interface UserExistListener {
         void onUserExists();
         void onUserNotExists();
@@ -101,9 +97,9 @@ public class User extends Observable implements Serializable {
     /**
      *
      */
-    public ListenerRegistration readData() {
+    public void readData() {
 //        if (!isListening) {
-            return addSnapshotListener();
+            getSnapshotListener();
 //            isListening = true;
 //        }
     }
@@ -153,30 +149,29 @@ public class User extends Observable implements Serializable {
                     }
                 });
     }
+
     /**
      *
-     * @param userName
+     * @param uid
      */
-    public User(String userName) {
-        this();
+    public User(String uid) {
+        this.uid = uid;
         Log.d("TEST", "Creating user with username " + userName);
-        this.userName = userName;
+        if(!connectionStarted){ // Makes sure these definitions are called only once.
+            connectionStarted = true;
+
+            db = FirebaseFirestore.getInstance();
+            collectionReference = db.collection("users");
+            storage = FirebaseStorage.getInstance();
+        }
     }
 
     /**
      *
      */
-    private ListenerRegistration addSnapshotListener() {
-        documentReference = collectionReference.document(userName);
-//        documentReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//
-//            }
-//        })
-        System.out.println("COUNT: " + count);
-        count++;
-        ListenerRegistration registration = documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    private ListenerRegistration getSnapshotListener() {
+        documentReference = collectionReference.document(uid);
+        return documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Log.d("TEST", "User event");
@@ -216,7 +211,6 @@ public class User extends Observable implements Serializable {
 
             }
         });
-        return registration;
     }
 
     /**
@@ -224,14 +218,14 @@ public class User extends Observable implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
-        if(userName == null){
+        if(uid == null){
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
         Log.d("TEST", "Reading in ALL data");
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
-        documentReference = collectionReference.document(userName);
+        documentReference = collectionReference.document(uid);
 
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -303,6 +297,14 @@ public class User extends Observable implements Serializable {
      *
      * @return
      */
+    public String getPicturePath() {
+        return picturePath;
+    }
+
+    /**
+     *
+     * @return
+     */
     public Uri getProfileURL() {
         return profileURL;
     }
@@ -336,7 +338,7 @@ public class User extends Observable implements Serializable {
      * @param userExistListener
      */
     public void exists(UserExistListener userExistListener) {
-        collectionReference.document(userName).get()
+        collectionReference.document(uid).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -492,7 +494,7 @@ public class User extends Observable implements Serializable {
             mood.put("social", moodEvent.getSocialSituation());
             mood.put("username", moodEvent.getUser().getUserName());
 
-            documentReference = collectionReference.document(userName);
+            documentReference = collectionReference.document(uid);
             documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -517,7 +519,7 @@ public class User extends Observable implements Serializable {
         mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
         mood.put("username", "testuser");
 
-        documentReference = collectionReference.document(userName);
+        documentReference = collectionReference.document(uid);
         documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -575,7 +577,7 @@ public class User extends Observable implements Serializable {
             return;
         } else {
             moods.remove(index.intValue());
-            documentReference = collectionReference.document(userName);
+            documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {

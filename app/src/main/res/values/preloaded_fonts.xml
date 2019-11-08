@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/parisienne</item>
         <item>@font/caveat_bold</item>
         <item>@font/great_vibes</item>
         <item>@font/seaweed_script</item>

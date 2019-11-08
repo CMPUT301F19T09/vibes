@@ -9,22 +9,26 @@ import java.io.Serializable;
  */
 public class UserPoint implements Serializable {
     private String username;
-    private LatLng location;
+    private double Lat;
+    private double Long;
     private int moodId;
     private String emotion;
     private String reason;
 
-    public UserPoint(String username, LatLng location, int moodId, String emotion, String reason) {
+    /**
+     *
+     * @param username
+     * @param Lat
+     * @param Long
+     * @param moodId
+     * @param emotion
+     * @param reason
+     */
+    public UserPoint(String username, double Lat, double Long, int moodId, String emotion, String reason) {
         this.username = username;
-        this.location = location;
+        this.Lat = Lat;
+        this.Long = Long;
         this.moodId = moodId;
-        this.emotion = emotion;
-        this.reason = reason;
-    }
-
-    public UserPoint(String username, LatLng location, String emotion, String reason) {
-        this.username = username;
-        this.location = location;
         this.emotion = emotion;
         this.reason = reason;
     }
@@ -34,23 +38,23 @@ public class UserPoint implements Serializable {
      * @return Returns the mock user
      */
     public static UserPoint getMockUser(){
-        return new UserPoint("testuser",new LatLng(53.5461, 113.4938), 0, "HAPPY", "I am pregnant");
+        return new UserPoint("testuser",53.5461, 113.4938, 0, "HAPPY", "I am pregnant");
     }
 
+    /**
+     * Returns username
+     * @return
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets username
+     * @param username
+     */
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    LatLng getLocation() {
-        return location;
-    }
-
-    public void setLocation(LatLng location) {
-        this.location = location;
     }
 
     public int getMoodId() {
@@ -75,6 +79,22 @@ public class UserPoint implements Serializable {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public double getLong() {
+        return Long;
+    }
+
+    public void setLong(double aLong) {
+        Long = aLong;
+    }
+
+    public double getLat() {
+        return Lat;
+    }
+
+    public void setLat(double lat) {
+        Lat = lat;
     }
 
 

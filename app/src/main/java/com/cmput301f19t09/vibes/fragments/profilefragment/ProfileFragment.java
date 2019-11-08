@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment implements Observer {
             followButton.setVisibility(View.INVISIBLE);
             if (registration == null) {
                 Log.d("CHECK", "SHOULD BE CALLED ONCE");
-                registration = user.readData();
+                user.readData();
             }
             user.addMood();
             MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
