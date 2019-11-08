@@ -84,8 +84,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 options.title(point.getEmotion());
             }
             switch(point.getEmotion()) {
-                case "HAPPY":
-                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.happy));
+                case "HAPPINESS":
+                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
                     break;
             }
             googlemap.addMarker(options);
