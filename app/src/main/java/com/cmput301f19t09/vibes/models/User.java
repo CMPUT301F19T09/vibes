@@ -560,7 +560,7 @@ public class User extends Observable implements Serializable {
 //            throw new RuntimeException("Mood not defined");
 //        } else {
 //            Map<String, Object> mood = new HashMap<String, Object>();
-//            mood.put("emotion", "SAD");
+//            mood.put("emotion", "SADNESS");
 //            mood.put("location", new GeoPoint(53.23, -115.44));
 //            mood.put("photo", null);
 //            mood.put("reason", "Something else");
@@ -583,7 +583,7 @@ public class User extends Observable implements Serializable {
 //        }
 
         Map<String, Object> mood = new HashMap<String, Object>();
-        mood.put("emotion", "SAD");
+        mood.put("emotion", "SADNESS");
         mood.put("location", new GeoPoint(55.55, -114.44));
         mood.put("photo", null);
         mood.put("reason", "Cause");
