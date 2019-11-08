@@ -67,20 +67,19 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         }
     }
 
-    public void refreshEvent(User user)
-    {
+    public void refreshEvent(User user) {
         Log.d("TEST", "Refreshing event for " + user.getUserName());
+
+        if (user.getMostRecentMoodEvent() == null)
+        {
+            return;
+        }
 
         boolean replaced = false;
         for (MoodEvent event : data)
         {
             if (event.getUser().getUserName() == user.getUserName())
             {
-                if (user.getMostRecentMoodEvent() == null)
-                {
-                    return;
-                }
-
                 clear();
 
                 data.remove(event);
