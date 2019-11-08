@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Observer;
 
 /*
-    This class is responsible for displ
+    This class is responsible for displaying a list of MoodEvents, the functionality of loading events
+    is handled by the subclass
  */
 public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
 {
@@ -33,12 +34,17 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     protected User user;
     private Context context;
 
-    public MoodListAdapter(Context context, User user)
+    /*
+    Create a MoodListAdapter with the context
+    @param context
+        the context
+     */
+    public MoodListAdapter(Context context)
     {
         super(context, 0);
 
         this.context = context;
-        this.user = user;
+        this.user = UserManager.getCurrentUser();
         this.data = new ArrayList<MoodEvent>();
 
         initialize();
@@ -51,14 +57,14 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         Log.d("MoodListAdapter", "Creating a View for a MoodItem");
         View item = convertView;
 
+        /*
+        if the view is null, create a new one
+         */
         if (item == null)
         {
             LayoutInflater inflater = LayoutInflater.from(context);
             item = inflater.inflate(R.layout.mood_list_item, null);
         }
-
-        //User user = data.get(position).user;
-        //MoodEvent event = data.get(position).event;
 
         MoodEvent event = data.get(position);
 
@@ -94,13 +100,8 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             emotionImage.setClipToOutline(true);
             Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
             emotionImage.setColorFilter(event.getState().getColour());
-            //emotionColour.setBackgroundResource(R.drawable.circle);
-            //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
-            //Duration timeSincePost = data.get(position).timeSinceEvent();
-
-            LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
-            Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
+            Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
 
             String timeString = "~";
 
@@ -137,6 +138,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         return item;
     }
 
+    /*
+    Add this class as an observer to the main user and call the initializeData fucntion
+     */
     private void initialize()
     {
         UserManager.addUserObserver(user.getUid(), this);
@@ -147,6 +151,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 
     public abstract void refreshData();
 
+    // When this is called, remove this object as an observer of User
     public void destroy()
     {
         UserManager.removeUserObserver(user.getUid(), this);

@@ -19,16 +19,27 @@ import com.cmput301f19t09.vibes.dialogs.MoodFilterDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+This fragment holds the radio buttons for selecting MoodList's adapter and will also have a button
+that opens the filter dialog
+ */
 public class MoodListFilterFragment extends Fragment
 {
     private List<MoodFilterListener> listeners;
-    private boolean locked;
+    private boolean locked; //This determines whether the radio buttons are shown (i.e. disallow a user from viewing
+    // other user's moods when on their own profile
 
+    /*
+    return a new instance
+     */
     public static MoodListFilterFragment newInstance()
     {
         return new MoodListFilterFragment();
     }
 
+    /*
+    initialize data
+     */
     public MoodListFilterFragment()
     {
         listeners = new ArrayList<MoodFilterListener>();
@@ -48,6 +59,7 @@ public class MoodListFilterFragment extends Fragment
         RadioButton ownMoodsButton = adapterSelectorLayout.findViewById(R.id.radioYou);
         RadioButton followedMoodsButton = adapterSelectorLayout.findViewById(R.id.radioFollowed);
 
+        //TODO: Open the filter dialog
         filterButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -57,6 +69,9 @@ public class MoodListFilterFragment extends Fragment
             }
         });
 
+        /*
+        If it isnt locked, add listeners to the radio buttons
+         */
         if (!locked)
         {
             ownMoodsButton.setOnClickListener(new View.OnClickListener()
@@ -96,6 +111,9 @@ public class MoodListFilterFragment extends Fragment
         locked = true;
     }
 
+    /*
+    Add a listener to be notified whenever the filter state is changed
+     */
     public void addOnFilterListener(MoodFilterListener listener)
     {
         listeners.add(listener);

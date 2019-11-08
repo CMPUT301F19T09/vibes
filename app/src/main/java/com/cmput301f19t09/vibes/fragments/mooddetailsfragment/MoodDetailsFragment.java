@@ -25,8 +25,14 @@ import com.cmput301f19t09.vibes.models.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+/*
+    A fragment that shows the details of a specified MoodEvent
+ */
 public class MoodDetailsFragment extends Fragment
 {
+    /*
+        Create a new instance of the Fragment for the specified event
+     */
     public static MoodDetailsFragment newInstance(MoodEvent event)
     {
         Bundle bundle = new Bundle();
@@ -48,6 +54,10 @@ public class MoodDetailsFragment extends Fragment
 
         MoodEvent event = (MoodEvent) arguments.getSerializable("event");
 
+        /*
+        TODO: Add this check somewhere else
+        if a null event was provided, don't show anything
+         */
         if (event == null)
         {
             view.setVisibility(View.GONE);
