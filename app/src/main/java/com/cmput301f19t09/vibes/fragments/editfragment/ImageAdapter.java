@@ -20,12 +20,12 @@ public class ImageAdapter extends BaseAdapter {
 
     public ImageAdapter(Context c) {
         mContext = c;
-        stateKeys = EmotionalState.getColorList();
+        stateKeys = EmotionalState.getColourList();
         stateMap = EmotionalState.getMap();
     }
 
     public int getCount() {
-        return stateKeys.length;
+        return stateKeys.size();
     }
 
     public Object getItem(int position) {
@@ -47,9 +47,9 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        Pair<Integer, Integer> state = stateMap.get(stateKeys[position]);
-        imageView.setImageResource((int) state.first);
-        imageView.setColorFilter((int) state.second);
+        Pair<Integer, Integer> state = stateMap.get(stateKeys.get(position));
+        imageView.setImageResource(state.first);
+        imageView.setColorFilter(state.second);
         return imageView;
     }
 }
