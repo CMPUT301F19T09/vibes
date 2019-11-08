@@ -119,12 +119,12 @@ public class SignUpActivity extends AppCompatActivity {
         Map<String, Object> userData = new HashMap<>();
         userData.put("email", user.getEmail());
         userData.put("username", user.getUserName());
-        userData.put("first_name", user.getFirstName());
-        userData.put("last_name", user.getLastName());
-        userData.put("profile_picture_path", user.getPicturePath());
-        userData.put("following", user.getFollowingList());
+        userData.put("first", user.getFirstName());
+        userData.put("last", user.getLastName());
+        userData.put("profile_picture", user.getPicturePath());
+        userData.put("following_list", user.getFollowingList());
         userData.put("moods", user.getMoodEvents());
-        userData.put("requested", user.getRequestedList());
+        userData.put("requested_list", user.getRequestedList());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final CollectionReference collectionReference = db.collection(USER_COLLECTION);

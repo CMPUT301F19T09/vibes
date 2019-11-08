@@ -56,9 +56,6 @@ public class MainActivity extends FragmentActivity {
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra("user");
 
-//        User user = new User("testuser");
-//        user = new User("testuser4", "Test", "User4", "testuser4@example.com");
-
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));

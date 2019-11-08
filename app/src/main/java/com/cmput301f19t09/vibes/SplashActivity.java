@@ -19,6 +19,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class SplashActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -34,6 +35,10 @@ public class SplashActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mStore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        mStore.setFirestoreSettings(settings);
     }
 
     @Override
@@ -44,22 +49,6 @@ public class SplashActivity extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             User user = new User(mAuth.getCurrentUser().getUid());
-//            mStore.collection(USER_COLLECTION)
-//                    .document(mAuth.getCurrentUser().getUid())
-//                    .get()
-//                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.d(TAG, "Data addition successful");
-//                        }
-//                    });
-
             intent = new Intent(this, MainActivity.class);
             intent.putExtra("user", user);
         } else {

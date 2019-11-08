@@ -47,7 +47,13 @@ public class LoginActivity extends AppCompatActivity {
                 String email = emailTextView.getText().toString();
                 String password = passwordTextView.getText().toString();
 
-                loginUser(email, password);
+                if (email.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Email field is empty", Toast.LENGTH_LONG).show();
+                } else if (password.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Password field is empty", Toast.LENGTH_LONG).show();
+                } else {
+                    loginUser(email, password);
+                }
             }
         });
 
@@ -65,7 +71,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void startMainActivity() {
+        User user = new User(mAuth.getCurrentUser().getUid());
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("user", user);
         startActivity(intent);
     }
 
