@@ -15,7 +15,7 @@ enum ColourEnum {
     BLUE (0xff0000ff),
     INDIGO (0xff4b0082),
     PURPLE (0xff800080),
-    RED (0xffffffff),
+    RED (0xffff0000),
     ORANGE (0xffffa500),
     PINK (0xffffc0ce);
 
