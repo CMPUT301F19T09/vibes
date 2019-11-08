@@ -20,11 +20,6 @@ import android.widget.ImageButton;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -194,6 +189,25 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
+
+        Button debugButton = findViewById(R.id.debug_button);
+        debugButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User testuser = new User("testuser");
+                User testuser2 = new User("testuser2");
+                User testuser3 = new User("testuser3");
+                User testuser4 = new User("testuser4");
+
+/*
+                testuser.addMood(generateRandomEvent(testuser));
+                testuser2.addMood(generateRandomEvent(testuser2));
+                testuser3.addMood(generateRandomEvent(testuser3));
+                testuser4.addMood(generateRandomEvent(testuser4));
+                *
+ */
+            }
+        });
     }
 
 
@@ -337,5 +351,38 @@ public class MainActivity extends FragmentActivity {
             manager.popBackStack();
         }
     }
+/*
+    private MoodEvent generateRandomEvent(User user)
+    {
+        Random random = new Random();
+
+        int emotion = random.nextInt(9);
+
+        if (emotion < 0)
+        {
+            emotion = -emotion;
+        }
+
+        LocalDateTime time = LocalDateTime.now();
+
+        EmotionalState state;
+        Set<String> emotions = EmotionalState.getMap().keySet();
+
+        state = new EmotionalState((String)emotions.toArray()[emotion]);
+
+        String reason = "RANDOM EVENT";
+
+        int situation = random.nextInt() % 10;
+
+        double longitude = ( random.nextDouble() - 0.5 ) * 360;
+        double latitude = ( random.nextDouble() - 0.5 ) * 180;
+        Location l = new Location("");
+        l.setLongitude(longitude);
+        l.setLatitude(latitude);
+
+        return new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, state, situation, l, user);
+    }
+
+ */
 }
 
