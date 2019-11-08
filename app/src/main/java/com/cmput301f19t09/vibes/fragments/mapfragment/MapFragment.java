@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -27,6 +29,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     MapData data;
     GoogleMap googlemap;
 
+    boolean firstPointPut = false;
     /**
      * This is used to filter out the moods being showed;
      */
@@ -55,6 +58,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
+    public static MapFragment getInstance(){
+        return new MapFragment();
+    }
+
     /**
      * Checks for the bundle MapData.
      * @param savedInstanceState
@@ -76,6 +83,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void showUserPoint(UserPoint point){
         if(googlemap != null){
+
             MarkerOptions options = new MarkerOptions();
             options.position(point.getLocation());
             if(point.getReason()!=null){
@@ -90,7 +98,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     break;
             }
             googlemap.addMarker(options);
+
+            if(!firstPointPut ){
+                firstPointPut = true;
+                CameraPosition googlePlex = CameraPosition.builder()
+                .target(point.getLocation())
+                .zoom(3)
+                .bearing(0)
+                .tilt(45)
+                .build();
+
+                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+
+            }
         }
+    }
+
+    public Drawable scaleImage (Drawable image) {
+
+        if ((image == null) || !(image instanceof BitmapDrawable)) {
+            return image;
+        }
+
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 32, 32, true);
+
+        image = new BitmapDrawable(getResources(), bitmapResized);
+
+        return image;
+
     }
 
     /**
@@ -110,6 +147,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
         return view;
+    }
+
+    public GoogleMap getGooglemap(){
+        return this.googlemap;
     }
 
 

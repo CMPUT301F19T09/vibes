@@ -18,8 +18,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,10 +34,12 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -250,77 +252,82 @@ public class MainActivity extends FragmentActivity {
         // Test user for now. This will be updated
         User user = new User("testuser");
 
-        if (this.mapFilter == MapFragment.Filter.SHOW_MINE) {
+        MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
+        if(myFragment == null ){
+            MapFragment mapFragment = MapFragment.getInstance();
+            MapFilter mapFilterFragment = MapFilter.getInstance(this.mapFilter);
+            stackFragment(mapFilterFragment, "filterFragment", mapFragment, "mapFragment");
+        }
+
+        if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
             user.readData(new User.FirebaseCallback() {
                 @Override
                 public void onCallback(User user) {
-                    List<Mood> moodsShowing = user.getMoods();
-                    MapData mapData = new MapData();
-                    for (Mood mood : moodsShowing) {
-                        UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(), mood.getReason());
-                        mapData.add(userpoint);
+                    MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
+//                    List<Mood> moodsShowing = user.getMoods();
+                    List<MoodEvent> moodsShowing = user.getMoodEvents();
+                    for(MoodEvent mood: moodsShowing){
+                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                        myFragment.showUserPoint(userpoint);
                     }
-
-                    Bundle mapBundle = new Bundle();
-                    mapBundle.putSerializable("MapData", mapData);
-                    Fragment mapFragment = new MapFragment();
-                    mapFragment.setArguments(mapBundle);
-
-                    Fragment filterFragment = new MapFilter();
-
-                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
                 }
             });
-        } else if (mapFilter == MapFragment.Filter.SHOW_EVERYONE) {
-            // Getting everyone's last moods.
-//            user.readData(new User.FirebaseCallback() {
-//                @Override
-//                public void onCallback(User user) {
-//                    List<String> followingPeople = user.getFollowingList();
-//                    MapData mapData = new MapData();
-//
-//                    for(String person : followingPeople){
-//                        Log.d("D", "Getting Last mood of " + person);
-//                        User newUser = new User(person);
-//                        newUser.readData(new User.FirebaseCallback() {
-//                            @Override
-//                            public void onCallback(User user) {
-//                                Mood mood = user.getMostRecentMood();
-//                                Log.d("D", "Found: " + mood.toString());
-//                                UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
-//                                mapData.add(userpoint);
-//
-//                            }
-//                        });
-//                    }
-//                    Bundle mapBundle = new Bundle();
-//                    mapBundle.putSerializable("MapData", mapData);
-//                    Fragment mapFragment = new MapFragment();
-//                    mapFragment.setArguments(mapBundle);
-//
-//                    Fragment filterFragment = new MapFilter();
-//
-//                    stackFragment(filterFragment, "filterFragment", mapFragment, "mapFragment");
-//                }
-//            });
+        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            GoogleMap gmap = myFragment.getGooglemap();
+            gmap.clear();
 
-        } else {
-            throw new RuntimeException("Given map filter isn't known");
+            user.readData(new User.FirebaseCallback() {
+                @Override
+                public void onCallback(User user) {
+                    for (String followed_username : user.getFollowingList()) {
+                        User followed_user = new User(followed_username);
+                        followed_user.exists(new User.UserExistListener() {
+                            @Override
+                            public void onUserExists() {
+                                followed_user.readData(new User.FirebaseCallback() {
+                                    @Override
+                                    public void onCallback(User user) {
+                                        MoodEvent mood = user.getMostRecentMoodEvent();
+                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                                        myFragment.showUserPoint(userpoint);
+                                    }
+                                });
+                            }
+                            @Override
+                            public void onUserNotExists() {
+                                // Just skip it for now.
+                            }
+                        });
+                    }
+                }
+            });
+
         }
-
     }
 
     /**
      * Switches the viewing in the map
-     *
      * @param filter
      */
     public void switchMapFilter(MapFragment.Filter filter) {
         Log.d("DEBUG", "switched");
         this.mapFilter = filter;
+        if(this.mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+            Log.d("D", "Showing everyone on the map");
+        }else if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
+            Log.d("D", "Showing mine on the map");
+        }
+
         updateMap();
     }
 
+    /**
+     * Returns the filter we have for the map. It is used in filter.
+     * @return
+     */
+    public MapFragment.Filter getMapFilter(){
+        return this.mapFilter;
+    }
 
     @Override
     public void onBackPressed() {
