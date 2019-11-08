@@ -50,7 +50,8 @@ public class MainActivity extends FragmentActivity {
     private enum ButtonMode {LIST, MAP}
 
     private ButtonMode currentButtonMode;
-    private @IdRes int fragment_root;
+    private @IdRes
+    int fragment_root;
     private User user;
 
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
@@ -78,20 +79,15 @@ public class MainActivity extends FragmentActivity {
 
         FragmentManager manager = getSupportFragmentManager();
 
-        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
-        {
+        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
-            public void onBackStackChanged()
-            {
+            public void onBackStackChanged() {
                 List<Fragment> fragments = manager.getFragments();
                 Fragment currentFragment = fragments.get(fragments.size() - 1);
 
-                if (currentFragment == null || currentFragment.getClass().equals(MoodListFragment.class))
-                {
+                if (currentFragment == null || currentFragment.getClass().equals(MoodListFragment.class)) {
                     currentButtonMode = ButtonMode.MAP;
-                }
-                else
-                {
+                } else {
                     currentButtonMode = ButtonMode.LIST;
                 }
 
@@ -105,12 +101,13 @@ public class MainActivity extends FragmentActivity {
      * You have to define the fragments, combine the fragments with
      * their bundles then send it into this function.
      * You can later access the fragments using the fragmentTitles you have used.
+     *
      * @param fragment1
      * @param fragmentTitle
      * @param fragment2
      * @param fragmentTitle2
      */
-    public void stackFragment(Fragment fragment1, String fragmentTitle, Fragment fragment2, String fragmentTitle2){
+    public void stackFragment(Fragment fragment1, String fragmentTitle, Fragment fragment2, String fragmentTitle2) {
         ViewGroup root = findViewById(R.id.main_fragment_root);
         root.removeAllViewsInLayout();
 
@@ -127,8 +124,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * Puts in listeners
      */
-    private void initListeners()
-    {
+    private void initListeners() {
 
         fragment_root = R.id.main_fragment_root;
 
@@ -141,16 +137,14 @@ public class MainActivity extends FragmentActivity {
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 setMainFragment(EditFragment.newInstance(user));
             }
         });
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 //setMainFragment(SearchFragment.newInstance());
             }
         });
@@ -181,15 +175,13 @@ public class MainActivity extends FragmentActivity {
 
         viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 /*
                 Set the button to represent which fragment will be opened the NEXT TIME the button
                 is pressed (i.e. the current fragment)
                  */
 
-                switch (currentButtonMode)
-                {
+                switch (currentButtonMode) {
                     case LIST:
                         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
@@ -202,31 +194,10 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
-
-//        Button debugButton = findViewById(R.id.debug_button);
-//        debugButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                User testuser = new User("testuser");
-//                User testuser2 = new User("testuser2");
-//                User testuser3 = new User("testuser3");
-//                User testuser4 = new User("testuser4");
-//
-///*
-//                testuser.addMood(generateRandomEvent(testuser));
-//                testuser2.addMood(generateRandomEvent(testuser2));
-//                testuser3.addMood(generateRandomEvent(testuser3));
-//                testuser4.addMood(generateRandomEvent(testuser4));
-//                *
-// */
-//            }
-//        });
     }
 
 
-
-    public void setMainFragment(Fragment fragment)
-    {
+    public void setMainFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
@@ -238,8 +209,7 @@ public class MainActivity extends FragmentActivity {
     /*
     Open a dialog fragment
      */
-    public void openDialogFragment(DialogFragment fragment)
-    {
+    public void openDialogFragment(DialogFragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
@@ -251,13 +221,11 @@ public class MainActivity extends FragmentActivity {
     @param fragmentType
         The type of fragment that the button will open if pressed
     */
-    private void updateViewButton()
-    {
+    private void updateViewButton() {
         ImageButton viewButton = findViewById(R.id.main_view_button);
         @DrawableRes int image;
 
-        switch (currentButtonMode)
-        {
+        switch (currentButtonMode) {
             case LIST:
                 image = R.drawable.ic_list_white_36dp;
                 break;
@@ -273,14 +241,14 @@ public class MainActivity extends FragmentActivity {
      * Updates only the map portion in the main root fragment.
      * This is called after having a change in the mapFilter fragment.
      */
-    public void updateMap(){
+    public void updateMap() {
         this.showMap();
     }
 
     /**
      * Shows the map fragment in the main fragment container.
      */
-    public void showMap(){
+    public void showMap() {
         // Test user for now. This will be updated
         User user = new User("testuser");
 
@@ -341,7 +309,7 @@ public class MainActivity extends FragmentActivity {
      * Switches the viewing in the map
      * @param filter
      */
-    public void switchMapFilter(MapFragment.Filter filter){
+    public void switchMapFilter(MapFragment.Filter filter) {
         Log.d("DEBUG", "switched");
         this.mapFilter = filter;
         if(this.mapFilter == MapFragment.Filter.SHOW_EVERYONE){
@@ -362,47 +330,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (manager.getBackStackEntryCount() > 1)
-        {
+        if (manager.getBackStackEntryCount() > 1) {
             manager.popBackStack();
         }
     }
-/*
-    private MoodEvent generateRandomEvent(User user)
-    {
-        Random random = new Random();
-
-        int emotion = random.nextInt(9);
-
-        if (emotion < 0)
-        {
-            emotion = -emotion;
-        }
-
-        LocalDateTime time = LocalDateTime.now();
-
-        EmotionalState state;
-        Set<String> emotions = EmotionalState.getMap().keySet();
-
-        state = new EmotionalState((String)emotions.toArray()[emotion]);
-
-        String reason = "RANDOM EVENT";
-
-        int situation = random.nextInt() % 10;
-
-        double longitude = ( random.nextDouble() - 0.5 ) * 360;
-        double latitude = ( random.nextDouble() - 0.5 ) * 180;
-        Location l = new Location("");
-        l.setLongitude(longitude);
-        l.setLatitude(latitude);
-
-        return new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, state, situation, l, user);
-    }
-
- */
 }
 
