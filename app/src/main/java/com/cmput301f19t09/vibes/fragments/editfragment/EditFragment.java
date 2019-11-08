@@ -24,6 +24,7 @@ import com.cmput301f19t09.vibes.models.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -52,6 +53,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView timeTextView;
     private GridView stateGridView;
     private TextView stateTextView;
+    private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
     private EditText editSituationView;
     private EditText editReasonView;
@@ -215,46 +217,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (adapterView.getId() == R.id.state_grid_view) {
-            // hardcoded positions match the hardcoded images specified in the ImageAdapter
-            switch (i) { // i is position of clicked image
-                case 0: {
-                    emotionalState = new EmotionalState("HAPPINESS");
-                    break;
-                }
-                case 1: {
-                    emotionalState = new EmotionalState("TRUST");
-                    break;
-                }
-                case 2: {
-                    emotionalState = new EmotionalState("FEAR");
-                    break;
-                }
-                case 3: {
-                    emotionalState = new EmotionalState("SURPRISE");
-                    break;
-                }
-                case 4: {
-                    emotionalState = new EmotionalState("SADNESS");
-                    break;
-                }
-                case 5: {
-                    emotionalState = new EmotionalState("DISGUST");
-                    break;
-                }
-                case 6: {
-                    emotionalState = new EmotionalState("ANGER");
-                    break;
-                }
-                case 7: {
-                    emotionalState = new EmotionalState("ANTICIPATION");
-                    break;
-                }
-                case 8: {
-                    emotionalState = new EmotionalState("LOVE");
-                    break;
-                }
-
-            }
+            emotionalState = new EmotionalState(stateKeys.get(i));
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
             checkRequiredFields();

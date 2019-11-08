@@ -85,10 +85,7 @@ public class EmotionalState implements Serializable {
         return map;
     }
 
-    public static ArrayList<String> getColourList() {
-        Set<String> set = map.keySet();
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.addAll(set);
-        return arrayList;
+    public static ArrayList<String> getListOfKeys() {
+        return new ArrayList<>(map.keySet());
     }
 }
