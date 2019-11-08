@@ -2,8 +2,10 @@ package com.cmput301f19t09.vibes;
 
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +18,11 @@ public class UserManagerTest
             "hXc1EVwXLkeDHQG0yPXhyw8ABrH2",
             "o81OG6esaghei2iulWulb3dzPky1"
     };
+
+    @BeforeAll
+    void init()
+    {
+    }
 
     @Test
     void testRegisterUser()

@@ -3,6 +3,7 @@ package com.cmput301f19t09.vibes.models;
 import android.util.Log;
 import android.util.Pair;
 
+import com.cmput301f19t09.vibes.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 
