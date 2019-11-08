@@ -19,6 +19,9 @@ import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.function.Consumer;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -27,6 +30,7 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.GoogleMap;
 
 /**
@@ -50,8 +54,7 @@ public class MainActivity extends FragmentActivity {
 
         // Set the button in the bottom left to open the map fragment
 
-        Intent intent = getIntent();
-        String user_id = (String) intent.getSerializableExtra("user_id");
+        user = UserManager.getCurrentUser();
 
         // Defines onClickListeners for the components defined above in the class.
         intializeViews();
@@ -173,8 +176,7 @@ public class MainActivity extends FragmentActivity {
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
-                        showMap();
-                        updateMap();
+                        setMainFragment(MapFragment.newInstance());
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
@@ -230,115 +232,6 @@ public class MainActivity extends FragmentActivity {
         }
 
         viewButton.setImageResource(image);
-    }
-
-    /**
-     * Updates only the map portion in the main root fragment.
-     * This is called after having a change in the mapFilter fragment.
-     */
-    public void updateMap() {
-
-        Log.d("filter", ""+ this.mapFilter);
-
-
-
-        // If filter is at mine, shows only my moods
-        if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
-            // This branch works when filter is everyone followed
-            MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
-            if(myFragment != null){
-                // Clearing out the map
-                GoogleMap gmap = myFragment.getGooglemap();
-                gmap.clear();
-            }
-
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    // Call back for getting user.
-                    // After getting the user the map shows the point.
-                    MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
-//                    List<Mood> moodsShowing = user.getMoods();
-                    List<MoodEvent> moodsShowing = user.getMoodEvents();
-                    // Looping through every loop
-                    for(MoodEvent mood: moodsShowing){
-                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(), -1, mood.getState().getEmotion(), mood.getDescription());
-                        myFragment.showUserPoint(userpoint);
-                    }
-                }
-            });
-        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE) {
-            // This branch works when filter is everyone followed
-            MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
-
-            // Clearing out the map
-            GoogleMap gmap = myFragment.getGooglemap();
-            gmap.clear();
-
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User user) {
-                    for (String followed_username : user.getFollowingList()) {
-                        User followed_user = new User(followed_username);
-                        followed_user.exists(new User.UserExistListener() {
-                            @Override
-                            public void onUserExists() {
-                                followed_user.readData(new User.FirebaseCallback() {
-                                    @Override
-                                    public void onCallback(User user) {
-                                        MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
-                                        MoodEvent mood = user.getMostRecentMoodEvent();
-                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(),1,  mood.getState().getEmotion(), mood.getDescription());
-                                        myFragment.showUserPoint(userpoint);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onUserNotExists() {
-                                // Just skip it for now.
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Shows the map fragment in the main fragment container.
-     */
-    public void showMap(){
-        // Test user for now. This will be updated
-
-        MapFragment mapFragment = MapFragment.getInstance();
-        MapFilter mapFilterFragment = MapFilter.getInstance(this.mapFilter);
-        stackFragment(mapFilterFragment, "filterFragment", mapFragment, "mapFragment");
-
-    }
-
-    /**
-     * Switches the viewing in the map
-     * @param filter
-     */
-    public void switchMapFilter(MapFragment.Filter filter) {
-        Log.d("DEBUG", "switched");
-        this.mapFilter = filter;
-        if(this.mapFilter == MapFragment.Filter.SHOW_EVERYONE){
-            Log.d("D", "Showing everyone on the map");
-        }else if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
-            Log.d("D", "Showing mine on the map");
-        }
-
-        updateMap();
-    }
-
-    /**
-     * Returns the filter we have for the map. It is used in filter.
-     * @return
-     */
-    public MapFragment.Filter getMapFilter(){
-        return this.mapFilter;
     }
 
     @Override

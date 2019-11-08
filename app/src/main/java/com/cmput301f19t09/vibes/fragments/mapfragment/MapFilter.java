@@ -69,9 +69,11 @@ public class MapFilter extends Fragment {
         youButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (((MainActivity) getActivity()).getMapFilter() == MapFragment.Filter.SHOW_EVERYONE) {
+                if (selectedRadioBox == SHOW_EVERYONE) {
                     // Setting it to be mine if it is everyone
-                    ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
+                    //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
+                    selectedRadioBox = SHOW_MINE;
+                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE);
                 }
             }
         });
@@ -79,9 +81,11 @@ public class MapFilter extends Fragment {
         everyoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(((MainActivity) getActivity()).getMapFilter() == MapFragment.Filter.SHOW_MINE){
+                if(selectedRadioBox == SHOW_MINE){
                     // Setting it to be everyone if it is only mine.
-                    ((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
+                    //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
+                    selectedRadioBox = SHOW_EVERYONE;
+                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE);
                 }
             }
         });
