@@ -84,7 +84,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
-        emotionColour = item.findViewById(R.id.emotion_colour);
+        //emotionColour = item.findViewById(R.id.emotion_colour);
 
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
@@ -94,8 +94,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
-            emotionImage.setColorFilter(Color.parseColor(event.getState().getColour()));
-            emotionColour.setBackgroundResource(R.drawable.circle);
+            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
+            emotionImage.setColorFilter(event.getState().getColour());
+            //emotionColour.setBackgroundResource(R.drawable.circle);
             //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
             //Duration timeSincePost = data.get(position).timeSinceEvent();

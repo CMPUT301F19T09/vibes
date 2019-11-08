@@ -27,6 +27,8 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
@@ -217,39 +219,7 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-    private MoodEvent generateRandomEvent(User user)
-    {
-        Random random = new Random();
 
-        long maxEpochSecond = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        long epochSecond = random.nextLong() % maxEpochSecond;
-
-        //LocalDateTime time = LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC);
-        LocalDateTime time = LocalDateTime.now();
-
-        EmotionalState state;
-
-        if (epochSecond % 2 == 0)
-        {
-            state = new EmotionalState("HAPPINESS");
-        }
-        else
-        {
-            state = new EmotionalState("SADNESS");
-        }
-
-        String reason = "RANDOM EVENT";
-
-        int situation = random.nextInt() % 10;
-
-        double longitude = ( random.nextDouble() - 0.5 ) * 360;
-        double latitude = ( random.nextDouble() - 0.5 ) * 180;
-        Location l = new Location("");
-        l.setLongitude(longitude);
-        l.setLatitude(latitude);
-
-        return new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, state, situation, l, user);
-    }
 
     public void setMainFragment(Fragment fragment)
     {
@@ -390,6 +360,37 @@ public class MainActivity extends FragmentActivity {
         {
             manager.popBackStack();
         }
+    }
+
+    private MoodEvent generateRandomEvent(User user)
+    {
+        Random random = new Random();
+
+        int emotion = random.nextInt(9);
+
+        if (emotion < 0)
+        {
+            emotion = -emotion;
+        }
+
+        LocalDateTime time = LocalDateTime.now();
+
+        EmotionalState state;
+        Set<String> emotions = EmotionalState.getMap().keySet();
+
+        state = new EmotionalState((String)emotions.toArray()[emotion]);
+
+        String reason = "RANDOM EVENT";
+
+        int situation = random.nextInt() % 10;
+
+        double longitude = ( random.nextDouble() - 0.5 ) * 360;
+        double latitude = ( random.nextDouble() - 0.5 ) * 180;
+        Location l = new Location("");
+        l.setLongitude(longitude);
+        l.setLatitude(latitude);
+
+        return new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, state, situation, l, user);
     }
 }
 

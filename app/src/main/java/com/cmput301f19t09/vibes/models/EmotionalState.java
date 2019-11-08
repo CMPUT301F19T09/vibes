@@ -8,32 +8,54 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+enum ColourEnum {
+    YELLOW (0xffffff00),
+    LIGHT_GREEN (0xffccff99),
+    GREEN (0xff009900),
+    BLUE (0xff0000ff),
+    INDIGO (0xff4b0082),
+    PURPLE (0xff800080),
+    RED (0xffffffff),
+    ORANGE (0xffffa500),
+    PINK (0xffffc0ce);
+
+    private int value;
+
+    ColourEnum(int value) {
+        this.value = value;
+    }
+
+    public int getValue(){
+        return this.value;
+    }
+}
+
 public class EmotionalState implements Serializable {
 
     private static final Map<String, Pair> map = new HashMap<>();
     static {
         //Ref: https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values#8229518
-        Pair<Integer, String> happiness = new Pair<>(R.drawable.emotion_image_happiness, "RED");
+        Pair<Integer, Integer> happiness = new Pair<Integer, Integer>(R.drawable.emotion_image_happiness, ColourEnum.YELLOW.getValue());
         map.put("HAPPINESS", happiness);
-        Pair<Integer, String> trust = new Pair<>(R.drawable.emotion_image_trust, "LIGHT_GREEN");
+        Pair<Integer, Integer> trust = new Pair<>(R.drawable.emotion_image_trust, ColourEnum.LIGHT_GREEN.getValue());
         map.put("TRUST", trust);
-        Pair<Integer, String> fear = new Pair<>(R.drawable.emotion_image_fear, "GREEN");
+        Pair<Integer, Integer> fear = new Pair<>(R.drawable.emotion_image_fear, ColourEnum.GREEN.getValue());
         map.put("FEAR", fear);
-        Pair<Integer, String> surprise = new Pair<>(R.drawable.emotion_image_surprise, "BLUE");
+        Pair<Integer, Integer> surprise = new Pair<>(R.drawable.emotion_image_surprise, ColourEnum.BLUE.getValue());
         map.put("SURPRISE", surprise);
-        Pair<Integer, String> sadness = new Pair<>(R.drawable.emotion_image_sadness, "BLUE");
+        Pair<Integer, Integer> sadness = new Pair<>(R.drawable.emotion_image_sadness, ColourEnum.INDIGO.getValue());
         map.put("SADNESS", sadness);
-        Pair<Integer, String> disgust = new Pair<>(R.drawable.emotion_image_disgust, "PURPLE");
+        Pair<Integer, Integer> disgust = new Pair<>(R.drawable.emotion_image_disgust, ColourEnum.PURPLE.getValue());
         map.put("DISGUST", disgust);
-        Pair<Integer, String> anger = new Pair<>(R.drawable.emotion_image_anger, "RED");
+        Pair<Integer, Integer> anger = new Pair<>(R.drawable.emotion_image_anger, ColourEnum.RED.getValue());
         map.put("ANGER", anger);
-        Pair<Integer, String> anticipation = new Pair<>(R.drawable.emotion_image_anticipation, "ORANGE");
+        Pair<Integer, Integer> anticipation = new Pair<>(R.drawable.emotion_image_anticipation, ColourEnum.ORANGE.getValue());
         map.put("ANTICIPATION", anticipation);
-        Pair<Integer, String> love = new Pair<>(R.drawable.emotion_image_love, "PINK");
+        Pair<Integer, Integer> love = new Pair<>(R.drawable.emotion_image_love, ColourEnum.PINK.getValue());
         map.put("LOVE", love);
     }
     private int file;
-    private String colour;
+    private int colour;
     private String emotion;
 
     public EmotionalState(String emotion) {
@@ -41,7 +63,7 @@ public class EmotionalState implements Serializable {
         this.emotion = emotion;
         Pair pair = map.get(this.emotion);
         this.file = (int) pair.first;
-        this.colour = (String) pair.second;
+        this.colour = (int) pair.second;
     }
 
     public String getEmotion(){
@@ -52,7 +74,7 @@ public class EmotionalState implements Serializable {
         return this.file;
     }
 
-    public String getColour() {
+    public int getColour() {
         return this.colour;
     }
 
