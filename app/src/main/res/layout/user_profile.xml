@@ -26,52 +26,36 @@
         android:textSize="24dp"
         android:fontFamily="@font/roboto_thin"
         app:layout_constraintStart_toEndOf="@+id/profile_picture"
-        app:layout_constraintTop_toBottomOf="@+id/firstname_textview"
+        app:layout_constraintTop_toBottomOf="@+id/fullname_textview"
         tools:text="testuser"
         tools:fontFamily="@font/roboto_thin" />
 
     <TextView
-        android:id="@+id/firstname_textview"
-        android:layout_width="wrap_content"
+        android:id="@+id/fullname_textview"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/roboto_thin"
         android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profile_picture"
         app:layout_constraintTop_toTopOf="parent"
         tools:fontFamily="@font/roboto_thin"
-        tools:text="Test" />
-
-    <TextView
-        android:id="@+id/lastname_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:textSize="32dp"
-        android:fontFamily="@font/roboto_thin"
-        app:layout_constraintBaseline_toBaselineOf="@+id/firstname_textview"
-        app:layout_constraintStart_toEndOf="@+id/firstname_textview"
-        tools:text="User"
-        tools:fontFamily="@font/roboto_thin" />
+        tools:text="Test User" />
 
     <Button
         android:id="@+id/follow_button"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="45dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_button"
         android:elevation="2dp"
         android:fontFamily="@font/roboto_regular"
-        android:textColor="#FFFFFF"
         android:text="F O L L O W"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profile_picture"
         app:layout_constraintTop_toBottomOf="@+id/username_textview"
@@ -84,9 +68,10 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/darker_gray"
         android:elevation="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/user_mood_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
+        app:layout_constraintTop_toBottomOf="@+id/follow_button" />
 
 <!--    <ImageView-->
 <!--        android:id="@+id/profile_mask"-->
