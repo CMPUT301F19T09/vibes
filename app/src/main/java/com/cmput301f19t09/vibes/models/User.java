@@ -43,8 +43,6 @@ public class User extends Observable implements Serializable {
     private String TAG = "Sample";
     private String picturePath;
     private List<String> followingList;
-    private List<Mood> result;
-    private List<MoodEvent> moodEvents;
     private List<String> requestedList;
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
@@ -55,6 +53,7 @@ public class User extends Observable implements Serializable {
     private transient static FirebaseStorage storage;
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
+    private transient List<MoodEvent> moodEvents;
 
     private transient List<Map> moods;
     private static boolean connectionStarted;
@@ -407,53 +406,6 @@ public class User extends Observable implements Serializable {
     }
 
     /**
-     * Returns a List of Mood objects using the moods Maps above
-     * @return
-     */
-    public List<Mood> getMoods() {
-        result = new ArrayList<Mood>();
-        if(this.moods != null){
-            for(Map mapMood : this.moods){
-//                Log.d("MAP_MOOD", mapMood.toString());
-
-                // Getting things out of the mood that is in the Map form.
-                String emotion = (String) mapMood.get("emotion");
-                String reason =(String) mapMood.get("reason");
-                Number social =(Number) mapMood.get("social");
-                Long timestamp = (Long) mapMood.get("timestamp");
-                String username = (String) mapMood.get("username");
-
-
-                GeoPoint location = (GeoPoint) mapMood.get("location");
-
-                if(mapMood.size() != MAP_MOOD_SIZE){ // The mood class isn't complete. Then skip it.
-                    Log.d("INFO", "Mood isn't complete yet");
-                    continue;
-                }
-
-                // Checking if timestamp is defined.
-                if(timestamp == null){
-                    throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
-                }
-
-                // Getting the time elements.
-                // However, it doesn't return the correct values when creating the new mood.
-                Calendar cal = Calendar.getInstance(); // TODO: This part isn't working.
-                cal.setTimeInMillis(timestamp); // TODO: The timestamp is something else idk why
-
-                // Creating the Mood
-                Mood newMood = new Mood(username, emotion, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), location);
-
-                result.add(newMood);
-            }
-            return result;
-        }else{
-            // Need to do a read from db.
-            throw new RuntimeException("Need to update moods from db");
-        }
-    }
-
-    /**
      *
      * @return
      */
@@ -570,7 +522,7 @@ public class User extends Observable implements Serializable {
 //            throw new RuntimeException("Mood not defined");
 //        } else {
 //            Map<String, Object> mood = new HashMap<String, Object>();
-//            mood.put("emotion", "SAD");
+//            mood.put("emotion", "SADNESS");
 //            mood.put("location", new GeoPoint(53.23, -115.44));
 //            mood.put("photo", null);
 //            mood.put("reason", "Something else");
@@ -593,7 +545,7 @@ public class User extends Observable implements Serializable {
 //        }
 
         Map<String, Object> mood = new HashMap<String, Object>();
-        mood.put("emotion", "SAD");
+        mood.put("emotion", "SADNESS");
         mood.put("location", new GeoPoint(55.55, -114.44));
         mood.put("photo", null);
         mood.put("reason", "Cause");

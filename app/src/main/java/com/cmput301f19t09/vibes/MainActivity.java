@@ -253,12 +253,12 @@ public class MainActivity extends FragmentActivity {
             user.readData(new User.FirebaseCallback() {
                 @Override
                 public void onCallback(User user) {
-                    List<Mood> moodsShowing = user.getMoods();
+//                    List<Mood> moodsShowing = user.getMoods();
                     MapData mapData = new MapData();
-                    for(Mood mood: moodsShowing){
-                        UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
-                        mapData.add(userpoint);
-                    }
+//                    for(Mood mood: moodsShowing){
+//                        UserPoint userpoint = new UserPoint(mood.getName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getStringEmotion(),mood.getReason());
+//                        mapData.add(userpoint);
+//                    }
 
                     Bundle mapBundle = new Bundle();
                     mapBundle.putSerializable("MapData", mapData);
