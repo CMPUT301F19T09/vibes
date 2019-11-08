@@ -21,7 +21,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
     private EmotionalState state; // not optional
     private int socialSituation; // optional
     private Location location; // optional
-    private User user;
+    private User user; // the user that the mood is associated with
 
     public MoodEvent(LocalDate date, LocalTime time, String description,
                      EmotionalState state, int socialSituation, Location location, User user) {

@@ -1,7 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.editfragment;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
