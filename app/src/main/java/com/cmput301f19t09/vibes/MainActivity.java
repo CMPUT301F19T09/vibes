@@ -156,7 +156,7 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View view) {
 //                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
 //                replaceFragment(ProfileFragment.class);
-                setMainFragment(ProfileFragment.newInstance(user));
+                setMainFragment(ProfileFragment.newInstance());
 
 //                getSupportFragmentManager().findFragmentById()
 //                User user = new User("testuser");

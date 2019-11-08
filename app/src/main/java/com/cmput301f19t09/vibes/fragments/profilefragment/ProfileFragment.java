@@ -15,6 +15,7 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Observable;
@@ -32,22 +33,15 @@ public class ProfileFragment extends Fragment implements Observer {
     private Button followButton;
     private ListenerRegistration registration;
 
-    public static ProfileFragment newInstance(User user) {
+    public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
-        user.addObserver(profileFragment);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        profileFragment.setArguments(bundle);
         return profileFragment;
     }
 
-    public static ProfileFragment newInstance(User user, User otherUser) {
+    public static ProfileFragment newInstance(String otherUserUID) {
         ProfileFragment profileFragment = new ProfileFragment();
-        //user.addObserver(profileFragment);
-        otherUser.addObserver(profileFragment);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        bundle.putSerializable("otherUser", otherUser);
+        bundle.putString("otherUserUID", otherUserUID);
         profileFragment.setArguments(bundle);
         return profileFragment;
     }
@@ -71,8 +65,18 @@ public class ProfileFragment extends Fragment implements Observer {
 //        ImageView profileMask = view.findViewById(R.id.profile_mask);
 //        profileMask.setImageResource(R.drawable.round_mask);
 
-        User user = (User) getArguments().getSerializable("user");
-        User otherUser = (User) getArguments().getSerializable("otherUser");
+        String otherUserUID = null;
+        if (getArguments() != null) {
+            otherUserUID = getArguments().getString("otherUserUID");
+        }
+        User otherUser = null;
+        if (otherUserUID != null) {
+            otherUser = UserManager.getUser(otherUserUID);
+            UserManager.addUserObserver(otherUserUID, this);
+        }
+
+        User user = UserManager.getCurrentUser();
+        UserManager.addUserObserver(user.getUid(), this);
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +103,7 @@ public class ProfileFragment extends Fragment implements Observer {
 
              */
             user.addMood();
+            setInfo(user);
             MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
@@ -113,11 +118,12 @@ public class ProfileFragment extends Fragment implements Observer {
             otherUser.addObserver((Observable o, Object arg) ->
             {
                 User u = (User) o;
-
+                setInfo(u);
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
                 transaction.commit();
             });
+            setInfo(otherUser);
         }
         return view;
     }
@@ -132,11 +138,13 @@ public class ProfileFragment extends Fragment implements Observer {
      * @param user
      */
     public void setInfo(User user) {
-        firstNameTextView.setText(user.getFirstName());
-        lastNameTextView.setText(user.getLastName());
-        userNameTextView.setText(user.getUserName());
-        Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
-        profilePictureImageView.setClipToOutline(true);
+        if (user.getFirstName() != null && user.getLastName() != null && user.getUserName() != null && user.getProfileURL() != null) {
+            firstNameTextView.setText(user.getFirstName());
+            lastNameTextView.setText(user.getLastName());
+            userNameTextView.setText(user.getUserName());
+            Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+            profilePictureImageView.setClipToOutline(true);
+        }
     }
 
     @Override
