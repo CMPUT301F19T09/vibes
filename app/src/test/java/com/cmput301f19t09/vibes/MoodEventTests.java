@@ -1,7 +1,5 @@
 package com.cmput301f19t09.vibes;
-import android.location.Location;
 
-import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 
 import org.junit.jupiter.api.BeforeEach;

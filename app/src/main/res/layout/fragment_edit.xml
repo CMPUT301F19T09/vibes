@@ -43,7 +43,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-
         <EditText
             android:id="@+id/edit_situation_view"
             android:layout_width="0dp"
@@ -162,7 +161,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            android:background="@drawable/rounded_button_grey"
+            android:background="@drawable/rounded_button_blue"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/cancel"
             android:textColor="@android:color/white"
