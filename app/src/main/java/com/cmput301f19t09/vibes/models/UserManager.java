@@ -23,7 +23,7 @@ public class UserManager
 
     public static void registerUser(String user_id)
     {
-        Log.d("USERMANAGER", "Register user: " + user_id);
+        //Log.d("USERMANAGER", "Register user: " + user_id);
         if (registeredUsers.containsKey(user_id))
         {
             return;
@@ -82,13 +82,13 @@ public class UserManager
     public static void removeUserObservers(String user_id)
     {
 
-        Log.d("USERMANAGER", "trying to delete all observers from " + user_id);
+        //Log.d("USERMANAGER", "trying to delete all observers from " + user_id);
         if ( registeredUsers.containsKey(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             User user = p.second;
 
-            Log.d("USERMANAGER", "deleting all observers from " + p.second.getUserName());
+            //Log.d("USERMANAGER", "deleting all observers from " + p.second.getUserName());
 
             user.deleteObservers();
         }

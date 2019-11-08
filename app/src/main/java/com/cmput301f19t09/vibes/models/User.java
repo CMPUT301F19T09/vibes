@@ -112,7 +112,7 @@ public class User extends Observable implements Serializable {
                         storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.d("INFO", "Failed to store default profile picture");
+                                //Log.d("INFO", "Failed to store default profile picture");
                             }
                         });
                     }
@@ -120,7 +120,7 @@ public class User extends Observable implements Serializable {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("INFO", "Data failed to store in Firestore");
+                        //Log.d("INFO", "Data failed to store in Firestore");
                     }
                 });
     }
@@ -145,7 +145,7 @@ public class User extends Observable implements Serializable {
 
     public User(String uid) {
         this.uid = uid;
-        Log.d("TEST", "Creating user from id " + uid);
+        //Log.d("TEST", "Creating user from id " + uid);
         if(!connectionStarted){ // Makes sure these definitions are called only once.
             connectionStarted = true;
 
@@ -162,7 +162,7 @@ public class User extends Observable implements Serializable {
         return documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                Log.d("TEST", "User event");
+                //Log.d("TEST", "User event");
                 userName = documentSnapshot.getString("username");
                 firstName = documentSnapshot.getString("first");
                 lastName = documentSnapshot.getString("last");
@@ -182,21 +182,21 @@ public class User extends Observable implements Serializable {
                     @Override
                     public void onSuccess(Uri uri) {
                         profileURL = uri;
-                        Log.d("INFO", "Loaded profile picture URL");
+                        //Log.d("INFO", "Loaded profile picture URL");
                         setChanged();
                         notifyObservers();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("INFO", "Cannot retrieve profile picture download url");
+                        //Log.d("INFO", "Cannot retrieve profile picture download url");
                     }
                 });
 
-                Log.d("INFO", "Loaded user information");
+                //Log.d("INFO", "Loaded user information");
 
                 int i = countObservers();
-                Log.d("TEST", i + " observers");
+                //Log.d("TEST", i + " observers");
 
             }
         });
@@ -211,7 +211,7 @@ public class User extends Observable implements Serializable {
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
-        Log.d("TEST", "Reading in ALL data");
+        //Log.d("TEST", "Reading in ALL data");
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         documentReference = collectionReference.document(uid);
@@ -238,23 +238,23 @@ public class User extends Observable implements Serializable {
                     @Override
                     public void onSuccess(Uri uri) {
                         profileURL = uri;
-                        Log.d("INFO", "Loaded profile picture URL");
+                        //Log.d("INFO", "Loaded profile picture URL");
                         firebaseCallback.onCallback(User.this);
                         loadedData = true;
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("INFO", "Cannot retrieve profile picture download url");
+                        //Log.d("INFO", "Cannot retrieve profile picture download url");
                     }
                 });
 
-                Log.d(TAG, "Loaded user information");
+                //Log.d(TAG, "Loaded user information");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d("INFO", "Cannot load info");
+                //Log.d("INFO", "Cannot load info");
             }
         });
     }
@@ -290,7 +290,7 @@ public class User extends Observable implements Serializable {
      * @return
      */
     public String getUserName() {
-        Log.d("TEST", "returning username " + userName);
+        //Log.d("TEST", "returning username " + userName);
         return userName;
     }
 
@@ -403,7 +403,7 @@ public class User extends Observable implements Serializable {
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
 
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
-                    Log.d("INFO", "MoodEvent isn't complete yet");
+                    //Log.d("INFO", "MoodEvent isn't complete yet");
                     continue;
                 }
 
@@ -420,7 +420,7 @@ public class User extends Observable implements Serializable {
                         ZoneOffset.UTC
                 );
 
-                Log.d("TEST", "The UTC time is " + time.toString());
+                //Log.d("TEST", "The UTC time is " + time.toString());
 
 
                 Location location = new Location("");
@@ -468,7 +468,7 @@ public class User extends Observable implements Serializable {
             //moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {
-            Log.d("INFO", "No mood events");
+            //Log.d("INFO", "No mood events");
             return null;
         }
     }
@@ -495,12 +495,12 @@ public class User extends Observable implements Serializable {
             documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.d("INFO", "Moods list updated");
+                    //Log.d("INFO", "Moods list updated");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("INFO", "Cannot add mood to list");
+                    //Log.d("INFO", "Cannot add mood to list");
                 }
             });
         }
@@ -520,12 +520,12 @@ public class User extends Observable implements Serializable {
         documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("INFO", "Moods list updated");
+                //Log.d("INFO", "Moods list updated");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d("INFO", "Cannot add mood to list");
+                //Log.d("INFO", "Cannot add mood to list");
             }
         });
     }
@@ -554,13 +554,13 @@ public class User extends Observable implements Serializable {
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.d("INFO", "Moods list updated");
+                    //Log.d("INFO", "Moods list updated");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("EXCEPTION", e.toString());
-                    Log.d("INFO", "Cannot add mood to list");
+                    //Log.d("EXCEPTION", e.toString());
+                    //Log.d("INFO", "Cannot add mood to list");
                 }
             });
         }
@@ -579,12 +579,12 @@ public class User extends Observable implements Serializable {
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.d("INFO", "Removed successfully");
+                    //Log.d("INFO", "Removed successfully");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d("INFO", "Could not remove from array");
+                    //Log.d("INFO", "Could not remove from array");
                 }
             });
         }
@@ -614,7 +614,7 @@ public class User extends Observable implements Serializable {
 
     private void logObservers(String msg)
     {
-        Log.d("TEST/USERS", " " + getUserName() + " has " + countObservers() + " observers");
-        Log.d("USERS/" + getUserName(), "Has " + countObservers() + " observers " + msg);
+        //Log.d("TEST/USERS", " " + getUserName() + " has " + countObservers() + " observers");
+        //Log.d("USERS/" + getUserName(), "Has " + countObservers() + " observers " + msg);
     }
 }
