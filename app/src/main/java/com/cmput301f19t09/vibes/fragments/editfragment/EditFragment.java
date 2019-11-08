@@ -40,9 +40,8 @@ import com.cmput301f19t09.vibes.models.UserManager;
  * to handle interaction events.
  * Use the {@link EditFragment#newInstance} factory method to
  * create an instance of this fragment.
- * TODO: make the context and state a drop down.
- * TODO: handle limiting the reason
- * TODO: pull coordinates from gps
+ * TODO: make the social situation editor a drop down with predefined values
+ * TODO: implement pulling location from GPS
  */
 public class EditFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -84,10 +83,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * this fragment using the provided parameters when we are
+     * editing an existing MoodEvent.
      *
-     * @param
-     * @param
+     * @param   moodEvent
+     *      The MoodEvent we want to edit.
+     * @param   index
+     *      The location in the users List of moods map that moodEvent occurrs.
+     *
      * @return A new instance of fragment EditFragment.
      */
     public static EditFragment newInstance(MoodEvent moodEvent, int index) {
@@ -100,11 +103,25 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         return fragment;
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment when we are adding a new MoodEvent.
+     *
+     * @return A new instance of fragment EditFragment.
+     */
     public static EditFragment newInstance() {
         // called when we don't pass in a MoodEvent
         return new EditFragment();
     }
 
+    /**
+     * Check if arguments were set on fragment initialization. If no arguments were
+     * set then we did not pass in a MoodEvent and its index meaning we were not
+     * editing an existing MoodEvent but rather, were creating a new one. Sets the
+     * global moodSet variable to indicate in onCreateView whether we are editing or
+     * adding. Saves the passed in MoodEvent and its index if we are editing for calling
+     * User.editMood() on submit button press.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +136,17 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         }
     }
 
+    /**
+     * Graphical initialization of the fragment. Handles the cases for when
+     * we are editing or adding a MoodEvent separately. When we are editing
+     * we need to initialize the fields from the existing MoodEvent's attributes
+     * and 'select' the appropriate EmotionalState gridView. When adding a new mood
+     * we initialize a new empty/null MoodEvent.
+     *
+     * Input from the fields is pulled. Enforces input requirements.
+     *
+     * Returns the View at the end.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -208,12 +236,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 String str = charSequence.toString();
                 String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
 
-                // reason must be 3 words or less
-                if (splitStr.length > 3) {
-                    buttonSubmitView.setEnabled(false); // disable the button
-                }
-                else {
+                // reason must be 3 words or less and must have all required fields set
+                if (splitStr.length <= 3 && emotionalState != null) {
                     buttonSubmitView.setEnabled(true);
+                }
+                else { // disable the button
+                    buttonSubmitView.setEnabled(false);
                 }
             }
 
@@ -269,13 +297,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
+    /**
+     * The onItemClick listener for the EmotionalState selector gridview. Callback invoked
+     * when an item in the AdapterView has been clicked.
+     *
+     * @param   adapterView
+     *      An AdapterView that was clicked on in the fragment.
+     * @param   view
+     *      The view within the AdapterView that was clicked.
+     * @param   i
+     *      The position of the view in the adapter.
+     * @param   l
+     *      The row id of the item that was clicked.
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (adapterView.getId() == R.id.state_grid_view) {
@@ -287,18 +321,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         }
     }
 
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 

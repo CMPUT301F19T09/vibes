@@ -3,12 +3,10 @@ package com.cmput301f19t09.vibes.models;
 import android.util.Pair;
 
 import com.cmput301f19t09.vibes.R;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This enumeration associates each colour name with its rgb value.
@@ -17,6 +15,7 @@ import java.util.Set;
  * ColourEnum.COLOUR.getValue()
  */
 enum ColourEnum {
+    // Colours and their values.
     YELLOW (0xffffcd05),
     LIGHT_GREEN (0xff24ff53),
     GREEN (0xff009900),
@@ -29,10 +28,20 @@ enum ColourEnum {
 
     private int value;
 
+    /**
+     * @param value : int
+     *
+     * Sets value to the value passed in
+     */
     ColourEnum(int value) {
         this.value = value;
     }
 
+    /**
+     * @return value : int
+     *
+     * Returns the value of the ColourEnum
+     */
     public int getValue(){
         return this.value;
     }
@@ -85,28 +94,48 @@ public class EmotionalState implements Serializable {
         this.colour = (int) pair.second;
     }
 
+    /**
+     * @return emotion : String
+     *
+     * Returns the name of the emotion as a String
+     */
     public String getEmotion(){
         return emotion;
     }
 
+    /**
+     * @return file : int
+     *
+     * Returns the layout file of the image of the emotion.
+     */
     public int getImageFile() {
         return this.file;
     }
 
+    /**
+     * @return colour : int
+     *
+     * Returns the rgb value of the colour corresponding to the mood
+     */
     public int getColour() {
         return this.colour;
     }
 
-
     /**
      * @return map : HashMap<>
      *
-     * Returns map, the static HashMap
+     * Returns map, the static HashMap where the keys are the emotion
+     * names and the values are Pair (first is image resource, second is rgb value of colour)
      */
     public static Map<String, Pair> getMap(){
         return map;
     }
 
+    /**
+     * @return keys : ArrayList<>
+     *
+     * Returns the keys of map
+     */
     public static ArrayList<String> getListOfKeys() {
         return new ArrayList<>(map.keySet());
     }

@@ -92,10 +92,10 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         {
             case OWN_MOODS:         // Show own moods
             case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
-                adapter = new OwnMoodListAdapter(getContext(), user);
+                adapter = new OwnMoodListAdapter(getContext());
                 break;
             case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
-                adapter = new FollowedMoodListAdapter(getContext(), user);
+                adapter = new FollowedMoodListAdapter(getContext());
                 break;
         }
 
@@ -142,7 +142,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         if (displayType != OWN_MOODS)
         {
             Log.d("MoodListFragment", "Setting adapter to OwnMoodAdapter");
-            setAdapter(new OwnMoodListAdapter(getContext(), user));
+            setAdapter(new OwnMoodListAdapter(getContext()));
         }
 
         displayType = OWN_MOODS;
@@ -156,7 +156,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         if (displayType != FOLLOWED_MOODS)
         {
             Log.d("MoodListFragment", "Setting adapter to FollowedMoodAdapter");
-            setAdapter(new FollowedMoodListAdapter(getContext(), user));
+            setAdapter(new FollowedMoodListAdapter(getContext()));
         }
 
         displayType = FOLLOWED_MOODS;
@@ -174,6 +174,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
     /*
     Set the filter for mood types
+    TODO: Create docs, but this stuff isn't implemented yet
      */
     public void addFilter(int filter)
     {

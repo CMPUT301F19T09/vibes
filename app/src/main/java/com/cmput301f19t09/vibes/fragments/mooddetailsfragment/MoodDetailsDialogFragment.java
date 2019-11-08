@@ -28,6 +28,11 @@ import com.cmput301f19t09.vibes.models.UserManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+/*
+This fragment opens a Dialog that shows the event. If the event belongs to the current user, then
+it is editable and the user can delete it from the database. Clicking on the user's profile picture
+will open the profile (ProfileFragmetn) of that user
+ */
 public class MoodDetailsDialogFragment extends DialogFragment
 {
     private MoodEvent event;
@@ -35,6 +40,14 @@ public class MoodDetailsDialogFragment extends DialogFragment
     private User eventUser;
     private boolean editable;
 
+
+    /*
+    Create a new fragment for the event, set the editable flag to editable
+    @param event
+        The MoodEvent to show the details of
+    @param editable
+        Whether the MoodEvent should be editable
+     */
     public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
     {
         Bundle bundle = new Bundle();
@@ -53,13 +66,13 @@ public class MoodDetailsDialogFragment extends DialogFragment
     {
         Bundle arguments = getArguments();
 
-        event = (MoodEvent) arguments.getSerializable("event");
-        user = UserManager.getCurrentUser();
-        eventUser = event.getUser();
-        editable = arguments.getBoolean("editable");
-
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.mood_details, null);
+
+        event = (MoodEvent) arguments.getSerializable("event");
+        user = UserManager.getCurrentUser(); // The current user of the app
+        eventUser = event.getUser();         // The user who posted the event
+        editable = arguments.getBoolean("editable");
 
         ImageView userImage, emotionImage, reasonImage;
         TextView userUsername, userFullName, moodTime, moodReason;
@@ -77,22 +90,30 @@ public class MoodDetailsDialogFragment extends DialogFragment
         editButton = view.findViewById(R.id.edit_button);
         confirmButton = view.findViewById(R.id.confirm_button);
 
+        // Set profile picture and crop to a circle
         Glide.with(getContext()).load(eventUser.getProfileURL()).into(userImage);
+        userImage.setClipToOutline(true);
+
+        // Set emotion picture and colour
         emotionImage.setImageResource(event.getState().getImageFile());
         emotionImage.setColorFilter(event.getState().getColour());
-
-        userImage.setClipToOutline(true);
         emotionImage.setClipToOutline(true);
+
         deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
 
+        // Set the username and user's name fields
         userUsername.setText(eventUser.getUserName());
         userFullName.setText(eventUser.getFirstName() + " " + eventUser.getLastName());
 
-        LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
-        Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
+        // Calculate the time since the event was posted
+        Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
 
         String timeString = "~";
 
+        /*
+        Set the field that displays time (e.g. ~5s)
+        TODO: Make this better
+         */
         if (timeSincePost.getSeconds() < 60)
         {
             timeString += timeSincePost.getSeconds() + " s";
@@ -123,6 +144,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
         }
         else
         {
+            // If the MoodEvent is not editable, disable the editButton, this also disables the delte
+            // button
             editButton.setVisibility(View.GONE);
         }
 
@@ -135,10 +158,16 @@ public class MoodDetailsDialogFragment extends DialogFragment
             @Override
             public void onClick(View v)
             {
-                //moodItem.user.deleteMood(moodItem.getIndex());
+                // Calculate the index of this event within the user's list of events
                 int mood_index = eventUser.getMoodEvents().indexOf(event);
-                Log.d("TEST", "Trying to remove event from user " + eventUser.getUserName());
-                Log.d("TEST", "Trying to remove mood with index " + mood_index);
+
+                // If the event doesn't exist in the user, return (i.e. the event has been deleted since
+                // the fragment was opened
+                if (mood_index == -1)
+                {
+                    return;
+                }
+
                 eventUser.deleteMood(mood_index);
 
                 dismiss();
@@ -156,6 +185,14 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     public void onDismiss(DialogInterface dialog)
                     {
                         int mood_index = eventUser.getMoodEvents().indexOf(event);
+
+                        // If the mood is not within the user, return
+                        if (mood_index == -1)
+                        {
+                            return;
+                        }
+
+                        // Open an edit fragment for the mood
                         ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event, mood_index));
                     }
                 });
@@ -175,16 +212,21 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         userImage.setOnClickListener((View v) ->
                 {
+                    /*
+                    When the dialog has closed, open a ProfileFragment for the Event's user,
+                     */
                     dialog.setOnDismissListener((DialogInterface d) ->
                     {
                         ProfileFragment profileFragment;
 
                         if (user == eventUser)
                         {
+                            // Open own profile
                             profileFragment = ProfileFragment.newInstance();
                         }
                         else
                         {
+                            // Open other user's profile
                             profileFragment = ProfileFragment.newInstance(eventUser.getUid());
                         }
                         ((MainActivity) getActivity()).setMainFragment(profileFragment);
@@ -193,7 +235,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     dialog.dismiss();
                 });
 
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.circle);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.vibes_logo_round);
 
         return dialog;
     }
