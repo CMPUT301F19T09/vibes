@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -13,7 +14,7 @@ import java.time.LocalTime;
  *
  * @see something?
  */
-public class MoodEvent extends Event implements Serializable {
+public class MoodEvent extends Event implements Serializable, Comparable {
     // date not optional
     // time not optional
     // description optional
@@ -69,5 +70,12 @@ public class MoodEvent extends Event implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    // returns negative int if this MoodEvent is before m2; o if the same; 1 if the other way around
+    @Override
+    public int compareTo(Object o) {
+        // if m2 has a more recent time then it will return 1
+        return ((MoodEvent) o).getLocalDateTime().compareTo(this.getLocalDateTime());
     }
 }
