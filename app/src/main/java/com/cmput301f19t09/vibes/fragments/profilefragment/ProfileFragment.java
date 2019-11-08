@@ -15,6 +15,7 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Observable;
@@ -32,22 +33,15 @@ public class ProfileFragment extends Fragment implements Observer {
     private Button followButton;
     private ListenerRegistration registration;
 
-    public static ProfileFragment newInstance(User user) {
+    public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
-        user.addObserver(profileFragment);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        profileFragment.setArguments(bundle);
         return profileFragment;
     }
 
-    public static ProfileFragment newInstance(User user, User otherUser) {
+    public static ProfileFragment newInstance(String otherUserUID) {
         ProfileFragment profileFragment = new ProfileFragment();
-        //user.addObserver(profileFragment);
-        otherUser.addObserver(profileFragment);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        bundle.putSerializable("otherUser", otherUser);
+        bundle.putString("otherUserUID", otherUserUID);
         profileFragment.setArguments(bundle);
         return profileFragment;
     }
@@ -71,7 +65,7 @@ public class ProfileFragment extends Fragment implements Observer {
 //        ImageView profileMask = view.findViewById(R.id.profile_mask);
 //        profileMask.setImageResource(R.drawable.round_mask);
 
-        User user = (User) getArguments().getSerializable("user");
+        User user = UserManager.getUser(UserManager.getUserUID());
         User otherUser = (User) getArguments().getSerializable("otherUser");
 
         followButton.setOnClickListener(new View.OnClickListener() {
