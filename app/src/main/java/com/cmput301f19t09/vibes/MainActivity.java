@@ -41,6 +41,8 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * MainActivity is the main activity that shows up in the app right now.
@@ -67,10 +69,7 @@ public class MainActivity extends FragmentActivity {
         currentButtonMode = ButtonMode.MAP;
 
         Intent intent = getIntent();
-        String username = (String) intent.getSerializableExtra("username");
-
-        user = new User("testuser");
-//        user = new User("testuser4", "Test", "User4", "testuser4@example.com");
+        User user = (User) intent.getSerializableExtra("user");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
