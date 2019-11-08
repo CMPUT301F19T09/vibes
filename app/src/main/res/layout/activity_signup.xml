@@ -11,105 +11,119 @@
         android:scaleType="centerCrop"
         android:src="@drawable/login_background" />
 
-    <TextView
-        android:id="@+id/logo"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
-        android:fontFamily="@font/housescript"
-        android:gravity="center"
-        android:lineSpacingExtra="12sp"
-        android:text="vibes."
-        android:textColor="#fff"
-        android:textSize="100sp"
-        android:typeface="normal" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/username_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="240dp"
-        android:ems="10"
-        android:hint="Username"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="text" />
+        <TextView
+            android:id="@+id/logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/housescript"
+            android:gravity="center"
+            android:lineSpacingExtra="12sp"
+            android:text="vibes."
+            android:textColor="#fff"
+            android:textSize="80sp"
+            android:typeface="normal" />
 
-    <EditText
-        android:id="@+id/email_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="300dp"
-        android:ems="10"
-        android:hint="Email"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="textEmailAddress" />
+        <EditText
+            android:id="@+id/username_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="Username"
+            android:inputType="text" />
 
-    <EditText
-        android:id="@+id/first_name_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="360dp"
-        android:ems="10"
-        android:hint="First Name"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="text" />
+        <EditText
+            android:id="@+id/email_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
 
-    <EditText
-        android:id="@+id/last_name_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="420dp"
-        android:ems="10"
-        android:hint="Last Name"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="text" />
+        <EditText
+            android:id="@+id/first_name_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="First Name"
+            android:inputType="text" />
 
-    <EditText
-        android:id="@+id/password_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="480dp"
-        android:ems="10"
-        android:hint="Password"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="textPassword" />
+        <EditText
+            android:id="@+id/last_name_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="Last Name"
+            android:inputType="text" />
 
-    <EditText
-        android:id="@+id/confirm_password_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="540dp"
-        android:ems="10"
-        android:hint="Confirm Password"
-        android:fontFamily="@font/roboto_thin"
-        android:inputType="textPassword" />
+        <EditText
+            android:id="@+id/password_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="Password"
+            android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/sign_up_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="96dp"
-        android:layout_marginTop="600dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textColor="@android:color/white"
-        android:background="@drawable/rounded_button"
-        android:text="Sign Up" />
+        <EditText
+            android:id="@+id/confirm_password_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_thin"
+            android:hint="Confirm Password"
+            android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="192dp"
-        android:layout_marginTop="600dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textColor="@android:color/white"
-        android:background="@drawable/rounded_button_blue"
-        android:text="Login Instead" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/sign_up_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="96dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@android:color/white"
+                android:background="@drawable/rounded_button"
+                android:text="Sign Up" />
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@android:color/white"
+                android:background="@drawable/rounded_button_blue"
+                android:padding="8dp"
+                android:text="Login Instead" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

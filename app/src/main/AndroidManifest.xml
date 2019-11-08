@@ -23,7 +23,8 @@
         </activity>
         <activity
             android:name="com.cmput301f19t09.vibes.SignUpActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name="com.cmput301f19t09.vibes.MainActivity">
         </activity>

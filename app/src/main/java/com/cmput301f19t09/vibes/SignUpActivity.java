@@ -43,6 +43,8 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseStorage mStorage;
     private StorageReference mStorageReference;
 
+    private boolean isLoading = false;
+
     final private String TAG = "authentication";
     final private String USER_COLLECTION = "users";
 
@@ -74,10 +76,15 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = passwordTextView.getText().toString();
                 String confirmPassword = confirmPasswordTextView.getText().toString();
 
-                if (validatePasswordMatch(password, confirmPassword)) {
-                    createUserFirebaseAuth(email, username, firstName, lastName, password);
+                if (!isLoading) {
+                    if (validatePasswordMatch(password, confirmPassword)) {
+                        createUserFirebaseAuth(email, username, firstName, lastName, password);
+                        isLoading = true;
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(SignUpActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SignUpActivity.this, "Please wait... creating your account", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -111,6 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             // Handle if user email address already exists
                             Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            isLoading = false;
                         }
                     }
                 });
@@ -140,6 +148,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.d(TAG, "Data addition successful");
 
                         startLoginActivity();
+                        isLoading = false;
 
                         Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
                         mStorageReference = mStorage.getReference(picturePath);
@@ -158,6 +167,7 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "Data addition unsuccessful");
                         Toast.makeText(SignUpActivity.this, "There was an error creating your account", Toast.LENGTH_LONG).show();
+                        isLoading = false;
                     }
                 });
     }
