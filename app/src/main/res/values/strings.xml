@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">vibes</string>
+    <string name="mood_event_title">vibes.</string>
+    <string name="date">Date (yyyy-mm-dd)</string>
+    <string name="time">Time (hh:mm)</string>
+    <string name="state">Emotional state</string>
+    <string name="enter_context">Social Situation (+ decimal)</string>
+    <string name="use_location">Use location</string>
+    <string name="enter_reason">Reason (20 characters or 3 words)</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
 </resources>
