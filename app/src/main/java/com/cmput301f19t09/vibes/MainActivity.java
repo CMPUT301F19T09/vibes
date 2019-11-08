@@ -210,11 +210,13 @@ public class MainActivity extends FragmentActivity {
                 User testuser3 = new User("testuser3");
                 User testuser4 = new User("testuser4");
 
-
+/*
                 testuser.addMood(generateRandomEvent(testuser));
                 testuser2.addMood(generateRandomEvent(testuser2));
                 testuser3.addMood(generateRandomEvent(testuser3));
                 testuser4.addMood(generateRandomEvent(testuser4));
+                *
+ */
             }
         });
     }
@@ -361,7 +363,7 @@ public class MainActivity extends FragmentActivity {
             manager.popBackStack();
         }
     }
-
+/*
     private MoodEvent generateRandomEvent(User user)
     {
         Random random = new Random();
@@ -392,5 +394,7 @@ public class MainActivity extends FragmentActivity {
 
         return new MoodEvent(time.toLocalDate(), time.toLocalTime(), reason, state, situation, l, user);
     }
+
+ */
 }
 
