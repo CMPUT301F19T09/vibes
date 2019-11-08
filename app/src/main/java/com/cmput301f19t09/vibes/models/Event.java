@@ -2,7 +2,9 @@ package com.cmput301f19t09.vibes.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -13,7 +15,9 @@ import java.time.format.DateTimeParseException;
  */
 public class Event implements Serializable {
     protected LocalDate date; // format yyyy-MM-dd; ISO_LOCAL_DATE
-    protected LocalTime time; // format HH:mm:ss; ISO_LOCAL_TIME
+    protected static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    protected LocalTime time; // format HH:mm
+    protected static DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     protected String description;
 
     public Event(LocalDate date, LocalTime time, String description) {
@@ -70,7 +74,7 @@ public class Event implements Serializable {
     }
 
     public String getTimeString() {
-        return time.format(DateTimeFormatter.ISO_LOCAL_TIME);
+        return time.format(timeFormatter);
     }
 
     /**
@@ -84,7 +88,7 @@ public class Event implements Serializable {
      */
     public boolean setTime(String time) {
         try {
-            LocalTime formattedTime = LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_TIME);
+            LocalTime formattedTime = LocalTime.parse(time, timeFormatter);
 
             // if we get here then format of time was correct
             this.time = formattedTime;
@@ -116,5 +120,15 @@ public class Event implements Serializable {
         this.description = description;
     }
 
-    //
+    // returns the combined date and time as a local datetime object
+    public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.of(date, time);
+    }
+
+    // returns the epoch time since dateTime converted to UTC
+    public long getEpochUTC() {
+        LocalDateTime dateTime = getLocalDateTime();
+        // set timezone to utc
+        return dateTime.toEpochSecond(ZoneOffset.UTC);
+    }
 }

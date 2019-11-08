@@ -15,6 +15,9 @@ public class MapData extends ArrayList<UserPoint> implements Serializable {
         super(initialCapacity);
     }
 
+    /**
+     * The constructor for mapdata. It stores UserPoint objects to be bundled.
+     */
     public MapData() {
     }
 

@@ -26,6 +26,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,7 @@ public class User extends Observable implements Serializable {
      */
     public User(String uid) {
         this.uid = uid;
+        Log.d("TEST", "Creating user with username " + userName);
 
         if(!connectionStarted){ // Makes sure these definitions are called only once.
             connectionStarted = true;
@@ -212,6 +214,7 @@ public class User extends Observable implements Serializable {
      * @return
      */
     public String getUserName() {
+        Log.d("TEST", "returning username " + userName);
         return userName;
     }
 
@@ -421,8 +424,19 @@ public class User extends Observable implements Serializable {
      */
     public MoodEvent getMostRecentMoodEvent() {
         MoodEvent moodEvent;
-        if (moodEvents.size() != 0) {
-            moodEvent = moodEvents.get(moodEvents.size() - 1);
+        if (moodEvents != null && moodEvents.size() != 0) {
+
+            moodEvent = moodEvents.get(0);
+
+            for (MoodEvent event : moodEvents)
+            {
+                if (event.compareTo(moodEvent) <= 0)
+                {
+                    moodEvent = event;
+                }
+            }
+
+            //moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {
             Log.d("INFO", "No mood events");
@@ -436,13 +450,13 @@ public class User extends Observable implements Serializable {
         } else {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
-            mood.put("emotion", "SADNESS");
+            mood.put("emotion", moodEvent.getState().getEmotion());
             mood.put("location", new GeoPoint(53.23, -115.44));
             mood.put("photo", null);
-            mood.put("reason", "Something else");
-            mood.put("social", 1);
-            mood.put("timestamp", time.toEpochSecond(ZoneOffset.from(time)));
-            mood.put("username", "testuser");
+            mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
+            mood.put("reason", moodEvent.getDescription());
+            mood.put("social", moodEvent.getSocialSituation());
+            mood.put("username", moodEvent.getUser().getUserName());
 
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
