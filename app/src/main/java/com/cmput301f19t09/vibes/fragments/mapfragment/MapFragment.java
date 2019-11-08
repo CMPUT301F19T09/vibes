@@ -40,7 +40,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, Observer{
-    MapData data;
     GoogleMap googlemap;
 
     boolean firstPointPut = false;
@@ -57,20 +56,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     private Map<String, MoodEvent> displayedEvents;
 
     /**
-     * An example for calling this MapFragment can be found below.
-     * FragmentManager fragmentManager = getSupportFragmentManager();
-     *         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-     *
-     *         MapFragment fragment = new MapFragment();
-     *         Bundle bundle = new Bundle();
-     *         MapData showingUsers = new MapData();
-     *         showingUsers.add(UserPoint.getMockUser());
-     *
-     *         bundle.putSerializable("MapData", showingUsers);
-     *         fragment.setArguments(bundle);
-     *
-     *         fragmentTransaction.add(R.id.map_container, fragment);
-     *         fragmentTransaction.commit();
+     * The map fragment shows the locations of the moods.
+     * It can show an interactive UserPoint, helping the mood to be able to get edited or viewed
+     * by the user.
      */
     public MapFragment() {
         // Required empty public constructor
@@ -83,7 +71,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
     /**
-     * Checks for the bundle MapData.
+     * Checks for the bundle.
      * @param savedInstanceState
      */
     @Override
@@ -91,10 +79,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         super.onCreate(savedInstanceState);
 
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            data = (MapData) bundle.getSerializable("MapData");
-            Log.d("MAPFRAGMENT: ", "" + data.size());
-        }
     }
 
     /**
@@ -190,7 +174,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * This is a callback function. It is called when the map is ready.
-     * It goes throught the data MapData, and and calls showUserPoint(UserPoint) for each item in it.
      * @param mMap
      */
     @Override
@@ -200,11 +183,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         mMap.clear();
-        if(this.data != null){
-                for (UserPoint p:this.data) {
-                    this.showUserPoint(p);
-                }
-        }
 
         googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override

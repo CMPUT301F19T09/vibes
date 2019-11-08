@@ -229,8 +229,7 @@ public class MainActivity extends FragmentActivity {
 
         viewButton.setImageResource(image);
     }
-
-
+    
     @Override
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
