@@ -41,8 +41,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     {
         if (observed_users == null)
         {
-
+            return;
         }
+
         List<String> followed_users = user.getFollowingList();
 
         for (String followed_user : followed_users)

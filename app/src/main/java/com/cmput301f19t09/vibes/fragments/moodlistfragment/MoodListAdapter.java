@@ -94,6 +94,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
+            emotionImage.setColorFilter(Color.parseColor(event.getState().getColour()));
             emotionColour.setBackgroundResource(R.drawable.circle);
             //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
@@ -140,6 +141,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     private void initialize()
     {
         user.readData();
+        initializeData();
     }
 
     public void initializeData() { }

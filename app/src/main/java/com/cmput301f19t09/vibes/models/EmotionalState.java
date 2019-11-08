@@ -13,7 +13,7 @@ public class EmotionalState implements Serializable {
     private static final Map<String, Pair> map = new HashMap<>();
     static {
         //Ref: https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values#8229518
-        Pair<Integer, String> happiness = new Pair<>(R.drawable.emotion_image_happiness, "YELLOW");
+        Pair<Integer, String> happiness = new Pair<>(R.drawable.emotion_image_happiness, "RED");
         map.put("HAPPINESS", happiness);
         Pair<Integer, String> trust = new Pair<>(R.drawable.emotion_image_trust, "LIGHT_GREEN");
         map.put("TRUST", trust);
@@ -21,7 +21,7 @@ public class EmotionalState implements Serializable {
         map.put("FEAR", fear);
         Pair<Integer, String> surprise = new Pair<>(R.drawable.emotion_image_surprise, "BLUE");
         map.put("SURPRISE", surprise);
-        Pair<Integer, String> sadness = new Pair<>(R.drawable.emotion_image_sadness, "INDIGO");
+        Pair<Integer, String> sadness = new Pair<>(R.drawable.emotion_image_sadness, "BLUE");
         map.put("SADNESS", sadness);
         Pair<Integer, String> disgust = new Pair<>(R.drawable.emotion_image_disgust, "PURPLE");
         map.put("DISGUST", disgust);

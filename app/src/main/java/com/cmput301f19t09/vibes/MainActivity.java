@@ -224,17 +224,18 @@ public class MainActivity extends FragmentActivity {
         long maxEpochSecond = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         long epochSecond = random.nextLong() % maxEpochSecond;
 
-        LocalDateTime time = LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC);
+        //LocalDateTime time = LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC);
+        LocalDateTime time = LocalDateTime.now();
 
         EmotionalState state;
 
         if (epochSecond % 2 == 0)
         {
-            state = new EmotionalState("HAPPY");
+            state = new EmotionalState("HAPPINESS");
         }
         else
         {
-            state = new EmotionalState("SAD");
+            state = new EmotionalState("SADNESS");
         }
 
         String reason = "RANDOM EVENT";
