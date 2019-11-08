@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -34,16 +35,21 @@ public class SplashActivity extends AppCompatActivity {
 
         Intent intent;
 
-        mAuth.signOut();
-
         if (mAuth.getCurrentUser() != null) {
-            User user = new User(mAuth.getCurrentUser().getUid());
             intent = new Intent(this, MainActivity.class);
-            intent.putExtra("user", user);
+            if (UserManager.getCurrentUser() == null)
+            {
+                UserManager.registerCurrentUser((User currentUser) -> {
+                    startActivity(intent);
+                });
+            }
+            else {
+                startActivity(intent);
+            }
         } else {
             intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
 
-        startActivity(intent);
     }
 }

@@ -73,10 +73,13 @@ public class LoginActivity extends AppCompatActivity {
     public void startMainActivity() {
         //User user = new User(mAuth.getCurrentUser().getUid());
         String userId = mAuth.getCurrentUser().getUid();
-        UserManager.registerUser(userId);
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user_id", userId);
-        startActivity(intent);
+        //UserManager.registerCurrentUser(userId);
+        UserManager.registerCurrentUser((User currentUser) ->
+        {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("user_id", userId);
+            startActivity(intent);
+        });
     }
 
     public void loginUser(String email, String password) {
@@ -93,5 +96,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

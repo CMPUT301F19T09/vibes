@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:fontFamily="@font/parisienne"
+            android:fontFamily="@font/housescript"
             android:gravity="center"
             android:lineSpacingExtra="12sp"
             android:text="vibes."
@@ -36,6 +36,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="20dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="Username"
             android:inputType="text" />
 
@@ -46,6 +47,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="Email"
             android:inputType="textEmailAddress" />
 
@@ -56,6 +58,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="First Name"
             android:inputType="text" />
 
@@ -66,6 +69,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="Last Name"
             android:inputType="text" />
 
@@ -76,6 +80,7 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="Password"
             android:inputType="textPassword" />
 
@@ -86,25 +91,35 @@
             android:layout_marginLeft="100dp"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_thin"
             android:hint="Confirm Password"
             android:inputType="textPassword" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
 
             <Button
                 android:id="@+id/sign_up_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="96dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@android:color/white"
+                android:background="@drawable/rounded_button"
                 android:text="Sign Up" />
 
             <Button
                 android:id="@+id/login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@android:color/white"
+                android:background="@drawable/rounded_button_blue"
+                android:padding="8dp"
                 android:text="Login Instead" />
 
         </LinearLayout>
