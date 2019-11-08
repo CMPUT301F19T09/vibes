@@ -142,7 +142,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 
     private void initialize()
     {
-        UserManager.addUserObserver(user.getUserName(), this);
+        UserManager.addUserObserver(user.getUid(), this);
         initializeData();
     }
 
@@ -152,6 +152,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 
     public void destroy()
     {
-        UserManager.removeUserObserver(user.getUserName(), this);
+        UserManager.removeUserObserver(user.getUid(), this);
     }
 }

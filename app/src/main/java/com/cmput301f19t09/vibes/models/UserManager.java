@@ -27,6 +27,7 @@ public class UserManager
         else
         {
             User user = new User(user_id);
+            user.readData((User u) -> {});
             ListenerRegistration registration = user.getSnapshotListener();
             registeredUsers.put(user_id,
                     new Pair(registration, user));

@@ -156,8 +156,9 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View view) {
 //                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
 //                replaceFragment(ProfileFragment.class);
-                User user = new User("testuser");
                 setMainFragment(ProfileFragment.newInstance(user));
+
+//                getSupportFragmentManager().findFragmentById()
 //                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
 
@@ -245,7 +246,6 @@ public class MainActivity extends FragmentActivity {
      */
     public void updateMap() {
 
-        User user = new User("testuser"); // Getting the test user
         Log.d("filter", ""+ this.mapFilter);
 
 
