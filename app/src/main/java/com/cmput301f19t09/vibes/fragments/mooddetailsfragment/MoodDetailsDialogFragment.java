@@ -21,7 +21,6 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.EditFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
-import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.time.Duration;

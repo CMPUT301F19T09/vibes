@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
-import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.time.Duration;
@@ -36,9 +35,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     protected static final Comparator<MoodEvent> COMPARE_BY_DATE;
 
     static {
-        COMPARE_BY_DATE = new Comparator<MoodEvent>() {
-            @Override
-            public int compare(MoodEvent o1, MoodEvent o2)
+        COMPARE_BY_DATE = (MoodEvent o1, MoodEvent o2) ->
             {
                 if (o1 == null || o2 == null)
                 {
@@ -49,8 +46,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
                 LocalDateTime t2 = LocalDateTime.of(o2.getDate(), o2.getTime());
 
                 return t2.compareTo(t1);
-            }
-        };
+            };
     }
 
     protected List<MoodEvent> data;
@@ -59,7 +55,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 
     public MoodListAdapter(Context context, User user)
     {
-        //super(context, R.layout.mood_list_item);
         super(context, 0);
 
         this.context = context;
@@ -163,7 +158,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     private void initialize()
     {
         user.readData();
+        initializeData();
     }
 
+    public void initializeData() {refreshData();}
     public abstract void refreshData();
 }

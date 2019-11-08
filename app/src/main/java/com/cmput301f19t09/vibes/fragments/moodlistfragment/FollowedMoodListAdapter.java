@@ -1,9 +1,9 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
-import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
@@ -16,43 +16,84 @@ import java.util.Observer;
  */
 public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 {
-    private List<User> followed_users;
+    interface FollowedUserListener extends Observer
+    {
+        @Override
+        void update(Observable o, Object arg);
+    }
+
+    private List<String> observed_users;
 
     public FollowedMoodListAdapter(Context context, User user)
     {
         super(context, user);
-        followed_users = new ArrayList<User>();
+    }
+
+    @Override
+    public void initializeData()
+    {
+        observed_users = new ArrayList<String>();
+        super.initializeData();
     }
 
     @Override
     public void refreshData()
     {
-        clear();
-
-        data = new ArrayList<MoodEvent>();
-        for (User followed_user : followed_users)
+        if (observed_users == null)
         {
-            data.add(followed_user.getMostRecentMoodEvent());
-        }
-        data.sort(COMPARE_BY_DATE);
 
-        addAll(data);
+        }
+        List<String> followed_users = user.getFollowingList();
+
+        for (String followed_user : followed_users)
+        {
+            if (!observed_users.contains(followed_user))
+            {
+                User user = new User(followed_user);
+                user.addObserver((Observable o, Object arg) ->
+                {
+                    refreshEvent((User) o);
+                });
+                user.readData();
+            }
+        }
     }
 
-    private void populateList()
+    public void refreshEvent(User user)
     {
-        clear();
+        Log.d("TEST", "Refreshing event for " + user.getUserName());
 
-        for (String username : user.getFollowingList())
+        boolean replaced = false;
+        for (MoodEvent event : data)
         {
-            User followed_user = new User(username);
-            followed_users.add(followed_user);
-            followed_user.addObserver(this);
+            if (event.getUser().getUserName() == user.getUserName())
+            {
+                clear();
+
+                data.remove(event);
+                data.add(user.getMostRecentMoodEvent());
+                data.sort(COMPARE_BY_DATE);
+
+                addAll(data);
+
+                replaced = true;
+
+                Log.d("TEST", "Replaced the event");
+
+                break;
+            }
         }
 
-        for (User followed_user : followed_users)
+        if (! replaced)
         {
-            followed_user.readData();
+            clear();
+
+            data.add(user.getMostRecentMoodEvent());
+            data.sort(COMPARE_BY_DATE);
+
+            addAll(data);
+
+            Log.d("TEST", "Event didn't exist, added new event");
         }
     }
 
@@ -61,13 +102,13 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     {
         User u = (User) o;
 
-        if (user.equals(u) || u.getFollowingList().size() != followed_users.size())
+        if (u == user)
         {
-            populateList();
+            refreshData();
         }
         else
         {
-            refreshData();
+            refreshEvent(u);
         }
     }
 }

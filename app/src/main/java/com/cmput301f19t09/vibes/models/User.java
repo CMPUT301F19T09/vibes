@@ -515,7 +515,7 @@ public class User extends Observable implements Serializable {
      */
     public MoodEvent getMostRecentMoodEvent() {
         MoodEvent moodEvent;
-        if (moodEvents.size() != 0) {
+        if (moodEvents != null && moodEvents.size() != 0) {
             moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {
