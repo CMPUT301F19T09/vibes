@@ -14,6 +14,14 @@ public class UserPoint implements Serializable {
     private String emotion;
     private String reason;
 
+    /**
+     * Constructor for creating a userpoint.
+     * @param username
+     * @param location
+     * @param moodId
+     * @param emotion
+     * @param reason
+     */
     public UserPoint(String username, LatLng location, int moodId, String emotion, String reason) {
         this.username = username;
         this.location = location;
@@ -22,6 +30,13 @@ public class UserPoint implements Serializable {
         this.reason = reason;
     }
 
+    /**
+     * constructor for creating a user point with given parameters.
+     * @param username
+     * @param location
+     * @param emotion
+     * @param reason
+     */
     public UserPoint(String username, LatLng location, String emotion, String reason) {
         this.username = username;
         this.location = location;
@@ -37,21 +52,38 @@ public class UserPoint implements Serializable {
         return new UserPoint("testuser",new LatLng(53.5461, 113.4938), 0, "HAPPY", "I am pregnant");
     }
 
+    /**
+     * Returns username
+     * @return
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets username
+     * @param username
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Returns the location
+     * @return
+     */
     LatLng getLocation() {
         return location;
     }
 
+    /**
+     * Sets the location
+     * @param location
+     */
     public void setLocation(LatLng location) {
         this.location = location;
     }
+
 
     public int getMoodId() {
         return moodId;
