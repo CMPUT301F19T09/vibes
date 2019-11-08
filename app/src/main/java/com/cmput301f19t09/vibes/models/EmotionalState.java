@@ -106,7 +106,7 @@ public class EmotionalState implements Serializable {
     public static Map<String, Pair> getMap(){
         return map;
     }
-    
+
     public static ArrayList<String> getListOfKeys() {
         return new ArrayList<>(map.keySet());
     }
