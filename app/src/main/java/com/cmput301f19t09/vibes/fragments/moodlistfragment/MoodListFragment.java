@@ -66,7 +66,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
                 MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
                 boolean editable = event.getUser() == user;
 
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, user, editable));
             }
         });
 

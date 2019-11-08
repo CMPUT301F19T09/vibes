@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 
@@ -38,7 +39,7 @@ public class ProfileFragment extends Fragment implements Observer {
 
     public static ProfileFragment newInstance(User user, User otherUser) {
         ProfileFragment profileFragment = new ProfileFragment();
-        user.addObserver(profileFragment);
+        //user.addObserver(profileFragment);
         otherUser.addObserver(profileFragment);
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
@@ -91,9 +92,18 @@ public class ProfileFragment extends Fragment implements Observer {
         } else {
             followButton.setVisibility(View.VISIBLE);
             otherUser.readData();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+            //MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
+            //FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            //fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+
+            otherUser.addObserver((Observable o, Object arg) ->
+            {
+                User u = (User) o;
+
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.add(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                transaction.commit();
+            });
         }
         return view;
     }
