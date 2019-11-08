@@ -72,7 +72,7 @@ public class UserPoint implements Serializable {
      * Returns the location
      * @return
      */
-    LatLng getLocation() {
+    public LatLng getLocation() {
         return location;
     }
 
