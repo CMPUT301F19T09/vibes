@@ -146,6 +146,7 @@ public class ProfileFragment extends Fragment implements Observer {
             } else {
                 // Not following the viewed user shows nothing
                 followButton.setVisibility(View.VISIBLE);
+                setInfo(otherUser);
             }
         }
         return view;
