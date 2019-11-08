@@ -459,7 +459,7 @@ public class User extends Observable implements Serializable {
 
             for (MoodEvent event : moodEvents)
             {
-                if (event.compareTo(moodEvent) <= 0)
+                if (moodEvent.compareTo(event) <= 0)
                 {
                     moodEvent = event;
                 }

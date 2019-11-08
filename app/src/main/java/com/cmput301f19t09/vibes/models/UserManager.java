@@ -9,18 +9,16 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observer;
+import java.util.function.Consumer;
 
 public class UserManager
 {
     private static Map<String, Pair<ListenerRegistration, User>> registeredUsers;
-    public static final String UID;
+    private static String UID;
 
     static
     {
         registeredUsers = new HashMap<String, Pair<ListenerRegistration, User>>();
-        UID = FirebaseAuth.getInstance().getUid();
-
-        registerUser(UID);
     }
 
     public static void registerUser(String user_id)
@@ -106,8 +104,32 @@ public class UserManager
         return registeredUsers.get(user_id).second;
     }
 
+    public static void registerCurrentUser(Consumer<User> callback)
+    {
+        UID = FirebaseAuth.getInstance().getUid();
+        User user = new User(UID);
+        ListenerRegistration registration = user.getSnapshotListener();
+        registeredUsers.put(UID,
+                new Pair(registration, user));
+        user.readData((User u) -> {
+            callback.accept(u);
+        });
+    }
+
     public static User getCurrentUser()
     {
-        return registeredUsers.get(UID).second;
+        if (registeredUsers.containsKey(UID))
+        {
+            return registeredUsers.get(UID).second;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static String getCurrentUserUID()
+    {
+        return UID;
     }
 }

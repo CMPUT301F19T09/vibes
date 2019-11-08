@@ -9,6 +9,7 @@ import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -96,6 +97,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             return;
         }
 
+        Comparator<Object> reverse_chronolgical = (Object o1, Object o2) ->
+        {
+            return ((MoodEvent)o2).compareTo(o1);
+        };
+
         /*
         Iterate through the list and check if an event associated with user exists, if it does,
         replace that event with the most recent MoodEvent
@@ -103,13 +109,16 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         boolean replaced = false;
         for (MoodEvent event : data)
         {
+
+
             if (event.getUser().getUid().equals(user.getUid()))
             {
                 clear();
 
                 data.remove(event);
                 data.add(user.getMostRecentMoodEvent());
-                Collections.sort(data);
+                //Collections.sort(data);
+                data.sort(reverse_chronolgical);
 
                 addAll(data);
 
@@ -129,7 +138,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             clear();
 
             data.add(user.getMostRecentMoodEvent());
-            Collections.sort(data);
+            data.sort(reverse_chronolgical);
+            //Collections.sort(data);
 
             addAll(data);
 

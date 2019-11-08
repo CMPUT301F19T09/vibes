@@ -37,10 +37,15 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
         for (MoodEvent event : events)
         {
-            data.add(event);
+            //data.add(event);
         }
 
-        Collections.sort(data);
+        //Collections.sort(data);
+        data.sort((Object o1, Object o2) ->
+        {
+            return ((MoodEvent)o2).compareTo(o1);
+        });
+
         addAll(data);
         notifyDataSetChanged();
     }

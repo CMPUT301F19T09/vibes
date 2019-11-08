@@ -25,6 +25,6 @@ public class UserManagerTest
     @Test
     void testGetCurrentUser()
     {
-        
+
     }
 }
