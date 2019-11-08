@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -70,9 +71,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void startMainActivity() {
-        User user = new User(mAuth.getCurrentUser().getUid());
+        //User user = new User(mAuth.getCurrentUser().getUid());
+        String userId = mAuth.getCurrentUser().getUid();
+        UserManager.registerUser(userId);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user", user);
+        intent.putExtra("user_id", userId);
         startActivity(intent);
     }
 

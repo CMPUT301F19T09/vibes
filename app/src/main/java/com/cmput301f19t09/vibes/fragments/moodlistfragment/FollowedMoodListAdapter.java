@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     @Override
     public void initializeData()
     {
-        observed_users = new ArrayList<String>();
+       observed_users = new ArrayList<String>();
+       refreshData();
     }
 
     @Override
@@ -49,19 +51,29 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             if (!observed_users.contains(followed_user))
             {
-                User user = new User(followed_user);
-                user.addObserver((Observable o, Object arg) ->
+                User user = UserManager.getUser(followed_user);
+                observed_users.add(followed_user);
+
+                if (user.isLoaded())
+                {
+                    refreshEvent(user);
+                }
+
+                UserManager.addUserObserver(followed_user, (Observable o, Object a) ->
                 {
                     refreshEvent((User) o);
                 });
-                user.readData();
             }
         }
     }
 
-    public void refreshEvent(User user)
-    {
+    public void refreshEvent(User user) {
         Log.d("TEST", "Refreshing event for " + user.getUserName());
+
+        if (user.getMostRecentMoodEvent() == null)
+        {
+            return;
+        }
 
         boolean replaced = false;
         for (MoodEvent event : data)
@@ -110,5 +122,15 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             refreshEvent(u);
         }
+    }
+
+    @Override
+    public void destroy()
+    {
+        for (String user : observed_users)
+        {
+            UserManager.removeUserObservers(user);
+        }
+        super.destroy();
     }
 }

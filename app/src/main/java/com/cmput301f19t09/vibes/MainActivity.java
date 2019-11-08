@@ -39,6 +39,7 @@ import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,11 +70,13 @@ public class MainActivity extends FragmentActivity {
         currentButtonMode = ButtonMode.MAP;
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
+        String user_id = (String) intent.getSerializableExtra("user_id");
+
+        user = UserManager.getUser(user_id);
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
+        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
 
         FragmentManager manager = getSupportFragmentManager();
@@ -153,8 +156,9 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View view) {
 //                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
 //                replaceFragment(ProfileFragment.class);
-                User user = new User("testuser");
-                setMainFragment(ProfileFragment.newInstance(user));
+                setMainFragment(ProfileFragment.newInstance());
+
+//                getSupportFragmentManager().findFragmentById()
 //                User user = new User("testuser");
                 //setMainFragment(ProfileFragment.newInstance(user, true));
 
@@ -182,7 +186,7 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode) {
                     case LIST:
-                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
+                        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
@@ -242,7 +246,6 @@ public class MainActivity extends FragmentActivity {
      */
     public void updateMap() {
 
-        User user = new User("testuser"); // Getting the test user
         Log.d("filter", ""+ this.mapFilter);
 
 
