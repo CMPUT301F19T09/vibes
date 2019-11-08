@@ -37,12 +37,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
     private User user;
     private MoodListFilterFragment filterFragment;
 
-    public static MoodListFragment newInstance(String user_id, int displayType)
+    public static MoodListFragment newInstance(int displayType)
     {
         MoodListFragment fragment = new MoodListFragment();
         Bundle arguments = new Bundle();
 
-        arguments.putString("id", user_id);
         arguments.putInt("type", displayType);
         fragment.setArguments(arguments);
 
@@ -74,7 +73,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         Bundle arguments = getArguments();
 
         displayType = arguments.getInt("type");
-        user = UserManager.getUser(arguments.getString("id"));
+        user = UserManager.getCurrentUser();
 
         switch (displayType)
         {

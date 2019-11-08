@@ -3,6 +3,7 @@ package com.cmput301f19t09.vibes.models;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.HashMap;
@@ -12,10 +13,14 @@ import java.util.Observer;
 public class UserManager
 {
     private static Map<String, Pair<ListenerRegistration, User>> registeredUsers;
+    public static final String UID;
 
     static
     {
         registeredUsers = new HashMap<String, Pair<ListenerRegistration, User>>();
+        UID = FirebaseAuth.getInstance().getUid();
+
+        registerUser(UID);
     }
 
     public static void registerUser(String user_id)
@@ -36,7 +41,7 @@ public class UserManager
 
     public static void unregisterUser(String user_id)
     {
-        if (registeredUsers.containsKey(user_id))
+        if (registeredUsers.containsKey(user_id) && !UID.equals(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             ListenerRegistration registration = p.first;
@@ -83,5 +88,10 @@ public class UserManager
         }
 
         return registeredUsers.get(user_id).second;
+    }
+
+    public static User getCurrentUser()
+    {
+        return registeredUsers.get(UID).second;
     }
 }

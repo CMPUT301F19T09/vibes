@@ -19,6 +19,7 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
