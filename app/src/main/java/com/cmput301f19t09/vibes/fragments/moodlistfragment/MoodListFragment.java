@@ -57,6 +57,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         ListView listView = view.findViewById(R.id.ml_listview);
         FrameLayout filterContainer = view.findViewById(R.id.filter_root);
 
+        user = UserManager.getCurrentUser();
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
@@ -66,7 +68,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
                 MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
                 boolean editable = event.getUser() == user;
 
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, user, editable));
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
             }
         });
 
@@ -87,7 +89,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         }
 
         listView.setAdapter(adapter);
-        user.addObserver(adapter);
 
         filterFragment = MoodListFilterFragment.newInstance();
 
@@ -104,13 +105,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         }
 
         return view;
-    }
-
-    @Override
-    public void onDestroy()
-    {
-        adapter.destroy();
-        super.onDestroy();
     }
 
     private void setAdapter(MoodListAdapter adapter)

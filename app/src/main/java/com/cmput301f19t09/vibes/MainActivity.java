@@ -76,7 +76,7 @@ public class MainActivity extends FragmentActivity {
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(user.getUid(), MoodListFragment.OWN_MOODS));
+        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
 
         FragmentManager manager = getSupportFragmentManager();
@@ -186,7 +186,7 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode) {
                     case LIST:
-                        setMainFragment(MoodListFragment.newInstance(user.getUid(), MoodListFragment.OWN_MOODS));
+                        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:

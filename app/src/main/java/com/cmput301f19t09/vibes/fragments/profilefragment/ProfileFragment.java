@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment implements Observer {
 
              */
             user.addMood();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(user.getUid(), MoodListFragment.OWN_MOODS_LOCKED);
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 

@@ -33,7 +33,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     @Override
     public void initializeData()
     {
-        observed_users = new ArrayList<String>();
+       observed_users = new ArrayList<String>();
+       refreshData();
     }
 
     @Override

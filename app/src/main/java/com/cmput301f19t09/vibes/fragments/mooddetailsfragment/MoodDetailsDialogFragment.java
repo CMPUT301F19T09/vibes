@@ -23,6 +23,7 @@ import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -34,13 +35,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
     private User eventUser;
     private boolean editable;
 
-    public static MoodDetailsDialogFragment newInstance(MoodEvent event, User user, boolean editable)
+    public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
     {
         Bundle bundle = new Bundle();
         MoodDetailsDialogFragment fragment = new MoodDetailsDialogFragment();
 
         bundle.putSerializable("event", event);
-        bundle.putSerializable("user", user);
         bundle.putBoolean("editable", editable);
         fragment.setArguments(bundle);
 
@@ -54,7 +54,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
         Bundle arguments = getArguments();
 
         event = (MoodEvent) arguments.getSerializable("event");
-        user = (User) arguments.getSerializable("user");
+        user = UserManager.getCurrentUser();
         eventUser = event.getUser();
         editable = arguments.getBoolean("editable");
 

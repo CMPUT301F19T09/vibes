@@ -48,6 +48,8 @@ public class User extends Observable implements Serializable {
     private List<String> followingList;
     private List<String> requestedList;
 
+    private boolean loadedData;
+
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
     private transient static FirebaseFirestore db;
@@ -91,6 +93,7 @@ public class User extends Observable implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.picturePath = "image/" + this.userName + ".png";
+        this.loadedData = true;
 
         Map<String, Object> userData = new HashMap<>();
         userData.put("first", userName);
@@ -151,6 +154,8 @@ public class User extends Observable implements Serializable {
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
         }
+
+        this.loadedData = false;
     }
 
     public ListenerRegistration getSnapshotListener() {
@@ -167,6 +172,7 @@ public class User extends Observable implements Serializable {
                 followingList = (List<String>) documentSnapshot.get("following_list");
                 requestedList = (List<String>) documentSnapshot.get("requested_list");
                 moods = (List<Map>) documentSnapshot.get("moods");
+                loadedData = true;
 
                 List<Map> moods = (List<Map>) documentSnapshot.get("moods");
 
@@ -234,6 +240,7 @@ public class User extends Observable implements Serializable {
                         profileURL = uri;
                         Log.d("INFO", "Loaded profile picture URL");
                         firebaseCallback.onCallback(User.this);
+                        loadedData = true;
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -250,6 +257,11 @@ public class User extends Observable implements Serializable {
                 Log.d("INFO", "Cannot load info");
             }
         });
+    }
+
+    public boolean isLoaded()
+    {
+        return loadedData;
     }
 
     public String getUid()
