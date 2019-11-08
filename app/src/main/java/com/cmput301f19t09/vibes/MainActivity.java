@@ -9,25 +9,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -35,15 +26,8 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
-import com.cmput301f19t09.vibes.models.EmotionalState;
-import com.cmput301f19t09.vibes.models.Mood;
-import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 /**
  * MainActivity is the main activity that shows up in the app right now.
@@ -59,28 +43,26 @@ public class MainActivity extends FragmentActivity {
 
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
 
-    /**
-     * Initialize the activity, setting the button listeners and setting the default fragment to a MoodList
-     **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        currentButtonMode = ButtonMode.MAP;
+        // Set the button in the bottom left to open the map fragment
 
         Intent intent = getIntent();
         String user_id = (String) intent.getSerializableExtra("user_id");
 
-        user = UserManager.getUser(user_id);
-
-        initListeners(); // Defines onClickListeners for the components defined above in the class.
+        // Defines onClickListeners for the components defined above in the class.
+        intializeViews();
 
         setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
-        updateViewButton(); // Updates the view button only.
 
+        /*
+            Add a backstack listener to change what the "view" (list/map) button displays
+            when a new fragment is opened
+         */
         FragmentManager manager = getSupportFragmentManager();
-
         manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
@@ -123,12 +105,13 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    /**
-     * Puts in listeners
+    /*
+     *  Initializes the views in the main activity layout
      */
-    private void initListeners() {
+    private void intializeViews() {
 
         fragment_root = R.id.main_fragment_root;
+        currentButtonMode = ButtonMode.MAP;
 
         View addButton, searchButton, profileButton, followingButton, viewButton;
         addButton = findViewById(R.id.main_add_button);
@@ -197,9 +180,16 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
+
+        updateViewButton(); // Updates the view button only.
     }
 
 
+    /*
+        Creates a FragmentTransaction which replaces the current fragment with the specified one
+        @param fragment
+            the fragment to place in the main view
+     */
     public void setMainFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
@@ -210,7 +200,9 @@ public class MainActivity extends FragmentActivity {
     }
 
     /*
-    Open a dialog fragment
+        Creates a FragmentTransaction to open a DialogFragmnent in the main view
+        @param fragment
+            the fragment to open
      */
     public void openDialogFragment(DialogFragment fragment) {
         FragmentManager manager = getSupportFragmentManager();

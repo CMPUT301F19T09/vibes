@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 
+/*
+Subclass of MoodListAdapter, this loads a user's own mood events
+ */
 public class OwnMoodListAdapter extends MoodListAdapter
 {
     public OwnMoodListAdapter(Context context, User user)
@@ -17,6 +20,9 @@ public class OwnMoodListAdapter extends MoodListAdapter
         super(context, user);
     }
 
+    /*
+    Clear the data list, iterates through the User's mood events and adds them to the data list
+     */
     @Override
     public void refreshData()
     {
@@ -31,20 +37,31 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
         for (MoodEvent event : events)
         {
-            data.add(event);
+            //data.add(event);
         }
 
-        Collections.sort(data);
+        //Collections.sort(data);
+        data.sort((Object o1, Object o2) ->
+        {
+            return ((MoodEvent)o2).compareTo(o1);
+        });
+
         addAll(data);
         notifyDataSetChanged();
     }
 
+    /*
+    Calls refresh data
+     */
     @Override
     public void initializeData()
     {
         refreshData();
     }
 
+    /*
+    When the User notifies it's observers this refreshesData incase any MoodEvents have changed
+     */
     @Override
     public void update(Observable user, Object arg)
     {

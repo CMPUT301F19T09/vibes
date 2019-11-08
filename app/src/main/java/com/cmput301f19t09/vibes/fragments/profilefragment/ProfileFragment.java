@@ -137,7 +137,7 @@ public class ProfileFragment extends Fragment implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        UserManager.removeUserObserver(UserManager.UID, this);
+        UserManager.removeUserObserver(UserManager.getCurrentUserUID(), this);
         if (otherUser != null) {
             UserManager.removeUserObservers(otherUser.getUid());
         }
