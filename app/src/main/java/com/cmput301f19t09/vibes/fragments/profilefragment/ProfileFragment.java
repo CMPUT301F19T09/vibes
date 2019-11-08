@@ -93,29 +93,30 @@ public class ProfileFragment extends Fragment implements Observer {
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
         } else {
-            followButton.setVisibility(View.VISIBLE);
-            if (otherUser.isLoaded())
-            {
-                Log.d("TEST", "Other user loaded");
-                setInfo(otherUser);
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
-                transaction.commit();
-            }
-            else
-            {
-                Log.d("TEST", "Other user not loaded");
-            }
+            if (user.getFollowingList().contains(otherUser.getUid())) {
+                followButton.setVisibility(View.INVISIBLE);
+            } else {
+                followButton.setVisibility(View.VISIBLE);
+                if (otherUser.isLoaded()) {
+                    Log.d("TEST", "Other user loaded");
+                    setInfo(otherUser);
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+                    transaction.commit();
+                } else {
+                    Log.d("TEST", "Other user not loaded");
+                }
 
-            otherUser.addObserver((Observable o, Object arg) ->
-            {
-                User u = (User) o;
-                setInfo(u);
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
-                transaction.commit();
-            });
-            setInfo(otherUser);
+                otherUser.addObserver((Observable o, Object arg) ->
+                {
+                    User u = (User) o;
+                    setInfo(u);
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                    transaction.commit();
+                });
+                setInfo(otherUser);
+            }
         }
         return view;
     }
