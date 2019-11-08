@@ -87,7 +87,6 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
             UserManager.addUserObserver(user.getUid(), this);
-            user.addMood();
             setInfo(user);
             MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
