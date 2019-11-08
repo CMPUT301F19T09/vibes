@@ -112,6 +112,7 @@ public class FollowingFragment extends Fragment {
         // its adapter set to followingAdapter
         followingAdapter = new FollowingFragmentAdapter(getActivity(), followingList);
         followingAdapter.setLayout(R.layout.following_list);
+        followingAdapter.setActivity(getActivity());
         followingListView = view.findViewById(R.id.following_list);
         followingListView.setAdapter(followingAdapter);
 
@@ -120,31 +121,33 @@ public class FollowingFragment extends Fragment {
         // its adapter set to requestedAdapter
         requestedAdapter = new FollowingFragmentAdapter(getActivity(), requestedList);
         requestedAdapter.setLayout(R.layout.requested_list);
+        requestedAdapter.setActivity(getActivity());
         requestedListView = view.findViewById(R.id.requested_list);
         requestedListView.setAdapter(requestedAdapter);
 
 
-        // Opens profile of followee clicked on
-        followingListView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) ->
-        {
-            User clickedUser = (User) parent.getItemAtPosition(position);
-            ProfileFragment profileFragment;
-            profileFragment = ProfileFragment.newInstance(clickedUser.getUid());
-            ((MainActivity) getActivity()).setMainFragment(profileFragment);
-        });
-
-        // Opens profile of requestee clicked on
-        requestedListView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) ->
-        {
-            Log.d("ddddddddddddddddddddd", "dddddddddddddddddddddddddddd");
-            User clickedUser = (User) parent.getItemAtPosition(position);
-            ProfileFragment profileFragment;
-            profileFragment = ProfileFragment.newInstance(clickedUser.getUid());
-            ((MainActivity) getActivity()).setMainFragment(profileFragment);
-        });
+//        // Opens profile of followee clicked on
+//        followingListView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) ->
+//        {
+//            User clickedUser = (User) parent.getItemAtPosition(position);
+//            ProfileFragment profileFragment;
+//            profileFragment = ProfileFragment.newInstance(clickedUser.getUid());
+//            ((MainActivity) getActivity()).setMainFragment(profileFragment);
+//        });
+//
+//        // Opens profile of requestee clicked on
+//        requestedListView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) ->
+//        {
+//            Log.d("ddddddddddddddddddddd", "dddddddddddddddddddddddddddd");
+//            User clickedUser = (User) parent.getItemAtPosition(position);
+//            ProfileFragment profileFragment;
+//            profileFragment = ProfileFragment.newInstance(clickedUser.getUid());
+//            ((MainActivity) getActivity()).setMainFragment(profileFragment);
+//        });
 
 
         return view;
     }
+
 
 }
