@@ -1,5 +1,8 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+/*
+    This class will be used to apply
+ */
 public abstract class MoodFilter
 {
     public static final int SHOW_HAPPY = 1 << 0;
