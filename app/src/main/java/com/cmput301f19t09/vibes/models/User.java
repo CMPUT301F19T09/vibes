@@ -4,7 +4,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
-import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,11 +38,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class User extends Observable implements Serializable {
+    private String uid;
     private String userName;
     private String firstName;
     private String lastName;
     private String email;
-    private String TAG = "Sample";
     private String picturePath;
     private List<String> followingList;
     private List<Mood> result;
@@ -58,23 +57,19 @@ public class User extends Observable implements Serializable {
     private transient static FirebaseStorage storage;
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
-
     private transient List<Map> moods;
+
     private static boolean connectionStarted;
 
     // This is the number of elements in the mood map on firebase.
     // I used it to check if a map is complete to show it on the map.
-    private final int MAP_MOOD_SIZE = 7;
-    /**
-     *
-     */
+    final private int MAP_MOOD_SIZE = 7;
+    final private String TAG = "Sample";
+
     public interface FirebaseCallback {
         void onCallback(User user);
     }
 
-    /**
-     *
-     */
     public interface UserExistListener {
         void onUserExists();
         void onUserNotExists();
@@ -98,99 +93,17 @@ public class User extends Observable implements Serializable {
         }
     }
 
-    /*
-    /**
-     *
-     * @param userName
-     * @param firstName
-     * @param lastName
-     * @param email
-    public User(String userName, String firstName, String lastName, String email) {
-        this();
-        this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.picturePath = "image/" + this.userName + ".png";
+    public User(String uid) {
+        this.uid = uid;
+        Log.d("TEST", "Creating user from id " + uid);
 
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("first", userName);
-        userData.put("last", lastName);
-        userData.put("email", email);
-        userData.put("following_list", new ArrayList<>());
-        userData.put("moods", new ArrayList<>());
-        userData.put("profile_picture", picturePath);
-        userData.put("requested_list", new ArrayList<>());
+        if(!connectionStarted){ // Makes sure these definitions are called only once.
+            connectionStarted = true;
 
-        collectionReference.document(userName).set(userData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                        storageReference = storage.getReference(picturePath);
-                        storageReference.putFile(imageUri).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "Failed to store default profile picture");
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Data failed to store in Firestore");
-                    }
-                });
-    }
-    */
-    /**
-     *
-     * @param userName
-     */
-    public User(String userName) {
-        this();
-        Log.d("TEST", "Creating user with username " + userName);
-        this.userName = userName;
-
-//        if(userName == null){
-//            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
-//        }
-
-        // Using SnapshotListener helps reduce load times and obtains from local cache
-        // Ref https://firebase.google.com/docs/firestore/query-data/listen
-//        documentReference = collectionReference.document(userName);
-//        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//                firstName = documentSnapshot.getString("first");
-//                lastName = documentSnapshot.getString("last");
-//                email = documentSnapshot.getString("email");
-//                picturePath = documentSnapshot.getString("profile_picture");
-//                followingList = (List<String>) documentSnapshot.get("following_list");
-//                moods = (List<Map>) documentSnapshot.get("moods");
-//
-//                List<Map> moods = (List<Map>) documentSnapshot.get("moods");
-//
-//                moodEvents = parseToMoodEvent();
-//
-//                storageReference = storage.getReference(picturePath);
-//                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        profileURL = uri;
-//                        Log.d(TAG, "Loaded profile picture URL");
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d(TAG, "Cannot retrieve profile picture download url");
-//                    }
-//                });
-//
-//                Log.d(TAG, "Loaded user information");
-//            }
-//        });
+            db = FirebaseFirestore.getInstance();
+            collectionReference = db.collection("users");
+            storage = FirebaseStorage.getInstance();
+        }
     }
 
     public ListenerRegistration getSnapshotListener() {
@@ -242,14 +155,14 @@ public class User extends Observable implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
-        if(userName == null){
+        if(uid == null){
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
         Log.d("TEST", "Reading in ALL data");
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
-        documentReference = collectionReference.document(userName);
+        documentReference = collectionReference.document(uid);
 
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -292,6 +205,11 @@ public class User extends Observable implements Serializable {
         });
     }
 
+    public String getUid()
+    {
+        return uid;
+    }
+
     /**
      *
      * @return
@@ -315,6 +233,14 @@ public class User extends Observable implements Serializable {
     public String getUserName() {
         Log.d("TEST", "returning username " + userName);
         return userName;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getPicturePath() {
+        return picturePath;
     }
 
     /**
@@ -354,7 +280,7 @@ public class User extends Observable implements Serializable {
      * @param userExistListener
      */
     public void exists(UserExistListener userExistListener) {
-        collectionReference.document(userName).get()
+        collectionReference.document(uid).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -549,7 +475,7 @@ public class User extends Observable implements Serializable {
             mood.put("social", moodEvent.getSocialSituation());
             mood.put("username", moodEvent.getUser().getUserName());
 
-            documentReference = collectionReference.document(userName);
+            documentReference = collectionReference.document(uid);
             documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -600,7 +526,7 @@ public class User extends Observable implements Serializable {
         mood.put("timestamp", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
         mood.put("username", "testuser");
 
-        documentReference = collectionReference.document(userName);
+        documentReference = collectionReference.document(uid);
         documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -623,7 +549,7 @@ public class User extends Observable implements Serializable {
             return;
         } else {
             moods.remove(index.intValue());
-            documentReference = collectionReference.document(userName);
+            documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {

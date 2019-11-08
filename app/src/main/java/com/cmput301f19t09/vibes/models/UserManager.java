@@ -18,69 +18,69 @@ public class UserManager
         registeredUsers = new HashMap<String, Pair<ListenerRegistration, User>>();
     }
 
-    private static void registerUser(String username)
+    public static void registerUser(String user_id)
     {
-        if (registeredUsers.containsKey(username))
+        if (registeredUsers.containsKey(user_id))
         {
             return;
         }
         else
         {
-            User user = new User(username);
+            User user = new User(user_id);
             ListenerRegistration registration = user.getSnapshotListener();
-            registeredUsers.put(username,
+            registeredUsers.put(user_id,
                     new Pair(registration, user));
         }
     }
 
-    private static void unregisterUser(String username)
+    public static void unregisterUser(String user_id)
     {
-        if (registeredUsers.containsKey(username))
+        if (registeredUsers.containsKey(user_id))
         {
-            Pair<ListenerRegistration, User> p = registeredUsers.get(username);
+            Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             ListenerRegistration registration = p.first;
             registration.remove();
 
-            registeredUsers.remove(username);
+            registeredUsers.remove(user_id);
         }
     }
 
-    public static void addUserObserver(String username, Observer observer)
+    public static void addUserObserver(String user_id, Observer observer)
     {
-        if ( !registeredUsers.containsKey(username))
+        if ( !registeredUsers.containsKey(user_id))
         {
-            registerUser(username);
+            registerUser(user_id);
         }
 
-        Pair<ListenerRegistration, User> p = registeredUsers.get(username);
+        Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
 
         u.addObserver(observer);
     }
 
-    public static void removeUserObserver(String username, Observer observer)
+    public static void removeUserObserver(String user_id, Observer observer)
     {
-        if ( registeredUsers.containsKey(username))
+        if ( registeredUsers.containsKey(user_id))
         {
-            Pair<ListenerRegistration, User> p = registeredUsers.get(username);
+            Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             User user = p.second;
 
             user.deleteObserver(observer);
 
             if (user.countObservers() == 0)
             {
-                unregisterUser(user.getUserName());
+                unregisterUser(user_id);
             }
         }
     }
 
-    public static User getUser(String username)
+    public static User getUser(String user_id)
     {
-        if ( !registeredUsers.containsKey(username) )
+        if ( !registeredUsers.containsKey(user_id) )
         {
-            registerUser(username);
+            registerUser(user_id);
         }
 
-        return registeredUsers.get(username).second;
+        return registeredUsers.get(user_id).second;
     }
 }
