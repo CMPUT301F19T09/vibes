@@ -25,6 +25,7 @@ public class UserManager
 
     public static void registerUser(String user_id)
     {
+        Log.d("USERMANAGER", "Register user: " + user_id);
         if (registeredUsers.containsKey(user_id))
         {
             return;
