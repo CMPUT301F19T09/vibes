@@ -74,7 +74,9 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.user = user;
     }
 
-    // returns negative int if this MoodEvent is before m2; 0 if the same; 1 if the other way around
+    // returns negative int if this MoodEvent is before o; 0 if the same; 1 if the other way around
+    // A positive integer, if the current object is greater than the passed in object o.
+    // A negative integer, if the current object is less than the passed in object o.
     @Override
     public int compareTo(Object o) {
         // if m2 has a more recent time then it will return 1
