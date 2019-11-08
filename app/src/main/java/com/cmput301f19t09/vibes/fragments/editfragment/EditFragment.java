@@ -1,34 +1,29 @@
-package com.cmput301f19t09.vibes.fragments;
+package com.cmput301f19t09.vibes.fragments.editfragment;
 
-import android.app.Activity;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -44,7 +39,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
  * TODO: handle limiting the reason
  * TODO: pull coordinates from gps
  */
-public class EditFragment extends Fragment {
+public class EditFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     // the fragment initialization parameters
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
@@ -55,9 +50,10 @@ public class EditFragment extends Fragment {
 
     private TextView dateTextView;
     private TextView timeTextView;
-    private EditText editStateView;
+    private GridView stateGridView;
+    private TextView stateTextView;
+    private EmotionalState emotionalState = null;
     private EditText editSituationView;
-    private TextView locationTextView;
     private EditText editReasonView;
     private Button buttonSubmitView;
     private Button buttonCancelView;
@@ -132,23 +128,25 @@ public class EditFragment extends Fragment {
         buttonSubmitView.setEnabled(false);
         buttonCancelView.setEnabled(true);
 
+
+        stateGridView = view.findViewById(R.id.state_grid_view);
+        stateGridView.setAdapter(new ImageAdapter(getActivity()));
+        stateGridView.setOnItemClickListener(this);
+        stateTextView = view.findViewById(R.id.state_text_view);
+
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
-        editStateView = view.findViewById(R.id.edit_state_view);
         editSituationView = view.findViewById(R.id.edit_situation_view);
-        locationTextView = view.findViewById(R.id.location_text_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
-        location = new Location("");
+        location = new Location(""); // empty provider when not pulling from a location service
 
         if (moodSet) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
 
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
-            editStateView.setText(moodEvent.getState().getEmotion());
             editSituationView.setText(moodEvent.getSocialSituation());
-            locationTextView.setText(moodEvent.getLocationString());
             editReasonView.setText(moodEvent.getDescription());
         }
         else {
@@ -165,42 +163,16 @@ public class EditFragment extends Fragment {
             // TODO: fix location handling
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
-            String tmp = Location.convert(
-                                location.getLatitude(), Location.FORMAT_DEGREES)
-                                + " "
-                                + Location.convert(location.getLongitude(), Location.FORMAT_DEGREES
-                        );
-
-            locationTextView.setText(tmp);
 
             // set moodEvent to be an empty new MoodEvent object
             moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
 
         }
 
-        // create textListeners for each required field to validate input
-        // having a textListener polling each field allows to validate input after each change
-        editStateView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Auto-generated stub; do nothing
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                checkRequiredFields();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // Auto-generated stub; do nothing
-            }
-        });
-
         buttonSubmitView.setOnClickListener(view1 -> {
             moodEvent.setDate(dateTextView.getText().toString());
             moodEvent.setTime(timeTextView.getText().toString());
-            moodEvent.setState(new EmotionalState(editStateView.getText().toString().toUpperCase()));
+            moodEvent.setState(emotionalState);
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
             }
@@ -239,6 +211,26 @@ public class EditFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (adapterView.getId() == R.id.state_grid_view) {
+            // hardcoded positions match the hardcoded images specified in the ImageAdapter
+            switch (i) { // i is position of clicked image
+                case 0: {
+                    emotionalState = new EmotionalState("HAPPY");
+                    break;
+                }
+                case 1: {
+                    emotionalState = new EmotionalState("SAD");
+                    break;
+                }
+            }
+            // update the state text view
+            stateTextView.setText(emotionalState.getEmotion());
+            checkRequiredFields();
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -256,12 +248,12 @@ public class EditFragment extends Fragment {
 
     private void checkRequiredFields() {
         // check if date and time have been set valid and no other field (except comment) is empty
-        if (    !editStateView.getText().toString().isEmpty() &&
-                EmotionalState.getMap().containsKey(editStateView.getText().toString().toUpperCase())) {
+        if (emotionalState != null) {
 
             // then enable button
             buttonSubmitView.setEnabled(true);
-        } else {
+        }
+        else {
             // disable button
             buttonSubmitView.setEnabled(false);
         }

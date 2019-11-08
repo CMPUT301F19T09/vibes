@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,32 +17,31 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
-import com.cmput301f19t09.vibes.models.MoodItem;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Observer;
 
 /*
     This class is responsible for displ
  */
-public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
+public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
 {
-    protected List<MoodItem> data;
-    protected List<MoodEvent> mood_data;
+    protected List<MoodEvent> data;
     protected User user;
     private Context context;
 
     public MoodListAdapter(Context context, User user)
     {
-        //super(context, R.layout.mood_list_item);
         super(context, 0);
 
         this.context = context;
         this.user = user;
-        this.data = new ArrayList<MoodItem>();
+        this.data = new ArrayList<MoodEvent>();
 
         initialize();
     }
@@ -59,11 +59,21 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             item = inflater.inflate(R.layout.mood_list_item, null);
         }
 
-        User user = data.get(position).user;
-        MoodEvent event = data.get(position).event;
+        //User user = data.get(position).user;
+        //MoodEvent event = data.get(position).event;
+
+        MoodEvent event = data.get(position);
+
+        if (event == null)
+        {
+            return item;
+        }
+
+        User user = event.getUser();
 
         ImageView userImage, emotionImage, userMask;
         TextView userUsername, userFullName, moodReason, moodTime;
+        View emotionColour;
 
         userImage = item.findViewById(R.id.user_image);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
@@ -74,6 +84,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
+        //emotionColour = item.findViewById(R.id.emotion_colour);
 
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
@@ -83,8 +94,16 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
+            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
+            emotionImage.setColorFilter(event.getState().getColour());
+            //emotionColour.setBackgroundResource(R.drawable.circle);
+            //emotionColour.setBackgroundColor(Color.parseColor(event.getState().getColour()));
 
-            Duration timeSincePost = data.get(position).timeSinceEvent();
+            //Duration timeSincePost = data.get(position).timeSinceEvent();
+
+            LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
+            Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
+
             String timeString = "~";
 
             if (timeSincePost.getSeconds() < 60)
@@ -123,8 +142,10 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
     private void initialize()
     {
         user.readData();
+        initializeData();
     }
 
-    protected abstract void initializeData();
+    public void initializeData() { }
+
     public abstract void refreshData();
 }
