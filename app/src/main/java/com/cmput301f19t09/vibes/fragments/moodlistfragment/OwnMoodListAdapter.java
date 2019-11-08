@@ -16,9 +16,9 @@ Subclass of MoodListAdapter, this loads a user's own mood events
  */
 public class OwnMoodListAdapter extends MoodListAdapter
 {
-    public OwnMoodListAdapter(Context context, User user)
+    public OwnMoodListAdapter(Context context)
     {
-        super(context, user);
+        super(context);
     }
 
     /*
@@ -63,6 +63,10 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
     /*
     When the User notifies it's observers this refreshesData incase any MoodEvents have changed
+    @param user
+        the user, should be current user
+    @param arg
+        optional argument, unused
      */
     @Override
     public void update(Observable user, Object arg)

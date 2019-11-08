@@ -28,9 +28,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     // Maintain a list of the UIDs of users that this user observes
     private List<String> observed_users;
 
-    public FollowedMoodListAdapter(Context context, User user)
+    public FollowedMoodListAdapter(Context context)
     {
-        super(context, user);
+        super(context);
     }
 
     /*
