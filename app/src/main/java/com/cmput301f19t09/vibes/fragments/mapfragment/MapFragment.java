@@ -87,7 +87,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(googlemap != null){
 
             MarkerOptions options = new MarkerOptions();
-            options.position(point.getLocation());
+            options.position(new LatLng(point.getLat(), point.getLong()));
             if(point.getReason()!=null){
                 options.snippet(point.getReason());
             }
@@ -98,17 +98,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
             Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
             options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
-//            switch(point.getEmotion()) {
-//                case "HAPPINESS":
-//                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
-//                    break;
-//            }
             googlemap.addMarker(options);
 
             if(!firstPointPut ){
                 firstPointPut = true;
                 CameraPosition googlePlex = CameraPosition.builder()
-                .target(point.getLocation())
+                .target(new LatLng(point.getLat(), point.getLong()))
                 .zoom(3)
                 .bearing(0)
                 .tilt(45)

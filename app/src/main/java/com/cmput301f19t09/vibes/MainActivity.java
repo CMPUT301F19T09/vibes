@@ -186,9 +186,9 @@ public class MainActivity extends FragmentActivity {
                         setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
-                    case MAP:
                     default:
                         showMap();
+                        updateMap();
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
@@ -242,37 +242,42 @@ public class MainActivity extends FragmentActivity {
      * This is called after having a change in the mapFilter fragment.
      */
     public void updateMap() {
-        this.showMap();
-    }
 
-    /**
-     * Shows the map fragment in the main fragment container.
-     */
-    public void showMap() {
-        // Test user for now. This will be updated
-        User user = new User("testuser");
+        User user = new User("testuser"); // Getting the test user
+        Log.d("filter", ""+ this.mapFilter);
 
-        MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
-        if(myFragment == null ){
-            MapFragment mapFragment = MapFragment.getInstance();
-            MapFilter mapFilterFragment = MapFilter.getInstance(this.mapFilter);
-            stackFragment(mapFilterFragment, "filterFragment", mapFragment, "mapFragment");
-        }
 
+
+        // If filter is at mine, shows only my moods
         if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
+            // This branch works when filter is everyone followed
+            MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
+            if(myFragment != null){
+                // Clearing out the map
+                GoogleMap gmap = myFragment.getGooglemap();
+                gmap.clear();
+            }
+
             user.readData(new User.FirebaseCallback() {
                 @Override
                 public void onCallback(User user) {
+                    // Call back for getting user.
+                    // After getting the user the map shows the point.
                     MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
 //                    List<Mood> moodsShowing = user.getMoods();
                     List<MoodEvent> moodsShowing = user.getMoodEvents();
+                    // Looping through every loop
                     for(MoodEvent mood: moodsShowing){
-                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(), -1, mood.getState().getEmotion(), mood.getDescription());
                         myFragment.showUserPoint(userpoint);
                     }
                 }
             });
-        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE){
+        }else if(mapFilter == MapFragment.Filter.SHOW_EVERYONE) {
+            // This branch works when filter is everyone followed
+            MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
+
+            // Clearing out the map
             GoogleMap gmap = myFragment.getGooglemap();
             gmap.clear();
 
@@ -287,12 +292,14 @@ public class MainActivity extends FragmentActivity {
                                 followed_user.readData(new User.FirebaseCallback() {
                                     @Override
                                     public void onCallback(User user) {
+                                        MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
                                         MoodEvent mood = user.getMostRecentMoodEvent();
-                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(),1,  mood.getState().getEmotion(), mood.getDescription());
                                         myFragment.showUserPoint(userpoint);
                                     }
                                 });
                             }
+
                             @Override
                             public void onUserNotExists() {
                                 // Just skip it for now.
@@ -301,8 +308,19 @@ public class MainActivity extends FragmentActivity {
                     }
                 }
             });
-
         }
+    }
+
+    /**
+     * Shows the map fragment in the main fragment container.
+     */
+    public void showMap(){
+        // Test user for now. This will be updated
+
+        MapFragment mapFragment = MapFragment.getInstance();
+        MapFilter mapFilterFragment = MapFilter.getInstance(this.mapFilter);
+        stackFragment(mapFilterFragment, "filterFragment", mapFragment, "mapFragment");
+
     }
 
     /**
