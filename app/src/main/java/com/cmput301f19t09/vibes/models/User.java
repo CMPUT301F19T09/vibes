@@ -550,7 +550,7 @@ public class User extends Observable implements Serializable {
             mood.put("username", moodEvent.getUser().getUserName());
 
             moods.set(index.intValue(), mood);
-            documentReference = collectionReference.document(userName);
+            documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
