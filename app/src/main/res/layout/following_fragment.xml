@@ -6,13 +6,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:color/holo_red_light">
+        android:layout_height="48dp"
+        android:background="#FF99AC">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Requested">
+            android:text="Requests"
+            android:textSize="32dp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/roboto_thin">
         </TextView>
 
     </LinearLayout>
@@ -24,14 +27,18 @@
     </ListView>
 
     <LinearLayout
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:color/holo_red_light">
+        android:layout_height="48dp"
+        android:background="#FF99AC">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Following">
+            android:text="Following"
+            android:textSize="32dp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/roboto_thin">
         </TextView>
 
     </LinearLayout>

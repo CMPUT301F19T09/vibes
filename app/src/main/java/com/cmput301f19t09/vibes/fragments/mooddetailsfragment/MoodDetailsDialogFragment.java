@@ -68,6 +68,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
         confirmButton = view.findViewById(R.id.confirm_button);
 
         Glide.with(getContext()).load(moodItem.user.getProfileURL()).into(userImage);
+        emotionImage.setImageResource(moodItem.event.getState().getImageFile());
+
+        userImage.setClipToOutline(true);
+        emotionImage.setClipToOutline(true);
+        deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
+
         //Glide.with(getContext()).load(moodItem.event.getReasonImage()).into(reasonImage);
         //Glide.with(getContext()).load(moodItem.event.getEmotion().getImage()).into(emotionImage);
 
@@ -80,23 +86,23 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         if (timeSincePost.getSeconds() < 60)
         {
-            timeString += timeSincePost.getSeconds() + " seconds ago";
+            timeString += timeSincePost.getSeconds() + " s";
         }
         else if (timeSincePost.toMinutes() < 60)
         {
-            timeString += timeSincePost.toMinutes() + " minutes ago";
+            timeString += timeSincePost.toMinutes() + " m";
         }
         else if (timeSincePost.toHours() < 24)
         {
-            timeString += timeSincePost.toHours() + " hours ago";
+            timeString += timeSincePost.toHours() + " h";
         }
         else if (timeSincePost.toDays() < 365)
         {
-            timeString += timeSincePost.toDays() + " days ago";
+            timeString += timeSincePost.toDays() + " d";
         }
         else
         {
-            timeString += ( timeSincePost.toDays() / 365 ) + "years ago";
+            timeString += ( timeSincePost.toDays() / 365 ) + " y";
         }
 
         moodTime.setText(timeString);
@@ -136,7 +142,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     @Override
                     public void onDismiss(DialogInterface dialog)
                     {
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(moodItem.event));
+                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(moodItem.event, moodItem.user));
                     }
                 });
 
@@ -152,6 +158,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
                 dialog.dismiss();
             }
         });
+
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.circle);
 
         return dialog;
     }
