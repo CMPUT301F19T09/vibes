@@ -19,6 +19,8 @@ import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
@@ -27,12 +29,13 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.GoogleMap;
 
 /**
  * MainActivity is the main activity that shows up in the app right now.
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements Observer {
 
     private enum ButtonMode {LIST, MAP}
 
@@ -240,7 +243,8 @@ public class MainActivity extends FragmentActivity {
 
         Log.d("filter", ""+ this.mapFilter);
 
-
+        user = UserManager.getCurrentUser();
+        UserManager.addUserObserver(user.getUid(), this);
 
         // If filter is at mine, shows only my moods
         if(this.mapFilter == MapFragment.Filter.SHOW_MINE){
@@ -348,6 +352,11 @@ public class MainActivity extends FragmentActivity {
         if (manager.getBackStackEntryCount() > 1) {
             manager.popBackStack();
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        updateMap();
     }
 }
 
