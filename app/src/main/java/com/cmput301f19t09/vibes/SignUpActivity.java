@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,7 +77,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if (validatePasswordMatch(password, confirmPassword)) {
                     createUserFirebaseAuth(email, username, firstName, lastName, password);
                 } else {
-                    // TOAST for mismatching passwords
+                    Toast.makeText(SignUpActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -109,6 +110,7 @@ public class SignUpActivity extends AppCompatActivity {
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             // Handle if user email address already exists
+                            Toast.makeText(SignUpActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -155,6 +157,7 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d(TAG, "Data addition unsuccessful");
+                        Toast.makeText(SignUpActivity.this, "There was an error creating your account", Toast.LENGTH_LONG).show();
                     }
                 });
     }
