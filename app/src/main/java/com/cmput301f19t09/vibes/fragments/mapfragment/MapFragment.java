@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -196,6 +197,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         vectorDrawable.setBounds(0, 0, 64, 64);
 
         Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
