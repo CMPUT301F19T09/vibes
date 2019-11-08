@@ -20,6 +20,7 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -36,12 +37,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
     private User user;
     private MoodListFilterFragment filterFragment;
 
-    public static MoodListFragment newInstance(User user, int displayType)
+    public static MoodListFragment newInstance(int displayType)
     {
         MoodListFragment fragment = new MoodListFragment();
         Bundle arguments = new Bundle();
 
-        arguments.putSerializable("user", user);
         arguments.putInt("type", displayType);
         fragment.setArguments(arguments);
 
@@ -56,6 +56,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
 
         ListView listView = view.findViewById(R.id.ml_listview);
         FrameLayout filterContainer = view.findViewById(R.id.filter_root);
+
+        user = UserManager.getCurrentUser();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -73,7 +75,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         Bundle arguments = getArguments();
 
         displayType = arguments.getInt("type");
-        user = (User) arguments.getSerializable("user");
+        user = UserManager.getCurrentUser();
 
         switch (displayType)
         {
@@ -87,7 +89,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         }
 
         listView.setAdapter(adapter);
-        user.addObserver(adapter);
 
         filterFragment = MoodListFilterFragment.newInstance();
 
@@ -108,11 +109,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
 
     private void setAdapter(MoodListAdapter adapter)
     {
-        user.deleteObserver(adapter);
+        adapter.destroy();
         this.adapter = adapter;
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
-        user.addObserver(adapter);
+        adapter.refreshData();
     }
 
     public void showOwnMoods()

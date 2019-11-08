@@ -19,9 +19,11 @@ import androidx.fragment.app.DialogFragment;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,6 +31,9 @@ import java.time.LocalDateTime;
 public class MoodDetailsDialogFragment extends DialogFragment
 {
     private MoodEvent event;
+    private User user;
+    private User eventUser;
+    private boolean editable;
 
     public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
     {
@@ -49,8 +54,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
         Bundle arguments = getArguments();
 
         event = (MoodEvent) arguments.getSerializable("event");
-        User user = event.getUser();
-        boolean editable = arguments.getBoolean("editable");
+        user = UserManager.getCurrentUser();
+        eventUser = event.getUser();
+        editable = arguments.getBoolean("editable");
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View view = inflater.inflate(R.layout.mood_details, null);
@@ -71,18 +77,16 @@ public class MoodDetailsDialogFragment extends DialogFragment
         editButton = view.findViewById(R.id.edit_button);
         confirmButton = view.findViewById(R.id.confirm_button);
 
-        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+        Glide.with(getContext()).load(eventUser.getProfileURL()).into(userImage);
         emotionImage.setImageResource(event.getState().getImageFile());
+        emotionImage.setColorFilter(event.getState().getColour());
 
         userImage.setClipToOutline(true);
         emotionImage.setClipToOutline(true);
         deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
 
-        //Glide.with(getContext()).load(moodItem.event.getReasonImage()).into(reasonImage);
-        //Glide.with(getContext()).load(moodItem.event.getEmotion().getImage()).into(emotionImage);
-
-        userUsername.setText(user.getUserName());
-        userFullName.setText(user.getFirstName() + " " + user.getLastName());
+        userUsername.setText(eventUser.getUserName());
+        userFullName.setText(eventUser.getFirstName() + " " + eventUser.getLastName());
 
         LocalDateTime timeOfPost = LocalDateTime.of(event.getDate(), event.getTime());
         Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
@@ -132,10 +136,10 @@ public class MoodDetailsDialogFragment extends DialogFragment
             public void onClick(View v)
             {
                 //moodItem.user.deleteMood(moodItem.getIndex());
-                int mood_index = user.getMoodEvents().indexOf(event);
-                Log.d("TEST", "Trying to remove event from user " + user.getUserName());
+                int mood_index = eventUser.getMoodEvents().indexOf(event);
+                Log.d("TEST", "Trying to remove event from user " + eventUser.getUserName());
                 Log.d("TEST", "Trying to remove mood with index " + mood_index);
-                user.deleteMood(mood_index);
+                eventUser.deleteMood(mood_index);
 
                 dismiss();
             }
@@ -151,7 +155,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     @Override
                     public void onDismiss(DialogInterface dialog)
                     {
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event,user));
+                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event,eventUser));
                     }
                 });
 
@@ -167,6 +171,26 @@ public class MoodDetailsDialogFragment extends DialogFragment
                 dialog.dismiss();
             }
         });
+
+        userImage.setOnClickListener((View v) ->
+                {
+                    dialog.setOnDismissListener((DialogInterface d) ->
+                    {
+                        ProfileFragment profileFragment;
+
+                        if (user == eventUser)
+                        {
+                            profileFragment = ProfileFragment.newInstance();
+                        }
+                        else
+                        {
+                            profileFragment = ProfileFragment.newInstance(eventUser.getUid());
+                        }
+                        ((MainActivity) getActivity()).setMainFragment(profileFragment);
+                    });
+
+                    dialog.dismiss();
+                });
 
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.circle);
 

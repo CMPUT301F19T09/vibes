@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -141,11 +143,16 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 
     private void initialize()
     {
-        user.readData();
+        UserManager.addUserObserver(user.getUid(), this);
         initializeData();
     }
 
     public void initializeData() { }
 
     public abstract void refreshData();
+
+    public void destroy()
+    {
+        UserManager.removeUserObserver(user.getUid(), this);
+    }
 }

@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -21,28 +25,24 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment implements Observer {
+    public static final String PROFILE_FRAGMENT_TAG = "ProfileFragment";
     private TextView firstNameTextView;
     private TextView lastNameTextView;
     private TextView userNameTextView;
     private ImageView profilePictureImageView;
     private Button followButton;
+    private User otherUser;
+    private User user;
 
-    public static ProfileFragment newInstance(User user) {
+    public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
-        user.addObserver(profileFragment);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        profileFragment.setArguments(bundle);
         return profileFragment;
     }
 
-    public static ProfileFragment newInstance(User user, User otherUser) {
+    public static ProfileFragment newInstance(String otherUserUID) {
         ProfileFragment profileFragment = new ProfileFragment();
-        user.addObserver(profileFragment);
-        otherUser.addObserver(profileFragment);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        bundle.putSerializable("otherUser", otherUser);
+        bundle.putString("otherUserUID", otherUserUID);
         profileFragment.setArguments(bundle);
         return profileFragment;
     }
@@ -63,11 +63,18 @@ public class ProfileFragment extends Fragment implements Observer {
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
-//        ImageView profileMask = view.findViewById(R.id.profile_mask);
-//        profileMask.setImageResource(R.drawable.round_mask);
 
-        User user = (User) getArguments().getSerializable("user");
-        User otherUser = (User) getArguments().getSerializable("otherUser");
+        String otherUserUID = null;
+        if (getArguments() != null) {
+            otherUserUID = getArguments().getString("otherUserUID");
+        }
+        otherUser = null;
+        if (otherUserUID != null) {
+            otherUser = UserManager.getUser(otherUserUID);
+            UserManager.addUserObserver(otherUserUID, this);
+        }
+
+        user = UserManager.getCurrentUser();
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,22 +89,29 @@ public class ProfileFragment extends Fragment implements Observer {
 
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
-            user.readData();
+            UserManager.addUserObserver(user.getUid(), this);
             user.addMood();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
+            setInfo(user);
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
         } else {
             followButton.setVisibility(View.VISIBLE);
-            otherUser.readData();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+            otherUser.addObserver((Observable o, Object arg) ->
+            {
+                User u = (User) o;
+                setInfo(u);
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                transaction.commit();
+            });
+            setInfo(otherUser);
         }
         return view;
     }
 
+    @Override
     public void update(Observable user, Object object) {
         setInfo((User) user);
     }
@@ -107,10 +121,46 @@ public class ProfileFragment extends Fragment implements Observer {
      * @param user
      */
     public void setInfo(User user) {
-        firstNameTextView.setText(user.getFirstName());
-        lastNameTextView.setText(user.getLastName());
-        userNameTextView.setText(user.getUserName());
-        Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
-        profilePictureImageView.setClipToOutline(true);
+        if (user.isLoaded()) {
+            firstNameTextView.setText(user.getFirstName());
+            lastNameTextView.setText(user.getLastName());
+            userNameTextView.setText(user.getUserName());
+            Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+            profilePictureImageView.setClipToOutline(true);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        UserManager.removeUserObserver(UserManager.UID, this);
+        if (otherUser != null) {
+            UserManager.removeUserObserver(otherUser.getUid(), this);
+        }
+        Log.d(PROFILE_FRAGMENT_TAG, "PAUSED");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(PROFILE_FRAGMENT_TAG, "STOPPED");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED VIEW");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(PROFILE_FRAGMENT_TAG, "DETACHED");
     }
 }

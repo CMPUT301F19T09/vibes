@@ -40,6 +40,12 @@ public class OwnMoodListAdapter extends MoodListAdapter
     }
 
     @Override
+    public void initializeData()
+    {
+        refreshData();
+    }
+
+    @Override
     public void update(Observable user, Object arg)
     {
         refreshData();
