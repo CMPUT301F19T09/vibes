@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.cmput301f19t09.vibes.MainActivity;
@@ -49,21 +51,29 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public static final String VIBES_USER = "com.cmput301f19t09.vibes.USER";
     private User user;
 
+    // date and time
     private TextView dateTextView;
     private TextView timeTextView;
+
+    // state setting
     private GridView stateGridView;
     private TextView stateTextView;
     private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+
     private EditText editSituationView;
     private EditText editReasonView;
+
+    // location services
+    private Location location;
+    private Switch locationSwitch;
+    private boolean useLocation;
+
+    // buttons
     private Button buttonSubmitView;
     private Button buttonCancelView;
 
     private OnFragmentInteractionListener mListener;
-
-    // location services
-    private Location location;
 
     public EditFragment() {
         // Required empty public constructor
@@ -142,6 +152,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         location = new Location(""); // empty provider when not pulling from a location service
+        locationSwitch = view.findViewById(R.id.location_switch);
 
         if (moodSet) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
@@ -179,15 +190,30 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // TODO: only set location if switch is set
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
-            moodEvent.setLocation(location);
+
         }
+        locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                useLocation = b; // b indicates whether switch is "ON" = 1 or "OFF" = 0
+            }
+        });
 
         buttonSubmitView.setOnClickListener(view1 -> {
             moodEvent.setState(emotionalState);
+            
             // set optional fields
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
             }
+
+            if (useLocation) {
+                moodEvent.setLocation(location);
+            }
+            else {
+                moodEvent.setLocation(null);
+            }
+
             if (editReasonView.getText().toString().isEmpty()){
                 moodEvent.setDescription("");
             }

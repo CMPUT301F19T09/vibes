@@ -49,6 +49,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.socialSituation = social_situation;
     }
 
+    // may return null if location was not specified
     public Location getLocation() {
         return location;
     }
