@@ -154,10 +154,7 @@ public class MainActivity extends FragmentActivity {
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //User user = new User("testuser");
-                //setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
-                User user = new User("testuser4");
-                setMainFragment(FollowingFragment.newInstance(user));
+                setMainFragment(FollowingFragment.newInstance(UserManager.getCurrentUser()));
             }
         });
 

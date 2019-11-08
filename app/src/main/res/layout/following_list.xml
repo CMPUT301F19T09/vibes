@@ -18,7 +18,8 @@
             <ImageView
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                tools:src="@tools:sample/avatars">
+                tools:src="@tools:sample/avatars"
+                android:id="@+id/profileImage">
             </ImageView>
 
         </LinearLayout>
