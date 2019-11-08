@@ -237,12 +237,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 String str = charSequence.toString();
                 String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
 
-                // reason must be 3 words or less
-                if (splitStr.length > 3) {
-                    buttonSubmitView.setEnabled(false); // disable the button
-                }
-                else {
+                // reason must be 3 words or less and must have all required fields set
+                if (splitStr.length <= 3 && emotionalState != null) {
                     buttonSubmitView.setEnabled(true);
+                }
+                else { // disable the button
+                    buttonSubmitView.setEnabled(false);
                 }
             }
 
@@ -308,7 +308,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      *      The view within the AdapterView that was clicked.
      * @param   i
      *      The position of the view in the adapter.
-     * @param l
+     * @param   l
      *      The row id of the item that was clicked.
      */
     @Override

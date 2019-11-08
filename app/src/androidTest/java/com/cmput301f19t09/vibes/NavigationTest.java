@@ -20,7 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
-public class EditFragmentTest {
+public class NavigationTest {
 
     // automate disabling device animations which is required by espresso
     @ClassRule
@@ -36,14 +36,48 @@ public class EditFragmentTest {
         onView(withId(R.id.password_field)).perform(typeText("111111"));
         onView(withId(R.id.password_field)).perform(closeSoftKeyboard());
         onView(withId(R.id.login_button)).perform(click());
-        rule.getActivity()
-                .getSupportFragmentManager().beginTransaction();
+    }
+
+    /**
+     * Check if the MainActivity is started after login.
+     */
+    @Test
+    public void startMainActivity() throws InterruptedException {
+        // sleep to allow time for login to process and view to switch
+        Thread.sleep(6000);
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void start() {
+    public void startEditFragment() throws InterruptedException {
+        // sleep to allow time for login to process and view to switch
+        Thread.sleep(6000);
         onView(withId(R.id.main_add_button)).perform(click());
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void startProfileFragment() throws InterruptedException {
+        // sleep to allow time for login to process and view to switch
+        Thread.sleep(6000);
+        onView(withId(R.id.main_profile_button)).perform(click());
+        onView(withId(R.id.profile_fragment)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void startFollowingFragment() throws InterruptedException {
+        // sleep to allow time for login to process and view to switch
+        Thread.sleep(6000);
+        onView(withId(R.id.main_follow_list_button)).perform(click());
+        onView(withId(R.id.followingFragment)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void startMapFragment() throws InterruptedException {
+        // sleep to allow time for login to process and view to switch
+        Thread.sleep(6000);
+        onView(withId(R.id.main_view_button)).perform(click());
+        onView(withId(R.id.map_fragment)).check(matches(isDisplayed()));
     }
 
 }
