@@ -74,10 +74,10 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.user = user;
     }
 
-    // returns negative int if this MoodEvent is before m2; o if the same; 1 if the other way around
+    // returns negative int if this MoodEvent is before m2; 0 if the same; 1 if the other way around
     @Override
     public int compareTo(Object o) {
         // if m2 has a more recent time then it will return 1
-        return ((MoodEvent) o).getLocalDateTime().compareTo(this.getLocalDateTime());
+        return -((MoodEvent) o).getLocalDateTime().compareTo(this.getLocalDateTime());
     }
 }
