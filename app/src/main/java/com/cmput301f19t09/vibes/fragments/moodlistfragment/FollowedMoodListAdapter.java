@@ -51,16 +51,14 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             if (!observed_users.contains(followed_user))
             {
-                /*
-                User user = new User(followed_user);
-                user.addObserver((Observable o, Object arg) ->
-                {
-                    refreshEvent((User) o);
-                });
-
-                 */
-
                 User user = UserManager.getUser(followed_user);
+                observed_users.add(followed_user);
+
+                if (user.isLoaded())
+                {
+                    refreshEvent(user);
+                }
+
                 UserManager.addUserObserver(followed_user, (Observable o, Object a) ->
                 {
                     refreshEvent((User) o);
@@ -69,9 +67,13 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         }
     }
 
-    public void refreshEvent(User user)
-    {
+    public void refreshEvent(User user) {
         Log.d("TEST", "Refreshing event for " + user.getUserName());
+
+        if (user.getMostRecentMoodEvent() == null)
+        {
+            return;
+        }
 
         boolean replaced = false;
         for (MoodEvent event : data)
@@ -127,7 +129,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     {
         for (String user : observed_users)
         {
-            UserManager.removeUserObserver(user, this);
+            UserManager.removeUserObservers(user);
         }
         super.destroy();
     }
