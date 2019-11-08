@@ -7,6 +7,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,7 +34,6 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     public void initializeData()
     {
         observed_users = new ArrayList<String>();
-        super.initializeData();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 
                 data.remove(event);
                 data.add(user.getMostRecentMoodEvent());
-                data.sort(COMPARE_BY_DATE);
+                Collections.sort(data);
 
                 addAll(data);
 
@@ -89,7 +89,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             clear();
 
             data.add(user.getMostRecentMoodEvent());
-            data.sort(COMPARE_BY_DATE);
+            Collections.sort(data);
 
             addAll(data);
 

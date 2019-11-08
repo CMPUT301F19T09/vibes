@@ -27,6 +27,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -516,6 +517,7 @@ public class User extends Observable implements Serializable {
     public MoodEvent getMostRecentMoodEvent() {
         MoodEvent moodEvent;
         if (moodEvents != null && moodEvents.size() != 0) {
+            Collections.sort(moodEvents);
             moodEvent = moodEvents.get(moodEvents.size() - 1);
             return moodEvent;
         } else {

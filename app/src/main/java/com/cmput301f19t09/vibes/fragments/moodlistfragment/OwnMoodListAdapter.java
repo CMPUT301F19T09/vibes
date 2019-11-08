@@ -6,6 +6,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 
@@ -33,7 +34,7 @@ public class OwnMoodListAdapter extends MoodListAdapter
             data.add(event);
         }
 
-        data.sort(COMPARE_BY_DATE);
+        Collections.sort(data);
         addAll(data);
         notifyDataSetChanged();
     }

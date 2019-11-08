@@ -31,24 +31,6 @@ import java.util.Observer;
  */
 public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
 {
-    //protected List<MoodItem> data;
-    protected static final Comparator<MoodEvent> COMPARE_BY_DATE;
-
-    static {
-        COMPARE_BY_DATE = (MoodEvent o1, MoodEvent o2) ->
-            {
-                if (o1 == null || o2 == null)
-                {
-                    return 0;
-                }
-
-                LocalDateTime t1 = LocalDateTime.of(o1.getDate(), o1.getTime());
-                LocalDateTime t2 = LocalDateTime.of(o2.getDate(), o2.getTime());
-
-                return t2.compareTo(t1);
-            };
-    }
-
     protected List<MoodEvent> data;
     protected User user;
     private Context context;
@@ -158,9 +140,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     private void initialize()
     {
         user.readData();
-        initializeData();
     }
 
-    public void initializeData() {refreshData();}
+    public void initializeData() { }
+
     public abstract void refreshData();
 }
