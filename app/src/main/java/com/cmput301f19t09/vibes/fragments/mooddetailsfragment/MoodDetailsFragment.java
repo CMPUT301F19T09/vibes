@@ -44,10 +44,17 @@ public class MoodDetailsFragment extends Fragment
     {
         Bundle arguments = getArguments();
 
-        MoodEvent event = (MoodEvent) arguments.getSerializable("event");
-        User event_user = event.getUser();
-
         View view = inflater.inflate(R.layout.mood_details, null);
+
+        MoodEvent event = (MoodEvent) arguments.getSerializable("event");
+
+        if (event == null)
+        {
+            view.setVisibility(View.GONE);
+            return view;
+        }
+
+        User event_user = event.getUser();
 
         ImageView userImage, emotionImage, reasonImage;
         TextView userUsername, userFullName, moodTime, moodReason;
