@@ -1,5 +1,18 @@
 @startuml
 
+skinparam {
+     linetype ortho
+     classAttributeIconSize 0
+     Class {
+         FontSize 18
+         ArrowFontSize 10
+     }
+
+     Package {
+         FontSize 24
+     }
+}
+
 package com.cmput201f10t09.vibes <<Rectangle>> {
     class LoginActivity {
     }
