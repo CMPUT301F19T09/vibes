@@ -17,10 +17,10 @@ import java.util.Set;
  * ColourEnum.COLOUR.getValue()
  */
 enum ColourEnum {
-    YELLOW (0xffffff00),
-    LIGHT_GREEN (0xffccff99),
+    YELLOW (0xffffcd05),
+    LIGHT_GREEN (0xff24ff53),
     GREEN (0xff009900),
-    BLUE (0xff0000ff),
+    BLUE (0xff29b4ff),
     INDIGO (0xff4b0082),
     PURPLE (0xff800080),
     RED (0xffff0000),

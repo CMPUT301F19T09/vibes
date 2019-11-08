@@ -16,12 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
-        android:fontFamily="@font/parisienne"
+        android:fontFamily="@font/housescript"
         android:gravity="center"
         android:lineSpacingExtra="12sp"
         android:text="vibes."
         android:textColor="#fff"
-        android:textSize="80sp"
+        android:textSize="100sp"
         android:typeface="normal" />
 
     <EditText
@@ -32,6 +32,7 @@
         android:layout_marginTop="240dp"
         android:ems="10"
         android:hint="Username"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="text" />
 
     <EditText
@@ -42,6 +43,7 @@
         android:layout_marginTop="300dp"
         android:ems="10"
         android:hint="Email"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -52,6 +54,7 @@
         android:layout_marginTop="360dp"
         android:ems="10"
         android:hint="First Name"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="text" />
 
     <EditText
@@ -62,6 +65,7 @@
         android:layout_marginTop="420dp"
         android:ems="10"
         android:hint="Last Name"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="text" />
 
     <EditText
@@ -72,6 +76,7 @@
         android:layout_marginTop="480dp"
         android:ems="10"
         android:hint="Password"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="textPassword" />
 
     <EditText
@@ -82,6 +87,7 @@
         android:layout_marginTop="540dp"
         android:ems="10"
         android:hint="Confirm Password"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="textPassword" />
 
     <Button
@@ -90,6 +96,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="96dp"
         android:layout_marginTop="600dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button"
         android:text="Sign Up" />
 
     <Button
@@ -98,6 +107,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="192dp"
         android:layout_marginTop="600dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button_blue"
         android:text="Login Instead" />
 
 </FrameLayout>

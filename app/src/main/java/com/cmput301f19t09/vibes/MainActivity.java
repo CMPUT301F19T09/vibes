@@ -21,7 +21,6 @@ import com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.function.Consumer;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;

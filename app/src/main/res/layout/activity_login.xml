@@ -18,12 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="240dp"
-        android:fontFamily="@font/parisienne"
+        android:fontFamily="@font/housescript"
         android:gravity="center"
         android:lineSpacingExtra="12sp"
         android:text="vibes."
         android:textColor="#fff"
-        android:textSize="80sp"
+        android:textSize="100sp"
         android:typeface="normal" />
 
     <EditText
@@ -34,6 +34,7 @@
         android:layout_marginTop="0dp"
         android:ems="10"
         android:hint="Email"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -44,6 +45,7 @@
         android:layout_marginTop="60dp"
         android:ems="10"
         android:hint="Password"
+        android:fontFamily="@font/roboto_thin"
         android:inputType="textPassword" />
 
     <Button
@@ -53,6 +55,9 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="96dp"
         android:layout_marginTop="120dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button"
         android:text="Login" />
 
     <Button
@@ -62,6 +67,9 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="192dp"
         android:layout_marginTop="120dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button_blue"
         android:text="Sign Up" />
 
 </FrameLayout>
