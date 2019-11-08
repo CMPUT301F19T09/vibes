@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -21,11 +23,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 public class ProfileFragment extends Fragment implements Observer {
+    public static final String PROFILE_FRAGMENT_TAG = "ProfileFragment";
     private TextView firstNameTextView;
     private TextView lastNameTextView;
     private TextView userNameTextView;
     private ImageView profilePictureImageView;
     private Button followButton;
+    private ListenerRegistration registration;
 
     public static ProfileFragment newInstance(User user) {
         ProfileFragment profileFragment = new ProfileFragment();
@@ -82,7 +86,10 @@ public class ProfileFragment extends Fragment implements Observer {
 
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
-            user.readData();
+            if (registration == null) {
+                Log.d("CHECK", "SHOULD BE CALLED ONCE");
+                registration = user.readData();
+            }
             user.addMood();
             MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
@@ -98,6 +105,7 @@ public class ProfileFragment extends Fragment implements Observer {
         return view;
     }
 
+    @Override
     public void update(Observable user, Object object) {
         setInfo((User) user);
     }
@@ -112,5 +120,36 @@ public class ProfileFragment extends Fragment implements Observer {
         userNameTextView.setText(user.getUserName());
         Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
         profilePictureImageView.setClipToOutline(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(PROFILE_FRAGMENT_TAG, "PAUSED");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(PROFILE_FRAGMENT_TAG, "STOPPED");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED VIEW");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        registration.remove();
+        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(PROFILE_FRAGMENT_TAG, "DETACHED");
     }
 }

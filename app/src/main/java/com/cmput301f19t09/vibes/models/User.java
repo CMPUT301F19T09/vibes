@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -43,6 +44,7 @@ public class User extends Observable implements Serializable {
     private String email;
     private String TAG = "Sample";
     private String picturePath;
+    private boolean isListening;
     private List<String> followingList;
     private List<String> requestedList;
 
@@ -55,6 +57,7 @@ public class User extends Observable implements Serializable {
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
     private transient List<MoodEvent> moodEvents;
+    private static int count;
 
     private transient List<Map> moods;
     private static boolean connectionStarted;
@@ -98,8 +101,11 @@ public class User extends Observable implements Serializable {
     /**
      *
      */
-    public void readData() {
-        addSnapshotListener();
+    public ListenerRegistration readData() {
+//        if (!isListening) {
+            return addSnapshotListener();
+//            isListening = true;
+//        }
     }
 
     /**
@@ -160,9 +166,17 @@ public class User extends Observable implements Serializable {
     /**
      *
      */
-    private void addSnapshotListener() {
+    private ListenerRegistration addSnapshotListener() {
         documentReference = collectionReference.document(userName);
-        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//        documentReference.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+//
+//            }
+//        })
+        System.out.println("COUNT: " + count);
+        count++;
+        ListenerRegistration registration = documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Log.d("TEST", "User event");
@@ -202,6 +216,7 @@ public class User extends Observable implements Serializable {
 
             }
         });
+        return registration;
     }
 
     /**
