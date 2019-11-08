@@ -2,7 +2,6 @@ package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
