@@ -96,10 +96,15 @@ public class ProfileFragment extends Fragment implements Observer {
             followButton.setVisibility(View.VISIBLE);
             if (otherUser.isLoaded())
             {
+                Log.d("TEST", "Other user loaded");
                 setInfo(otherUser);
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
                 transaction.commit();
+            }
+            else
+            {
+                Log.d("TEST", "Other user not loaded");
             }
 
             otherUser.addObserver((Observable o, Object arg) ->

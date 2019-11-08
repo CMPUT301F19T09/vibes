@@ -18,6 +18,8 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
+
 import java.util.ArrayList;
 
 /**
@@ -52,6 +54,12 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
 
         // For user at position in list
         User user = userList.get(position);
+
+        if (user == null)
+        {
+            Log.d("TEST/FOLLOWING", "User is null");
+            return view;
+        }
 
         // Sets the fullNameText to the user's firstName + lastName
         TextView fullNameText = view.findViewById(R.id.fullName);

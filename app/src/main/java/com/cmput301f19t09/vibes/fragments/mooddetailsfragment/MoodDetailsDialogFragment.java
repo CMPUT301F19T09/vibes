@@ -53,13 +53,13 @@ public class MoodDetailsDialogFragment extends DialogFragment
     {
         Bundle arguments = getArguments();
 
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view = inflater.inflate(R.layout.mood_details, null);
+
         event = (MoodEvent) arguments.getSerializable("event");
         user = UserManager.getCurrentUser();
         eventUser = event.getUser();
         editable = arguments.getBoolean("editable");
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View view = inflater.inflate(R.layout.mood_details, null);
 
         ImageView userImage, emotionImage, reasonImage;
         TextView userUsername, userFullName, moodTime, moodReason;
