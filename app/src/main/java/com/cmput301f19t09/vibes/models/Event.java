@@ -17,7 +17,7 @@ public class Event implements Serializable {
     protected LocalDate date; // format yyyy-MM-dd; ISO_LOCAL_DATE
     protected static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     protected LocalTime time; // format HH:mm
-    protected static DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern(yyyy-MM-dd)
+    protected static DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     protected String description;
 
     public Event(LocalDate date, LocalTime time, String description) {
