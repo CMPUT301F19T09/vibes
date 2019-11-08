@@ -79,23 +79,6 @@ public class User extends Observable implements Serializable {
     /**
      *
      * @param userName
-     * @param firstName
-     * @param lastName
-     * @param email
-     */
-    public User(String userName, String firstName, String lastName, String email) {
-        this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.picturePath = "image/" + this.userName + ".png";
-        this.followingList = new ArrayList<>();
-        this.moodEvents = new ArrayList<>();
-        this.requestedList = new ArrayList<>();
-    }
-    /**
-     *
-     * @param userName
      */
     public User(String uid) {
         this.uid = uid;
@@ -107,24 +90,6 @@ public class User extends Observable implements Serializable {
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
         }
-    }
-
-    public void initializeFields() {
-        documentReference = collectionReference.document(uid);
-
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                userName = documentSnapshot.getString("username");
-                firstName = documentSnapshot.getString("first");
-                lastName = documentSnapshot.getString("last");
-                email = documentSnapshot.getString("email");
-                picturePath = documentSnapshot.getString("profile_picture");
-                followingList = (List<String>) documentSnapshot.get("following_list");
-                requestedList = (List<String>) documentSnapshot.get("requested_list");
-                moods = (List<Map>) documentSnapshot.get("moods");
-            }
-        });
     }
 
     private void addSnapshotListener() {

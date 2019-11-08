@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cmput301f19t09.vibes.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button loginButton;
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mStore;
     private FirebaseStorage mStorage;
     private StorageReference mStorageReference;
 
@@ -59,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
 
         mAuth = FirebaseAuth.getInstance();
+        mStore = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance();
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -113,21 +115,19 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void createUserFirebaseStore(String email, String username, String firstName, String lastName) {
-        User user = new User(username, firstName, lastName, email);
+        String picturePath = "image/" + username + ".png";
 
-        // Maybe get this object from User class
         Map<String, Object> userData = new HashMap<>();
-        userData.put("email", user.getEmail());
-        userData.put("username", user.getUserName());
-        userData.put("first", user.getFirstName());
-        userData.put("last", user.getLastName());
-        userData.put("profile_picture", user.getPicturePath());
-        userData.put("following_list", user.getFollowingList());
-        userData.put("moods", user.getMoodEvents());
-        userData.put("requested_list", user.getRequestedList());
+        userData.put("email", email);
+        userData.put("username", username);
+        userData.put("first", firstName);
+        userData.put("last", lastName);
+        userData.put("profile_picture", picturePath);
+        userData.put("following_list", new ArrayList<>());
+        userData.put("moods", new ArrayList<>());
+        userData.put("requested_list", new ArrayList<>());
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final CollectionReference collectionReference = db.collection(USER_COLLECTION);
+        final CollectionReference collectionReference = mStore.collection(USER_COLLECTION);
 
         collectionReference
                 .document(mAuth.getCurrentUser().getUid())
@@ -140,7 +140,7 @@ public class SignUpActivity extends AppCompatActivity {
                         startLoginActivity();
 
                         Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                        mStorageReference = mStorage.getReference(user.getPicturePath());
+                        mStorageReference = mStorage.getReference(picturePath);
                         mStorageReference
                                 .putFile(imageUri)
                                 .addOnFailureListener(new OnFailureListener() {
