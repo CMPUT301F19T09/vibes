@@ -2,7 +2,10 @@ package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.EmotionalState;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -26,6 +31,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     MapData data;
     GoogleMap googlemap;
 
+    boolean firstPointPut = false;
     /**
      * This is used to filter out the moods being showed;
      */
@@ -54,6 +60,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
+    public static MapFragment getInstance(){
+        return new MapFragment();
+    }
+
     /**
      * Checks for the bundle MapData.
      * @param savedInstanceState
@@ -75,6 +85,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void showUserPoint(UserPoint point){
         if(googlemap != null){
+
             MarkerOptions options = new MarkerOptions();
             options.position(point.getLocation());
             if(point.getReason()!=null){
@@ -83,13 +94,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if(point.getEmotion() != null){
                 options.title(point.getEmotion());
             }
-            switch(point.getEmotion()) {
-                case "HAPPINESS":
-                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
-                    break;
-            }
+
+            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
+            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
+            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
+//            switch(point.getEmotion()) {
+//                case "HAPPINESS":
+//                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
+//                    break;
+//            }
             googlemap.addMarker(options);
+
+            if(!firstPointPut ){
+                firstPointPut = true;
+                CameraPosition googlePlex = CameraPosition.builder()
+                .target(point.getLocation())
+                .zoom(3)
+                .bearing(0)
+                .tilt(45)
+                .build();
+
+                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+
+            }
         }
+    }
+
+    public Drawable scaleImage (Drawable image) {
+
+        if ((image == null) || !(image instanceof BitmapDrawable)) {
+            return image;
+        }
+
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 32, 32, true);
+
+        image = new BitmapDrawable(getResources(), bitmapResized);
+
+        return image;
+
     }
 
     /**
@@ -106,10 +150,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.map_fragment, container,false);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
         return view;
+    }
+
+    public GoogleMap getGooglemap(){
+        return this.googlemap;
     }
 
 
@@ -133,35 +180,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        mMap.clear(); //clear old markers
-
-//        CameraPosition googlePlex = CameraPosition.builder()
-//                .target(new LatLng(37.4219999,-122.0862462))
-//                .zoom(10)
-//                .bearing(0)
-//                .tilt(45)
-//                .build();
-//
-//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
-
+        mMap.clear();
             if(this.data != null){
                     for (UserPoint p:this.data) {
                         this.showUserPoint(p);
                     }
         }
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.4219999, -122.0862462))
-//                .title("Spider Man")
-//                .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.happy)));
-//
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.4629101,-122.2449094))
-//                .title("Iron Man")
-//                .snippet("His Talent : Plenty of money"));
-//
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(37.3092293,-122.1136845))
-//                .title("Captain America"));
     }
 
     /**
@@ -171,10 +195,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param vectorResId
      * @return
      */
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        vectorDrawable.setBounds(0, 0, 64, 64);
+
+        Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = (Bitmap.createScaledBitmap(bitmap2, 64, 64, true));
+
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);

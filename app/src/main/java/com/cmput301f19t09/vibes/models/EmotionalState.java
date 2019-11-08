@@ -5,8 +5,10 @@ import android.util.Pair;
 import com.cmput301f19t09.vibes.R;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 enum ColourEnum {
     YELLOW (0xffffff00),
@@ -15,7 +17,7 @@ enum ColourEnum {
     BLUE (0xff0000ff),
     INDIGO (0xff4b0082),
     PURPLE (0xff800080),
-    RED (0xffffffff),
+    RED (0xffff0000),
     ORANGE (0xffffa500),
     PINK (0xffffc0ce);
 
@@ -35,7 +37,8 @@ public class EmotionalState implements Serializable {
     private static final Map<String, Pair> map = new HashMap<>();
     static {
         //Ref: https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values#8229518
-        Pair<Integer, Integer> happiness = new Pair<Integer, Integer>(R.drawable.emotion_image_happiness, ColourEnum.YELLOW.getValue());
+
+        Pair<Integer, Integer> happiness = new Pair<>(R.drawable.emotion_image_happiness, ColourEnum.YELLOW.getValue());
         map.put("HAPPINESS", happiness);
         Pair<Integer, Integer> trust = new Pair<>(R.drawable.emotion_image_trust, ColourEnum.LIGHT_GREEN.getValue());
         map.put("TRUST", trust);
@@ -80,5 +83,12 @@ public class EmotionalState implements Serializable {
 
     public static Map<String, Pair> getMap(){
         return map;
+    }
+
+    public static ArrayList<String> getColourList() {
+        Set<String> set = map.keySet();
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.addAll(set);
+        return arrayList;
     }
 }
