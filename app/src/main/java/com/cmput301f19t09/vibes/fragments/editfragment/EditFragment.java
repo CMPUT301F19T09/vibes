@@ -41,9 +41,8 @@ import com.cmput301f19t09.vibes.models.UserManager;
  * to handle interaction events.
  * Use the {@link EditFragment#newInstance} factory method to
  * create an instance of this fragment.
- * TODO: make the context and state a drop down.
- * TODO: handle limiting the reason
- * TODO: pull coordinates from gps
+ * TODO: make the social situation editor a drop down with predefined values
+ * TODO: implement pulling location from GPS
  */
 public class EditFragment extends Fragment implements AdapterView.OnItemClickListener {
 
