@@ -601,6 +601,7 @@ public class User extends Observable implements Serializable {
         super.addObserver(o);
         observers++;
         Log.d("TEST/User.addObserver", "User " + userName + " has " + observers + " observers");
+        Log.d("TEST/User.addObserver", "Observed by: " + o.getClass().getSimpleName());
     }
 
     @Override
@@ -609,5 +610,6 @@ public class User extends Observable implements Serializable {
         super.deleteObserver(o);
         observers--;
         Log.d("TEST/User.deleteObserver", "User " + userName + " has " + observers + " observers");
+        Log.d("TEST/User.addObserver", "Remove observe by: " + o.getClass().getSimpleName());
     }
 }

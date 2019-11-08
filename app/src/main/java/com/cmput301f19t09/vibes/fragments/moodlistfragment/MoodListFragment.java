@@ -138,6 +138,23 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         displayType = FOLLOWED_MOODS;
     }
 
+    @Override
+    public void onResume()
+    {
+        if (adapter != null)
+        {
+            UserManager.addUserObserver(user.getUid(), adapter);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        adapter.destroy();
+        super.onPause();
+    }
+
     public void addFilter(int filter)
     {
         this.filter |= filter;
