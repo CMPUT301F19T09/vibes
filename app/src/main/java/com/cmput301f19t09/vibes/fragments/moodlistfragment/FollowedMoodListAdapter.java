@@ -13,7 +13,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 /*
-    Subclass of
  */
 public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 {
