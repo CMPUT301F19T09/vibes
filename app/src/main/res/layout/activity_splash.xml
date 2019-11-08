@@ -16,12 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="@font/parisienne"
+        android:fontFamily="@font/housescript"
         android:gravity="center"
         android:lineSpacingExtra="12sp"
         android:text="vibes."
         android:textColor="#fff"
-        android:textSize="80sp"
+        android:textSize="100sp"
         android:typeface="normal" />
 
 </FrameLayout>
