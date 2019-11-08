@@ -98,6 +98,15 @@ public class ProfileFragment extends Fragment implements Observer {
 
         } else {
             followButton.setVisibility(View.VISIBLE);
+
+            if (otherUser.isLoaded())
+            {
+                setInfo(otherUser);
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+                transaction.commit();
+            }
+
             otherUser.addObserver((Observable o, Object arg) ->
             {
                 User u = (User) o;
@@ -135,7 +144,7 @@ public class ProfileFragment extends Fragment implements Observer {
         super.onPause();
         UserManager.removeUserObserver(UserManager.UID, this);
         if (otherUser != null) {
-            UserManager.removeUserObserver(otherUser.getUid(), this);
+            UserManager.removeUserObservers(otherUser.getUid());
         }
         Log.d(PROFILE_FRAGMENT_TAG, "PAUSED");
     }
