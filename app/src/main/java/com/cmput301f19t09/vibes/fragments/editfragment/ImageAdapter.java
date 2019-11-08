@@ -20,7 +20,7 @@ public class ImageAdapter extends BaseAdapter {
 
     public ImageAdapter(Context c) {
         mContext = c;
-        stateKeys = EmotionalState.getColourList();
+        stateKeys = EmotionalState.getListOfKeys();
         stateMap = EmotionalState.getMap();
     }
 
@@ -44,12 +44,13 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
-        } else {
+        }
+        else {
             imageView = (ImageView) convertView;
         }
-        Pair<Integer, Integer> state = stateMap.get(stateKeys.get(position));
-        imageView.setImageResource(state.first);
-        imageView.setColorFilter(state.second);
+        Pair state = stateMap.get(stateKeys.get(position));
+        imageView.setImageResource((Integer) state.first);
+        imageView.setColorFilter((Integer) state.second);
         return imageView;
     }
 }
