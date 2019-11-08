@@ -403,7 +403,7 @@ public class User extends Observable implements Serializable {
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
 
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
-                    Log.d("INFO", "Mood isn't complete yet");
+                    Log.d("INFO", "MoodEvent isn't complete yet");
                     continue;
                 }
 
@@ -479,7 +479,7 @@ public class User extends Observable implements Serializable {
      */
     public void addMood(MoodEvent moodEvent) {
         if (moodEvent == null) {
-            throw new RuntimeException("Mood not defined");
+            throw new RuntimeException("MoodEvent not defined");
         } else {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);

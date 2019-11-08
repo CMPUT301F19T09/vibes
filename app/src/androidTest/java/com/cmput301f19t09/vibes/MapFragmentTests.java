@@ -2,7 +2,6 @@ package com.cmput301f19t09.vibes;
 
 import android.util.Log;
 
-import com.cmput301f19t09.vibes.fragments.mapfragment.MapData;
 import com.cmput301f19t09.vibes.fragments.mapfragment.UserPoint;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -11,8 +10,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 
 public class MapFragmentTests {
@@ -47,10 +44,4 @@ public class MapFragmentTests {
         Assert.assertTrue(test.getLong() == 113.4938);
     }
 
-    @Test
-    public void testMapData(){
-        MapData data = new MapData();
-        data.add(getMockUserPoint());
-        Assert.assertTrue(data.size() == 1);
-    }
 }
