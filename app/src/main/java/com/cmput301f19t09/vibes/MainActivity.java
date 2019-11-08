@@ -69,7 +69,7 @@ public class MainActivity extends FragmentActivity {
         currentButtonMode = ButtonMode.MAP;
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra("user");
+        user = (User) intent.getSerializableExtra("user");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 

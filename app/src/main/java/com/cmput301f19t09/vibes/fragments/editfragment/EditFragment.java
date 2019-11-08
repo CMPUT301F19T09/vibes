@@ -161,8 +161,10 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
-            String situationString = Integer.toString(moodEvent.getSocialSituation());
-            editSituationView.setText(situationString);
+            if (moodEvent.getSocialSituation() != -1) { // social situation was specified
+                String situationString = Integer.toString(moodEvent.getSocialSituation());
+                editSituationView.setText(situationString);
+            }
             editReasonView.setText(moodEvent.getDescription());
             emotionalState = moodEvent.getState();
             stateTextView.setText(moodEvent.getState().getEmotion());
