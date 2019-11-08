@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,9 +24,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    This class is responsible for displ
+ */
 public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 {
     protected List<MoodItem> data;
+    protected List<MoodEvent> mood_data;
     protected User user;
     private Context context;
 
@@ -57,48 +62,50 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
         User user = data.get(position).user;
         MoodEvent event = data.get(position).event;
 
-        ImageView userImage, emotionImage;
+        ImageView userImage, emotionImage, userMask;
         TextView userUsername, userFullName, moodReason, moodTime;
 
         userImage = item.findViewById(R.id.user_image);
         Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+
+        userImage.setClipToOutline(true);
+
         emotionImage = item.findViewById(R.id.emotion_image);
-        userUsername = item.findViewById(R.id.username);
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
 
-        userUsername.setText(user.getUserName());
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
         if (event != null)
         {
 
             moodReason.setText(event.getDescription());
-            //emotionImage.setImageBitmap();
+            emotionImage.setImageResource(event.getState().getImageFile());
+            emotionImage.setClipToOutline(true);
 
             Duration timeSincePost = data.get(position).timeSinceEvent();
             String timeString = "~";
 
             if (timeSincePost.getSeconds() < 60)
             {
-                timeString += timeSincePost.getSeconds() + " seconds ago";
+                timeString += timeSincePost.getSeconds() + " s";
             }
             else if (timeSincePost.toMinutes() < 60)
             {
-                timeString += timeSincePost.toMinutes() + " minutes ago";
+                timeString += timeSincePost.toMinutes() + " m";
             }
             else if (timeSincePost.toHours() < 24)
             {
-                timeString += timeSincePost.toHours() + " hours ago";
+                timeString += timeSincePost.toHours() + " h";
             }
             else if (timeSincePost.toDays() < 365)
             {
-                timeString += timeSincePost.toDays() + " days ago";
+                timeString += timeSincePost.toDays() + " d";
             }
             else
             {
-                timeString += ( timeSincePost.toDays() / 365 ) + "years ago";
+                timeString += ( timeSincePost.toDays() / 365 ) + " y";
             }
 
             moodTime.setText(timeString);
@@ -115,39 +122,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodItem>
 
     private void initialize()
     {
-            /*
-        user.exists(new User.UserExistListener()
-        {
-            @Override
-            public void onUserExists()
-            {
-            */
-                user.readData(new User.FirebaseCallback()
-                {
-                    @Override
-                    public void onCallback(User user)
-                    {
-                        initializeData();
-                    }
-                });
-
-            /*
-            }
-
-            @Override
-            public void onUserNotExists()
-            {
-                throw new RuntimeException("Attempt to create MoodList with invalid user");
-            }
-        });
-             */
-    }
-
-    protected void addMoodItem(MoodItem item)
-    {
-        data.add(item);
-        add(item);
+        user.readData();
     }
 
     protected abstract void initializeData();
+    public abstract void refreshData();
 }

@@ -19,21 +19,26 @@ public class OwnMoodListAdapter extends MoodListAdapter
     @Override
     protected void initializeData()
     {
+        clear();
         data = new ArrayList<MoodItem>();
 
         List<MoodEvent> eventList = user.getMoodEvents();
         int index = 0;
         for (MoodEvent event : user.getMoodEvents())
         {
-            //data.add(new MoodItem(user, event));
-            addMoodItem(new MoodItem(user, event, index));
+            data.add(new MoodItem(user, event, index));
+            //addMoodItem(new MoodItem(user, event, index));
             index++;
         }
 
         data.sort(MoodItem.date_comparator);
-        //TODO MAKE A BETTER FIX THAN THIS
-        clear();
         addAll(data);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void refreshData()
+    {
+        initializeData();
     }
 }
