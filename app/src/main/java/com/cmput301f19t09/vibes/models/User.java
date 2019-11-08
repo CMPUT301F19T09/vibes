@@ -95,6 +95,9 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    /**
+     *
+     */
     public void readData() {
         addSnapshotListener();
     }
@@ -192,6 +195,9 @@ public class User extends Observable implements Serializable {
 //        });
     }
 
+    /**
+     *
+     */
     private void addSnapshotListener() {
         documentReference = collectionReference.document(userName);
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -503,6 +509,10 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<MoodEvent> getMoodEvents() {
         return moodEvents;
     }
@@ -522,6 +532,10 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param moodEvent
+     */
     public void addMood(MoodEvent moodEvent) {
         if (moodEvent == null) {
             throw new RuntimeException("Mood not defined");
@@ -601,6 +615,11 @@ public class User extends Observable implements Serializable {
         });
     }
 
+    /**
+     *
+     * @param moodEvent
+     * @param index
+     */
     public void editMood(MoodEvent moodEvent, Integer index) {
         if (index > moods.size() - 1) {
             return;
@@ -631,6 +650,10 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param index
+     */
     public void deleteMood(Integer index) {
         System.out.println(moods.size());
         System.out.println(index);
