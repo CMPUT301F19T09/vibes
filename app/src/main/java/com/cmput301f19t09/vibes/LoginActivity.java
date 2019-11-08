@@ -28,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
 
     final private String TAG = "authentication";
 
+    /**
+     * Initialize login activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +68,17 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Start sign up activity
+     */
     public void startSignUpActivity() {
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Start main activity
+     */
     public void startMainActivity() {
         //User user = new User(mAuth.getCurrentUser().getUid());
         String userId = mAuth.getCurrentUser().getUid();
@@ -81,6 +91,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Authenticate user with email and password
+     * @param email
+     * @param password
+     */
     public void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -97,6 +112,9 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Start the home activity
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(Intent.ACTION_MAIN);

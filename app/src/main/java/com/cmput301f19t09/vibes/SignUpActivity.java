@@ -48,6 +48,10 @@ public class SignUpActivity extends AppCompatActivity {
     final private String TAG = "authentication";
     final private String USER_COLLECTION = "users";
 
+    /**
+     * Initialize the sign up activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,15 +101,33 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Start the login activity
+     */
     public void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Check if the password and confirm password match
+     * @param password
+     * @param confirmPassword
+     * @return
+     */
     public boolean validatePasswordMatch(String password, String confirmPassword) {
         return password.equals(confirmPassword);
     }
 
+    /**
+     * After user enters all the sign up fields and presses sign up button, this function creates
+     * a user in Firebase Authentication.
+     * @param email
+     * @param username
+     * @param firstName
+     * @param lastName
+     * @param password
+     */
     public void createUserFirebaseAuth(String email, String username, String firstName, String lastName, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -124,6 +146,15 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * This function creates a Firestore document with name that matches the UID of Firebase
+     * Authentication user inside the 'users' collection. The Firestore document stores
+     * information about user
+     * @param email
+     * @param username
+     * @param firstName
+     * @param lastName
+     */
     public void createUserFirebaseStore(String email, String username, String firstName, String lastName) {
         String picturePath = "image/" + username + ".png";
 

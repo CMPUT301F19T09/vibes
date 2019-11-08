@@ -16,6 +16,11 @@ public class SplashActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore mStore;
 
+    /**
+     * Initialize the splash activity. Gets instance of Firebase Authentication and Firebase
+     * Firestore.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +34,11 @@ public class SplashActivity extends AppCompatActivity {
         mStore.setFirestoreSettings(settings);
     }
 
+    /**
+     * Check if the app already has a valid Firebase authentication token. If so, authentication
+     * user and start main activity. Pass the user as an intent. If the user is not authenticated,
+     * start login activity.
+     */
     @Override
     public void onStart() {
         super.onStart();
