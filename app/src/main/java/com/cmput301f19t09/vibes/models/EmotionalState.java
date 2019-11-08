@@ -10,6 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This enumeration associates each colour name with its rgb value.
+ *
+ * To get the rgb value of any colour in this enumeration, use
+ * ColourEnum.COLOUR.getValue()
+ */
 enum ColourEnum {
     YELLOW (0xffffff00),
     LIGHT_GREEN (0xffccff99),
@@ -34,10 +40,10 @@ enum ColourEnum {
 
 public class EmotionalState implements Serializable {
 
+    // Maps each name of each colour as a string to a pair (R.drawable, rgbColourValue)
     private static final Map<String, Pair> map = new HashMap<>();
     static {
-        //Ref: https://stackoverflow.com/questions/8229473/hashmap-one-key-multiple-values#8229518
-
+        // For every emotion, the map is given a key (the name of the emotion as a string) and a
         Pair<Integer, Integer> happiness = new Pair<>(R.drawable.emotion_image_happiness, ColourEnum.YELLOW.getValue());
         map.put("HAPPINESS", happiness);
         Pair<Integer, Integer> trust = new Pair<>(R.drawable.emotion_image_trust, ColourEnum.LIGHT_GREEN.getValue());
