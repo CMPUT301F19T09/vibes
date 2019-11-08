@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -92,11 +93,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if(point.getEmotion() != null){
                 options.title(point.getEmotion());
             }
-            switch(point.getEmotion()) {
-                case "HAPPINESS":
-                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
-                    break;
-            }
+
+            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
+            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
+            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
+//            switch(point.getEmotion()) {
+//                case "HAPPINESS":
+//                    options.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.emotion_image_happiness));
+//                    break;
+//            }
             googlemap.addMarker(options);
 
             if(!firstPointPut ){
@@ -189,7 +194,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param vectorResId
      * @return
      */
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setBounds(0, 0, 64, 64);
 
