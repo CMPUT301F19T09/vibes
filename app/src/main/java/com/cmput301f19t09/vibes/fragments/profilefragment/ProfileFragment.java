@@ -23,8 +23,15 @@ import java.util.Observer;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+/**
+ * ProfileFragment contains information about the the current user logged in or information of
+ * other users being viewed based on whether you're following the other user or not. Calls a child
+ * fragment to view user's own mood history if on own user profile but calls a child fragment to
+ * view other user's most recent mood event if following
+ *
+ * Following other users not implemented yet
+ */
 public class ProfileFragment extends Fragment implements Observer {
-    public static final String PROFILE_FRAGMENT_TAG = "ProfileFragment";
     private TextView fullNameTextView;
     private TextView userNameTextView;
     private ImageView profilePictureImageView;
@@ -32,11 +39,20 @@ public class ProfileFragment extends Fragment implements Observer {
     private User otherUser;
     private User user;
 
+    /**
+     * Creates a new instance of the profile fragment for the current user
+     * @return ProfileFragment of the current user
+     */
     public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
     }
 
+    /**
+     * Creates a new instance of the profile fragment for the user being viewed
+     * @param otherUserUID The UID of the other user you want to view
+     * @return ProfileFragment of the user you want to view
+     */
     public static ProfileFragment newInstance(String otherUserUID) {
         ProfileFragment profileFragment = new ProfileFragment();
         Bundle bundle = new Bundle();
@@ -46,33 +62,40 @@ public class ProfileFragment extends Fragment implements Observer {
     }
 
     /**
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * Creates the view of the ProfileFragment and loading specific fields with values based on
+     * who's profile is being viewed
+     * @param inflater Makes the view of the fragment from the XML layout file
+     * @param container Parent container to store the fragment in
+     * @param savedInstanceState Saved instance state of the MainActivity
+     * @return The created ProfileFragment view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_profile, container, false);
 
+        // Get specific views
         fullNameTextView = view.findViewById(R.id.fullname_textview);
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
 
+        // Verifies if other user's UID is passed in through new instance
         String otherUserUID = null;
         if (getArguments() != null) {
             otherUserUID = getArguments().getString("otherUserUID");
         }
+
+        // Creates a user and observer for the user being viewed
         otherUser = null;
         if (otherUserUID != null) {
             otherUser = UserManager.getUser(otherUserUID);
             UserManager.addUserObserver(otherUserUID, this);
         }
 
+        // Gets the current user from UserManager
         user = UserManager.getCurrentUser();
 
+        // TODO: Implementing in last checkpoint
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,10 +103,13 @@ public class ProfileFragment extends Fragment implements Observer {
             }
         });
 
+        // Verifies if user exists
         if (user == null) {
-            throw new RuntimeException("YOU DUN GOOFED");
+            throw new RuntimeException("[ERROR]: USER IS NOT DEFINED");
         }
 
+        // Show's your own profile if other user wasn't passed in, set's the info, and gets the child
+        // fragment MoodListFragment of the mood list of the current user
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
             UserManager.addUserObserver(user.getUid(), this);
@@ -93,9 +119,11 @@ public class ProfileFragment extends Fragment implements Observer {
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
         } else {
+            // Checks if the user is following the other user and show their latest mood event by
+            // calling the child fragment MoodDetailsFragment
             if (user.getFollowingList().contains(otherUser.getUid())) {
                 followButton.setVisibility(View.INVISIBLE);
-                
+
                 if (otherUser.isLoaded()) {
                     Log.d("TEST", "Other user loaded");
                     setInfo(otherUser);
@@ -116,20 +144,26 @@ public class ProfileFragment extends Fragment implements Observer {
                 });
                 setInfo(otherUser);
             } else {
+                // Not following the viewed user shows nothing
                 followButton.setVisibility(View.VISIBLE);
             }
         }
         return view;
     }
 
+    /**
+     * Updates the fragment with new values if there was an update from the database.
+     * @param user The user object being observed for changes
+     * @param object Any object being handed in (will always be null)
+     */
     @Override
     public void update(Observable user, Object object) {
         setInfo((User) user);
     }
 
     /**
-     *
-     * @param user
+     * Updates the fields with user information
+     * @param user The object to get the values from
      */
     public void setInfo(User user) {
         if (user.isLoaded()) {
@@ -140,6 +174,9 @@ public class ProfileFragment extends Fragment implements Observer {
         }
     }
 
+    /**
+     * Removes observers when switch fragments
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -147,30 +184,5 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser != null) {
             UserManager.removeUserObservers(otherUser.getUid());
         }
-        Log.d(PROFILE_FRAGMENT_TAG, "PAUSED");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(PROFILE_FRAGMENT_TAG, "STOPPED");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED VIEW");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.d(PROFILE_FRAGMENT_TAG, "DETACHED");
     }
 }
