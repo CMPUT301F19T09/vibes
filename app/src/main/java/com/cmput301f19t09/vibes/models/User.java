@@ -60,7 +60,6 @@ public class User extends Observable implements Serializable {
     private transient Uri profileURL;
 
     private transient List<MoodEvent> moodEvents;
-    private static int count;
     private transient List<Map> moods;
 
     private static boolean connectionStarted;

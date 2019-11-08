@@ -31,7 +31,8 @@ public class ProfileFragment extends Fragment implements Observer {
     private TextView userNameTextView;
     private ImageView profilePictureImageView;
     private Button followButton;
-    private ListenerRegistration registration;
+    private User otherUser;
+    private User user;
 
     public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
@@ -62,21 +63,18 @@ public class ProfileFragment extends Fragment implements Observer {
         userNameTextView = view.findViewById(R.id.username_textview);
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
-//        ImageView profileMask = view.findViewById(R.id.profile_mask);
-//        profileMask.setImageResource(R.drawable.round_mask);
 
         String otherUserUID = null;
         if (getArguments() != null) {
             otherUserUID = getArguments().getString("otherUserUID");
         }
-        User otherUser = null;
+        otherUser = null;
         if (otherUserUID != null) {
             otherUser = UserManager.getUser(otherUserUID);
             UserManager.addUserObserver(otherUserUID, this);
         }
 
-        User user = UserManager.getCurrentUser();
-        UserManager.addUserObserver(user.getUid(), this);
+        user = UserManager.getCurrentUser();
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,17 +89,7 @@ public class ProfileFragment extends Fragment implements Observer {
 
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
-            /*
-<<<<<<< HEAD
-            //user.readData();
-=======
-            if (registration == null) {
-                Log.d("CHECK", "SHOULD BE CALLED ONCE");
-                user.readData();
-            }
->>>>>>> 438d6bd0435418a1aee7807611c02709be61d909
-
-             */
+            UserManager.addUserObserver(user.getUid(), this);
             user.addMood();
             setInfo(user);
             MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
@@ -110,11 +98,6 @@ public class ProfileFragment extends Fragment implements Observer {
 
         } else {
             followButton.setVisibility(View.VISIBLE);
-            //otherUser.readData();
-            //MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
-            //FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            //fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
-
             otherUser.addObserver((Observable o, Object arg) ->
             {
                 User u = (User) o;
@@ -138,7 +121,7 @@ public class ProfileFragment extends Fragment implements Observer {
      * @param user
      */
     public void setInfo(User user) {
-        if (user.getFirstName() != null && user.getLastName() != null && user.getUserName() != null && user.getProfileURL() != null) {
+        if (user.isLoaded()) {
             firstNameTextView.setText(user.getFirstName());
             lastNameTextView.setText(user.getLastName());
             userNameTextView.setText(user.getUserName());
@@ -150,6 +133,10 @@ public class ProfileFragment extends Fragment implements Observer {
     @Override
     public void onPause() {
         super.onPause();
+        UserManager.removeUserObserver(UserManager.UID, this);
+        if (otherUser != null) {
+            UserManager.removeUserObserver(otherUser.getUid(), this);
+        }
         Log.d(PROFILE_FRAGMENT_TAG, "PAUSED");
     }
 
@@ -168,7 +155,6 @@ public class ProfileFragment extends Fragment implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        registration.remove();
         Log.d(PROFILE_FRAGMENT_TAG, "DESTROYED");
     }
 
