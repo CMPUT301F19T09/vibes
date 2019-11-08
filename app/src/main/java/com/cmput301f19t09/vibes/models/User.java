@@ -232,6 +232,7 @@ public class User extends Observable implements Serializable {
 
                 moodEvents = parseToMoodEvent();
 
+                System.out.println(userName + picturePath);
                 storageReference = storage.getReference(picturePath);
                 storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -438,7 +439,6 @@ public class User extends Observable implements Serializable {
         }
         return events;
     }
-
     /**
      *
      * @return
@@ -550,7 +550,6 @@ public class User extends Observable implements Serializable {
             mood.put("username", moodEvent.getUser().getUserName());
 
             moods.set(index.intValue(), mood);
-
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
