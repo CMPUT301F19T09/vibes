@@ -101,7 +101,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 User u = (User) o;
 
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
                 transaction.commit();
             });
         }
