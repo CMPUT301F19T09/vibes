@@ -201,24 +201,24 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        Button debugButton = findViewById(R.id.debug_button);
-        debugButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                User testuser = new User("testuser");
-                User testuser2 = new User("testuser2");
-                User testuser3 = new User("testuser3");
-                User testuser4 = new User("testuser4");
-
-/*
-                testuser.addMood(generateRandomEvent(testuser));
-                testuser2.addMood(generateRandomEvent(testuser2));
-                testuser3.addMood(generateRandomEvent(testuser3));
-                testuser4.addMood(generateRandomEvent(testuser4));
-                *
- */
-            }
-        });
+//        Button debugButton = findViewById(R.id.debug_button);
+//        debugButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                User testuser = new User("testuser");
+//                User testuser2 = new User("testuser2");
+//                User testuser3 = new User("testuser3");
+//                User testuser4 = new User("testuser4");
+//
+///*
+//                testuser.addMood(generateRandomEvent(testuser));
+//                testuser2.addMood(generateRandomEvent(testuser2));
+//                testuser3.addMood(generateRandomEvent(testuser3));
+//                testuser4.addMood(generateRandomEvent(testuser4));
+//                *
+// */
+//            }
+//        });
     }
 
 

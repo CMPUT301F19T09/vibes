@@ -217,13 +217,42 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // hardcoded positions match the hardcoded images specified in the ImageAdapter
             switch (i) { // i is position of clicked image
                 case 0: {
-                    emotionalState = new EmotionalState("HAPPY");
+                    emotionalState = new EmotionalState("HAPPINESS");
                     break;
                 }
                 case 1: {
-                    emotionalState = new EmotionalState("SAD");
+                    emotionalState = new EmotionalState("TRUST");
                     break;
                 }
+                case 2: {
+                    emotionalState = new EmotionalState("FEAR");
+                    break;
+                }
+                case 3: {
+                    emotionalState = new EmotionalState("SURPRISE");
+                    break;
+                }
+                case 4: {
+                    emotionalState = new EmotionalState("SADNESS");
+                    break;
+                }
+                case 5: {
+                    emotionalState = new EmotionalState("DISGUST");
+                    break;
+                }
+                case 6: {
+                    emotionalState = new EmotionalState("ANGER");
+                    break;
+                }
+                case 7: {
+                    emotionalState = new EmotionalState("ANTICIPATION");
+                    break;
+                }
+                case 8: {
+                    emotionalState = new EmotionalState("LOVE");
+                    break;
+                }
+
             }
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());

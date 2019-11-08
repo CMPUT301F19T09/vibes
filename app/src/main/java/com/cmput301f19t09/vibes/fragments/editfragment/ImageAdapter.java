@@ -47,6 +47,13 @@ public class ImageAdapter extends BaseAdapter {
     // references to our images
     private Integer[] mThumbIds = {
             R.drawable.emotion_image_happiness,
-            R.drawable.emotion_image_sadness
+            R.drawable.emotion_image_trust,
+            R.drawable.emotion_image_fear,
+            R.drawable.emotion_image_surprise,
+            R.drawable.emotion_image_sadness,
+            R.drawable.emotion_image_disgust,
+            R.drawable.emotion_image_anger,
+            R.drawable.emotion_image_anticipation,
+            R.drawable.emotion_image_love
     };
 }
