@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
@@ -10,6 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 
+/*
+Subclass of MoodListAdapter, this loads a user's own mood events
+ */
 public class OwnMoodListAdapter extends MoodListAdapter
 {
     public OwnMoodListAdapter(Context context, User user)
@@ -17,6 +21,9 @@ public class OwnMoodListAdapter extends MoodListAdapter
         super(context, user);
     }
 
+    /*
+    Clear the data list, iterates through the User's mood events and adds them to the data list
+     */
     @Override
     public void refreshData()
     {
@@ -26,6 +33,7 @@ public class OwnMoodListAdapter extends MoodListAdapter
         List<MoodEvent> events = user.getMoodEvents();
         if (events == null)
         {
+            Log.d("TEST/OwnMoodListAdapter", "null MoodEvent list");
             return;
         }
 
@@ -34,17 +42,28 @@ public class OwnMoodListAdapter extends MoodListAdapter
             data.add(event);
         }
 
-        Collections.sort(data);
+        //Collections.sort(data);
+        data.sort((Object o1, Object o2) ->
+        {
+            return ((MoodEvent)o2).compareTo(o1);
+        });
+
         addAll(data);
         notifyDataSetChanged();
     }
 
+    /*
+    Calls refresh data
+     */
     @Override
     public void initializeData()
     {
         refreshData();
     }
 
+    /*
+    When the User notifies it's observers this refreshesData incase any MoodEvents have changed
+     */
     @Override
     public void update(Observable user, Object arg)
     {

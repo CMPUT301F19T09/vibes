@@ -232,6 +232,7 @@ public class User extends Observable implements Serializable {
 
                 moodEvents = parseToMoodEvent();
 
+                System.out.println(userName + picturePath);
                 storageReference = storage.getReference(picturePath);
                 storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -395,8 +396,8 @@ public class User extends Observable implements Serializable {
         if (moods != null) {
             for (Map moodEvent : moods) {
                 String emotion = (String) moodEvent.get("emotion");
-                String reason =(String) moodEvent.get("reason");
-                Number social =(Number) moodEvent.get("social");
+                String reason = (String) moodEvent.get("reason");
+                Number social = (Number) moodEvent.get("social");
                 Long timestamp = (Long) moodEvent.get("timestamp");
                 String username = (String) moodEvent.get("username");
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
@@ -435,13 +436,9 @@ public class User extends Observable implements Serializable {
                         this);
                 events.add(event);
             }
-
-            return events;
-        } else {
-            throw new RuntimeException("Need to update moods from DB");
         }
+        return events;
     }
-
     /**
      *
      * @return
@@ -462,7 +459,7 @@ public class User extends Observable implements Serializable {
 
             for (MoodEvent event : moodEvents)
             {
-                if (event.compareTo(moodEvent) <= 0)
+                if (moodEvent.compareTo(event) <= 0)
                 {
                     moodEvent = event;
                 }
@@ -553,7 +550,6 @@ public class User extends Observable implements Serializable {
             mood.put("username", moodEvent.getUser().getUserName());
 
             moods.set(index.intValue(), mood);
-
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
