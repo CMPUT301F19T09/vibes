@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -192,6 +194,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             location.setLongitude(-113.4938);
 
         }
+
         locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -199,9 +202,35 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             }
         });
 
+        editReasonView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // auto-generated stub; do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String str = charSequence.toString();
+                String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
+
+                // reason must be 3 words or less
+                if (splitStr.length > 3) {
+                    buttonSubmitView.setEnabled(false); // disable the button
+                }
+                else {
+                    buttonSubmitView.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // auto-generated stub; do nothing
+            }
+        });
+
         buttonSubmitView.setOnClickListener(view1 -> {
             moodEvent.setState(emotionalState);
-            
+
             // set optional fields
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
