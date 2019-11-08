@@ -2,7 +2,6 @@ package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,8 +15,13 @@ import android.view.ViewGroup;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
+import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,8 +31,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
-    MapData data;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+
+public class MapFragment extends Fragment implements OnMapReadyCallback, Observer{
     GoogleMap googlemap;
 
     boolean firstPointPut = false;
@@ -40,32 +50,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         SHOW_EVERYONE
     }
 
+    Filter filter;
+    private List<String> observedUsers;
+    private Map<String, MoodEvent> displayedEvents;
+
     /**
-     * An example for calling this MapFragment can be found below.
-     * FragmentManager fragmentManager = getSupportFragmentManager();
-     *         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-     *
-     *         MapFragment fragment = new MapFragment();
-     *         Bundle bundle = new Bundle();
-     *         MapData showingUsers = new MapData();
-     *         showingUsers.add(UserPoint.getMockUser());
-     *
-     *         bundle.putSerializable("MapData", showingUsers);
-     *         fragment.setArguments(bundle);
-     *
-     *         fragmentTransaction.add(R.id.map_container, fragment);
-     *         fragmentTransaction.commit();
+     * The map fragment shows the locations of the moods.
+     * It can show an interactive UserPoint, helping the mood to be able to get edited or viewed
+     * by the user.
      */
     public MapFragment() {
         // Required empty public constructor
+        observedUsers = new ArrayList<>();
+        displayedEvents = new HashMap<>();
     }
 
-    public static MapFragment getInstance(){
+    public static MapFragment newInstance(){
         return new MapFragment();
     }
 
     /**
-     * Checks for the bundle MapData.
+     * Checks for the bundle.
      * @param savedInstanceState
      */
     @Override
@@ -73,17 +78,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            data = (MapData) bundle.getSerializable("MapData");
-            Log.d("MAPFRAGMENT: ", "" + data.size());
-        }
     }
 
     /**
      * Displays the UserPoint in the map.
      * @param point
      */
-    public void showUserPoint(UserPoint point){
+    public String showUserPoint(UserPoint point){
+        String id = "";
         if(googlemap != null){
 
             MarkerOptions options = new MarkerOptions();
@@ -98,7 +100,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
             Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
             options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
-            googlemap.addMarker(options);
+
+            id = googlemap.addMarker(options).getId();
 
             if(!firstPointPut ){
                 firstPointPut = true;
@@ -109,10 +112,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .tilt(45)
                 .build();
 
-                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 2000, null);
 
             }
         }
+        return id;
     }
 
     public Drawable scaleImage (Drawable image) {
@@ -147,6 +151,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.map_fragment, container,false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
+        getChildFragmentManager().beginTransaction().add(R.id.filter_root, MapFilter.getInstance(Filter.SHOW_MINE), "mapFilter").commit();
+        UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
+
         return view;
     }
 
@@ -166,7 +173,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     /**
      * This is a callback function. It is called when the map is ready.
-     * It goes throught the data MapData, and and calls showUserPoint(UserPoint) for each item in it.
      * @param mMap
      */
     @Override
@@ -176,11 +182,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         mMap.clear();
-            if(this.data != null){
-                    for (UserPoint p:this.data) {
-                        this.showUserPoint(p);
-                    }
-        }
+
+        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(marker.getId()), filter == Filter.SHOW_MINE));
+                return true;
+            }
+        });
+        switchFilter(Filter.SHOW_MINE);
     }
 
     /**
@@ -201,5 +211,118 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public void switchFilter(Filter filter) {
+        if (googlemap == null)
+            return;
+
+        this.filter = filter;
+        User user = UserManager.getCurrentUser();
+        Log.d("TEST/Map", "Showing own events");
+        if (filter == Filter.SHOW_MINE) {
+            removeObservers();
+            showUserEvents();
+        } else if (filter == Filter.SHOW_EVERYONE) {
+            Log.d("TEST/Map", "Showing other events");
+            for (String id : user.getFollowingList())
+            {
+                Log.d("TEST/Map", "Adding " + id);
+                observedUsers.add(id);
+                User followed_user = UserManager.getUser(id);
+                if (followed_user.isLoaded()) {
+                    if (followed_user.getMostRecentMoodEvent() != null) {
+                        showEvent(followed_user.getMostRecentMoodEvent());
+                    }
+                }
+                followed_user.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        showFollowedEvents();
+                    }
+                });
+            }
+        }
+    }
+
+    private void showFollowedEvents()
+    {
+        googlemap.clear();
+        for (String id : observedUsers)
+        {
+            User user = UserManager.getUser(id);
+            if (user.isLoaded() && user.getMostRecentMoodEvent() != null)
+            {
+                showEvent(user.getMostRecentMoodEvent());
+            }
+        }
+    }
+
+    private void showUserEvents()
+    {
+        googlemap.clear();
+        displayedEvents.clear();
+        for (MoodEvent event : UserManager.getCurrentUser().getMoodEvents()) {
+            showEvent(event);
+        }
+    }
+
+    private void showEvent(MoodEvent event)
+    {
+        UserPoint point = new UserPoint(event.getUser().getUserName(), event.getLocation().getLatitude(), event.getLocation().getLongitude(),
+                event.getSocialSituation(), event.getState().getEmotion(), event.getDescription());
+        String id = showUserPoint(point);
+
+        if (id != "")
+        {
+            displayedEvents.put(id, event);
+        }
+    }
+
+    private void removeObservers()
+    {
+        for (String id : observedUsers)
+        {
+            UserManager.getUser(id).deleteObservers();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        removeObservers();
+        UserManager.getCurrentUser().deleteObserver(this);
+        super.onPause();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        Log.d("TEST/Map", "Current User Update");
+        if (filter == Filter.SHOW_MINE)
+        {
+            showUserEvents();
+        }
+        else
+        {
+            for (String id : ((User)o).getFollowingList())
+            {
+                if (!observedUsers.contains(id))
+                {
+                    observedUsers.add(id);
+                    User followed_user = UserManager.getUser(id);
+                    if (followed_user.isLoaded()) {
+                        if (followed_user.getMostRecentMoodEvent() != null) {
+                            showEvent(followed_user.getMostRecentMoodEvent());
+                        }
+                    }
+                    followed_user.addObserver(new Observer() {
+                        @Override
+                        public void update(Observable o, Object arg) {
+                            showFollowedEvents();
+                        }
+                    });
+                }
+            }
+            showFollowedEvents();
+        }
     }
 }
