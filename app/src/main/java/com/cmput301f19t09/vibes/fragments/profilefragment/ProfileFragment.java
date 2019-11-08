@@ -65,8 +65,18 @@ public class ProfileFragment extends Fragment implements Observer {
 //        ImageView profileMask = view.findViewById(R.id.profile_mask);
 //        profileMask.setImageResource(R.drawable.round_mask);
 
-        User user = UserManager.getUser(UserManager.getUserUID());
-        User otherUser = (User) getArguments().getSerializable("otherUser");
+        String otherUserUID = null;
+        if (getArguments() != null) {
+            otherUserUID = getArguments().getString("otherUserUID");
+        }
+        User otherUser = null;
+        if (otherUserUID != null) {
+            otherUser = UserManager.getUser(otherUserUID);
+            UserManager.addUserObserver(otherUserUID, this);
+        }
+
+        User user = UserManager.getCurrentUser();
+        UserManager.addUserObserver(user.getUid(), this);
 
         followButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +103,8 @@ public class ProfileFragment extends Fragment implements Observer {
 
              */
             user.addMood();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(user.getUid(), MoodListFragment.OWN_MOODS_LOCKED);
+            setInfo(user);
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
@@ -107,11 +118,12 @@ public class ProfileFragment extends Fragment implements Observer {
             otherUser.addObserver((Observable o, Object arg) ->
             {
                 User u = (User) o;
-
+                setInfo(u);
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
                 transaction.commit();
             });
+            setInfo(otherUser);
         }
         return view;
     }
@@ -126,11 +138,13 @@ public class ProfileFragment extends Fragment implements Observer {
      * @param user
      */
     public void setInfo(User user) {
-        firstNameTextView.setText(user.getFirstName());
-        lastNameTextView.setText(user.getLastName());
-        userNameTextView.setText(user.getUserName());
-        Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
-        profilePictureImageView.setClipToOutline(true);
+        if (user.getFirstName() != null && user.getLastName() != null && user.getUserName() != null && user.getProfileURL() != null) {
+            firstNameTextView.setText(user.getFirstName());
+            lastNameTextView.setText(user.getLastName());
+            userNameTextView.setText(user.getUserName());
+            Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+            profilePictureImageView.setClipToOutline(true);
+        }
     }
 
     @Override

@@ -180,11 +180,11 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
                         if (user == eventUser)
                         {
-                            profileFragment = ProfileFragment.newInstance(user);
+                            profileFragment = ProfileFragment.newInstance();
                         }
                         else
                         {
-                            profileFragment = ProfileFragment.newInstance(user, eventUser);
+                            profileFragment = ProfileFragment.newInstance(eventUser.getUid());
                         }
                         ((MainActivity) getActivity()).setMainFragment(profileFragment);
                     });
