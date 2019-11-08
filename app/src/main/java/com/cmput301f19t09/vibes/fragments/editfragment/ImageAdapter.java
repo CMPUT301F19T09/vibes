@@ -1,23 +1,31 @@
 package com.cmput301f19t09.vibes.fragments.editfragment;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.EmotionalState;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private ArrayList<String> stateKeys;
+    private Map<String, Pair> stateMap;
 
     public ImageAdapter(Context c) {
         mContext = c;
+        stateKeys = EmotionalState.getColourList();
+        stateMap = EmotionalState.getMap();
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return stateKeys.size();
     }
 
     public Object getItem(int position) {
@@ -39,14 +47,9 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageResource(mThumbIds[position]);
+        Pair<Integer, Integer> state = stateMap.get(stateKeys.get(position));
+        imageView.setImageResource(state.first);
+        imageView.setColorFilter(state.second);
         return imageView;
     }
-
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.emotion_image_happiness,
-            R.drawable.emotion_image_sadness
-    };
 }

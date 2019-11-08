@@ -151,27 +151,28 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         }
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
+            // set moodEvent to be an empty new MoodEvent object
+            moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
 
             // set the current date
             LocalDate date = LocalDate.now();
             dateTextView.setText(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            // can update immediately because cant be edited
+            moodEvent.setDate(dateTextView.getText().toString());
 
             // set the current time
             LocalTime time = LocalTime.now();
-            timeTextView.setText(time.format(DateTimeFormatter.ISO_LOCAL_TIME));
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            timeTextView.setText(time.format(timeFormatter));
+            // can update immediately because cant be edited
+            moodEvent.setTime(timeTextView.getText().toString());
 
             // TODO: fix location handling
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
-
-            // set moodEvent to be an empty new MoodEvent object
-            moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
-
         }
 
         buttonSubmitView.setOnClickListener(view1 -> {
-            moodEvent.setDate(dateTextView.getText().toString());
-            moodEvent.setTime(timeTextView.getText().toString());
             moodEvent.setState(emotionalState);
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
@@ -217,13 +218,42 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // hardcoded positions match the hardcoded images specified in the ImageAdapter
             switch (i) { // i is position of clicked image
                 case 0: {
-                    emotionalState = new EmotionalState("HAPPY");
+                    emotionalState = new EmotionalState("HAPPINESS");
                     break;
                 }
                 case 1: {
-                    emotionalState = new EmotionalState("SAD");
+                    emotionalState = new EmotionalState("TRUST");
                     break;
                 }
+                case 2: {
+                    emotionalState = new EmotionalState("FEAR");
+                    break;
+                }
+                case 3: {
+                    emotionalState = new EmotionalState("SURPRISE");
+                    break;
+                }
+                case 4: {
+                    emotionalState = new EmotionalState("SADNESS");
+                    break;
+                }
+                case 5: {
+                    emotionalState = new EmotionalState("DISGUST");
+                    break;
+                }
+                case 6: {
+                    emotionalState = new EmotionalState("ANGER");
+                    break;
+                }
+                case 7: {
+                    emotionalState = new EmotionalState("ANTICIPATION");
+                    break;
+                }
+                case 8: {
+                    emotionalState = new EmotionalState("LOVE");
+                    break;
+                }
+
             }
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
