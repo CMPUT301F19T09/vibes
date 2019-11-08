@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragments.mapfragment.MapFragment">
+    tools:context=".fragments.mapfragment.MapFragment"
+    android:id="@+id/map_fragment"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/filter_root"

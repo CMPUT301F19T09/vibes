@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -42,7 +43,6 @@
             app:layout_constraintBottom_toTopOf="@+id/edit_situation_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
 
         <EditText
             android:id="@+id/edit_situation_view"
@@ -162,7 +162,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            android:background="@drawable/rounded_button_grey"
+            android:background="@drawable/rounded_button_blue"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/cancel"
             android:textColor="@android:color/white"
