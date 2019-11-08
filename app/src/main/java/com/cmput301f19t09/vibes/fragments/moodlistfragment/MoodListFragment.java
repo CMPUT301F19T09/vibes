@@ -22,10 +22,11 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class MoodListFragment extends Fragment implements MoodFilterListener//, Observer
+/*
+    This class is a Fragment that displays either a users own list of MoodEvents, or the list
+    of their followers' most recent MoodEvents
+ */
+public class MoodListFragment extends Fragment implements MoodFilterListener
 {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
@@ -37,6 +38,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
     private User user;
     private MoodListFilterFragment filterFragment;
 
+    /*
+    Create a new instance of MoodListFragment, passing the displayType (int) as an argument to the instance
+    @param displayType
+        the display type of the new Fragment
+     */
     public static MoodListFragment newInstance(int displayType)
     {
         MoodListFragment fragment = new MoodListFragment();
@@ -48,6 +54,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         return fragment;
     }
 
+    /*
+    Intializes the View and adapter
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -59,16 +68,16 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
 
         user = UserManager.getCurrentUser();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        /*
+        When an item in the listview is clicked, open a MoodDetailsDialogFragmnent for the coresponding mood
+        If the MoodEvent's User is the current User, enable the editable flag
+         */
+        listView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) ->
         {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
-                boolean editable = event.getUser() == user;
+            MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
+            boolean editable = event.getUser() == user;
 
-                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
-            }
+            ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
         });
 
         Bundle arguments = getArguments();
@@ -76,19 +85,24 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         displayType = arguments.getInt("type");
         user = UserManager.getCurrentUser();
 
+        /*
+        Set the adapter to the one specified by displayType
+         */
         switch (displayType)
         {
-            case OWN_MOODS:
-            case OWN_MOODS_LOCKED:
+            case OWN_MOODS:         // Show own moods
+            case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
                 adapter = new OwnMoodListAdapter(getContext(), user);
                 break;
-            case FOLLOWED_MOODS:
+            case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
                 adapter = new FollowedMoodListAdapter(getContext(), user);
                 break;
         }
 
         listView.setAdapter(adapter);
 
+        // Create a filter fragment and add it to the view
+        // this allows switching between own moods and others' moods
         filterFragment = MoodListFilterFragment.newInstance();
 
         FragmentManager manager = getChildFragmentManager();
@@ -106,6 +120,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         return view;
     }
 
+    /*
+    Set the MoodListAdapter to adapter
+    @param adapter
+        The MoodListAdapter to use
+     */
     private void setAdapter(MoodListAdapter adapter)
     {
         this.adapter.destroy();
@@ -115,6 +134,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         adapter.refreshData();
     }
 
+    /*
+    Set the adapter to an OwnMoodListAdapter
+     */
     public void showOwnMoods()
     {
         if (displayType != OWN_MOODS)
@@ -126,6 +148,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         displayType = OWN_MOODS;
     }
 
+    /*
+    Set the adapter to an OwnMoodListAdapter
+     */
     public void showFollowedMoods()
     {
         if (displayType != FOLLOWED_MOODS)
@@ -137,12 +162,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         displayType = FOLLOWED_MOODS;
     }
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-    }
-
+    /*
+    On pause, destroy the adapter. This causes it to remove any observers it has on user objects
+     */
     @Override
     public void onPause()
     {
@@ -150,6 +172,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
         super.onPause();
     }
 
+    /*
+    Set the filter for mood types
+     */
     public void addFilter(int filter)
     {
         this.filter |= filter;

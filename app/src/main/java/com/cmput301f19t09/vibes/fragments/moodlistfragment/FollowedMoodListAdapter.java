@@ -14,6 +14,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 /*
+Subclass of MoodListAdapter, this loads the each of the most recent MoodEvents of the User that the
+current user follows
  */
 public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 {
@@ -23,6 +25,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         void update(Observable o, Object arg);
     }
 
+    // Maintain a list of the UIDs of users that this user observes
     private List<String> observed_users;
 
     public FollowedMoodListAdapter(Context context, User user)
@@ -30,6 +33,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         super(context, user);
     }
 
+    /*
+    initialize the observed users list and call refresh data
+     */
     @Override
     public void initializeData()
     {
@@ -37,6 +43,10 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
        refreshData();
     }
 
+    /*
+    For each User that the current User is following, make sure that that user has an entry in the
+    data set for their most recent MoodEvent
+     */
     @Override
     public void refreshData()
     {
@@ -51,9 +61,16 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             if (!observed_users.contains(followed_user))
             {
+                /*
+                If the user is not followed (by UID), add that user to the observed_users list and
+                create an Observer that updates the entry for that user whenever that User is changed
+                 */
                 User user = UserManager.getUser(followed_user);
                 observed_users.add(followed_user);
 
+                /*
+                If the User doesn't need to be loaded by UserManager, add the entry immediately
+                 */
                 if (user.isLoaded())
                 {
                     refreshEvent(user);
@@ -67,6 +84,10 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         }
     }
 
+    /*
+    Finds the MoodEvent with User user in the data. If that MoodEvent doesn't exist, add the User's
+    most recent MoodEvent, otherwise update the displayed MoodEvent to be the User's most recent MoodEvnet
+     */
     public void refreshEvent(User user) {
         Log.d("TEST", "Refreshing event for " + user.getUserName());
 
@@ -75,10 +96,14 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             return;
         }
 
+        /*
+        Iterate through the list and check if an event associated with user exists, if it does,
+        replace that event with the most recent MoodEvent
+         */
         boolean replaced = false;
         for (MoodEvent event : data)
         {
-            if (event.getUser().getUserName() == user.getUserName())
+            if (event.getUser().getUid().equals(user.getUid()))
             {
                 clear();
 
@@ -96,6 +121,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             }
         }
 
+        /*
+        If there wasn't an event to replace, add a new entry to the list
+         */
         if (! replaced)
         {
             clear();
@@ -109,21 +137,32 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         }
     }
 
+    /*
+    Called for notifyObservers, if the user parameter is the current user, update the entire list,
+    otherwise update the event associated with the User parameter
+    @param observable
+        A User object
+    @param arg
+        An optional (ignored) argument
+     */
     @Override
-    public void update(Observable o, Object arg)
+    public void update(Observable observable, Object arg)
     {
-        User u = (User) o;
+        User user1 = (User) user;
 
-        if (u == user)
+        if (user1 == this.user)
         {
             refreshData();
         }
         else
         {
-            refreshEvent(u);
+            refreshEvent(user1);
         }
     }
 
+    /*
+    Remove any observers that observed_users have
+     */
     @Override
     public void destroy()
     {

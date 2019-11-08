@@ -34,8 +34,6 @@ public class SplashActivity extends AppCompatActivity {
 
         Intent intent;
 
-        mAuth.signOut();
-
         if (mAuth.getCurrentUser() != null) {
             User user = new User(mAuth.getCurrentUser().getUid());
             intent = new Intent(this, MainActivity.class);
