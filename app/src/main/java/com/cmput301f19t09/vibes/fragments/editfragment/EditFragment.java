@@ -148,13 +148,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
-            editSituationView.setText(moodEvent.getSocialSituation());
+            String situationString = Integer.toString(moodEvent.getSocialSituation());
+            editSituationView.setText(situationString);
             editReasonView.setText(moodEvent.getDescription());
+            emotionalState = moodEvent.getState();
+            stateTextView.setText(moodEvent.getState().getEmotion());
+
+            // all required fields are completed already
+            buttonSubmitView.setEnabled(true);
         }
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
-            // set moodEvent to be an empty new MoodEvent object
-            moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
+            // set moodEvent to be an empty new MoodEvent object for the current user
+            moodEvent = new MoodEvent(null, null, null, null, -1, null, user);
 
             // set the current date
             LocalDate date = LocalDate.now();
@@ -170,17 +176,24 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             moodEvent.setTime(timeTextView.getText().toString());
 
             // TODO: fix location handling
+            // TODO: only set location if switch is set
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
+            moodEvent.setLocation(location);
         }
 
         buttonSubmitView.setOnClickListener(view1 -> {
             moodEvent.setState(emotionalState);
+            // set optional fields
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
             }
-            moodEvent.setLocation(location);
-            moodEvent.setDescription(editReasonView.getText().toString());
+            if (editReasonView.getText().toString().isEmpty()){
+                moodEvent.setDescription("");
+            }
+            else {
+                moodEvent.setDescription(editReasonView.getText().toString());
+            }
 
             if (!moodSet) {
                 // was adding a new mood
@@ -220,7 +233,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             emotionalState = new EmotionalState(stateKeys.get(i));
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
-            checkRequiredFields();
+            // a mood has been selected so all required fields have been set; allow submitting MoodEvent
+            buttonSubmitView.setEnabled(true);
         }
     }
 
@@ -237,19 +251,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    private void checkRequiredFields() {
-        // check if date and time have been set valid and no other field (except comment) is empty
-        if (emotionalState != null) {
-
-            // then enable button
-            buttonSubmitView.setEnabled(true);
-        }
-        else {
-            // disable button
-            buttonSubmitView.setEnabled(false);
-        }
     }
 
 }

@@ -40,6 +40,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.state = state;
     }
 
+    // return value of -1 indicates that socialSituation was not specified
     public int getSocialSituation() {
         return socialSituation;
     }
