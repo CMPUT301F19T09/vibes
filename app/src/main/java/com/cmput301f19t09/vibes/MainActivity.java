@@ -254,7 +254,7 @@ public class MainActivity extends FragmentActivity {
 //                    List<Mood> moodsShowing = user.getMoods();
                     List<MoodEvent> moodsShowing = user.getMoodEvents();
                     for(MoodEvent mood: moodsShowing){
-                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(), -1, mood.getState().getEmotion(), mood.getDescription());
                         myFragment.showUserPoint(userpoint);
                     }
                 }
@@ -277,7 +277,7 @@ public class MainActivity extends FragmentActivity {
                                     public void onCallback(User user) {
                                         MapFragment myFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag("mapFragment");
                                         MoodEvent mood = user.getMostRecentMoodEvent();
-                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), new LatLng(mood.getLocation().getLatitude(), mood.getLocation().getLongitude()), mood.getState().getEmotion(), mood.getDescription());
+                                        UserPoint userpoint = new UserPoint(mood.getUser().getUserName(), mood.getLocation().getLatitude(), mood.getLocation().getLongitude(),1,  mood.getState().getEmotion(), mood.getDescription());
                                         myFragment.showUserPoint(userpoint);
                                     }
                                 });

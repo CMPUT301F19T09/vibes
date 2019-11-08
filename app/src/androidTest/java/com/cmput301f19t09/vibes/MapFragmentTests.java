@@ -24,7 +24,7 @@ public class MapFragmentTests {
 
 
     public UserPoint getMockUserPoint(){
-        UserPoint test = new UserPoint("testuser", getMockLocation(), 0, "HAPPY", "NO REASON");
+        UserPoint test = UserPoint.getMockUser();
         return test;
     }
 
@@ -43,7 +43,8 @@ public class MapFragmentTests {
     @Test
     public void testGetLocation(){
         UserPoint test = getMockUserPoint();
-        Assert.assertTrue(test.getLocation().latitude ==23.23);
+        Assert.assertTrue(test.getLat() ==53.5461);
+        Assert.assertTrue(test.getLong() == 113.4938);
     }
 
     @Test
