@@ -124,6 +124,7 @@ public class SignUpActivity extends AppCompatActivity {
         userData.put("profile_picture_path", user.getPicturePath());
         userData.put("following", user.getFollowingList());
         userData.put("moods", user.getMoodEvents());
+        userData.put("requested", user.getRequestedList());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final CollectionReference collectionReference = db.collection(USER_COLLECTION);
@@ -135,6 +136,9 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Data addition successful");
+
+                        startLoginActivity();
+
                         Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
                         mStorageReference = mStorage.getReference(user.getPicturePath());
                         mStorageReference

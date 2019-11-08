@@ -4,7 +4,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
-import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +30,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 
 public class User implements Serializable {
+    private String uid;
     private String userName;
     private String firstName;
     private String lastName;
@@ -40,8 +40,6 @@ public class User implements Serializable {
     private List<Mood> result;
     private List<MoodEvent> moodEvents;
     private List<String> requestedList;
-    private String TAG = "Sample";
-
 
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
@@ -51,45 +49,38 @@ public class User implements Serializable {
     private transient static FirebaseStorage storage;
     private transient static StorageReference storageReference;
     private transient Uri profileURL;
-
     private transient List<Map> moods;
+
     private static boolean connectionStarted;
 
     // This is the number of elements in the mood map on firebase.
     // I used it to check if a map is complete to show it on the map.
-    private final int MAP_MOOD_SIZE = 7;
-    /**
-     *
-     */
+    final private int MAP_MOOD_SIZE = 7;
+    final private String TAG = "Sample";
+
     public interface FirebaseCallback {
         void onCallback(User user);
     }
 
-    /**
-     *
-     */
     public interface UserExistListener {
         void onUserExists();
         void onUserNotExists();
     }
 
-    /**
-     * Constructor for the user class
-     */
-//    public User(){
-//        if(!connectionStarted){ // Makes sure these definitions are called only once.
-//            connectionStarted = true;
-//
-//            db = FirebaseFirestore.getInstance();
+    public User(){
+        if(!connectionStarted){ // Makes sure these definitions are called only once.
+            connectionStarted = true;
+
+            db = FirebaseFirestore.getInstance();
             FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                     .setPersistenceEnabled(false)
                     .build();
-//            db.setFirestoreSettings(settings);
-//
-//            collectionReference = db.collection("users");
-//            storage = FirebaseStorage.getInstance();
-//        }
-//    }
+            db.setFirestoreSettings(settings);
+
+            collectionReference = db.collection("users");
+            storage = FirebaseStorage.getInstance();
+        }
+    }
 
     /**
      *
@@ -106,13 +97,15 @@ public class User implements Serializable {
         this.picturePath = "image/" + this.userName + ".png";
         this.followingList = new ArrayList<>();
         this.moodEvents = new ArrayList<>();
+        this.requestedList = new ArrayList<>();
     }
     /**
      *
      * @param userName
      */
-    public User(String userName) {
-        this.userName = userName;
+    public User(String uid) {
+        this();
+        this.uid = uid;
 
 //        if(userName == null){
 //            throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
@@ -159,13 +152,11 @@ public class User implements Serializable {
      * @param firebaseCallback
      */
     public void readData(FirebaseCallback firebaseCallback) {
-        if(userName == null){
+        if(uid == null){
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
-        // Using SnapshotListener helps reduce load times and obtains from local cache
-        // Ref https://firebase.google.com/docs/firestore/query-data/listen
-        documentReference = collectionReference.document(userName);
+        documentReference = collectionReference.document(uid);
 //        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
 //            @Override
 //            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {

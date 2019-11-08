@@ -24,7 +24,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextView passwordTextView;
     private Button loginButton;
     private Button signUpButton;
+
     private FirebaseAuth mAuth;
+
     final private String TAG = "authentication";
 
     @Override
@@ -32,12 +34,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
-
         emailTextView = findViewById(R.id.email_field);
         passwordTextView = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
         signUpButton = findViewById(R.id.sign_up_button);
+
+        mAuth = FirebaseAuth.getInstance();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +64,11 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     public void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -69,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithEmail:success");
+                            startMainActivity();
                         } else {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
