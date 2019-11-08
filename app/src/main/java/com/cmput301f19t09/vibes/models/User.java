@@ -86,7 +86,7 @@ public class User extends Observable implements Serializable {
      */
     public User(String uid) {
         this.uid = uid;
-
+        this.loadedData = false;
         if(!connectionStarted){ // Makes sure these definitions are called only once.
             connectionStarted = true;
 
@@ -99,8 +99,6 @@ public class User extends Observable implements Serializable {
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
         }
-
-        this.loadedData = false;
     }
 
     /**
