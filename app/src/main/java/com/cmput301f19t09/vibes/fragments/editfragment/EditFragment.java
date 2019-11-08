@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,8 +51,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
     private MoodEvent moodEvent;
     private boolean moodSet;
-    public static final String VIBES_USER = "com.cmput301f19t09.vibes.USER";
     private User user;
+    public static final String VIBES_INDEX = "com.cmput301f19t09.vibes.INDEX";
+    private int moodEventListIndex;
 
     // date and time
     private TextView dateTextView;
@@ -89,43 +91,32 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      * @param
      * @return A new instance of fragment EditFragment.
      */
-    public static EditFragment newInstance(MoodEvent moodEvent, User user) {
-        // called when we pass in a MoodEvent
+    public static EditFragment newInstance(MoodEvent moodEvent, int index) {
+        // called when we pass in a MoodEvent and its index in the moodEventList
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
         args.putSerializable(VIBES_MOODEVENT, moodEvent);
-        args.putSerializable(VIBES_USER, user);
+        args.putInt(VIBES_INDEX, index);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static EditFragment newInstance(User user) {
+    public static EditFragment newInstance() {
         // called when we don't pass in a MoodEvent
-        EditFragment fragment = new EditFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(VIBES_USER, user);
-        fragment.setArguments(args);
-        return fragment;
+        return new EditFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            user = (User) getArguments().getSerializable(VIBES_USER);
+        if (getArguments() != null) { // a MoodEvent was passed so set fields based on it
             moodEvent = (MoodEvent) getArguments().getSerializable(VIBES_MOODEVENT);
-
-            if (moodEvent != null) { // a MoodEvent was passed so set fields based on it
-                moodSet = true;
-            }
-            else { // we didn't pass a MoodEvent so we are creating a new one
-                moodSet = false;
-            }
-
+            moodEventListIndex = (int) getArguments().getInt(VIBES_INDEX);
+            moodSet = true;
         }
-        else {
-            Log.d("info", "the bundle args was null");
+        else { // we didn't pass a MoodEvent so we are creating a new one
+            moodSet = false;
         }
     }
 
@@ -135,6 +126,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
+
+        // get user in current session
+        user = UserManager.getCurrentUser();
 
         // enable buttons
         buttonSubmitView = view.findViewById(R.id.button_submit_view);
@@ -258,8 +252,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             }
             else {
                 // was editing
-                // TODO: replace the moodEvent which was clicked on by using its index
-                user.addMood(moodEvent);
+                user.editMood(moodEvent, moodEventListIndex);
             }
             MainActivity main = (MainActivity) getActivity();
             MoodListFragment moodList = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS);

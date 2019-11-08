@@ -155,7 +155,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     @Override
                     public void onDismiss(DialogInterface dialog)
                     {
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event,eventUser));
+                        int mood_index = eventUser.getMoodEvents().indexOf(event);
+                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event, mood_index));
                     }
                 });
 

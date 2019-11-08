@@ -549,11 +549,12 @@ public class User extends Observable implements Serializable {
             mood.put("photo", null);
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
-            mood.put("timestamp", time.toEpochSecond(ZoneOffset.from(time)));
+            mood.put("timestamp", moodEvent.getEpochUTC());
             mood.put("username", moodEvent.getUser().getUserName());
 
             moods.set(index.intValue(), mood);
-            documentReference = collectionReference.document(userName);
+
+            documentReference = collectionReference.document(User.this.getUid());
             documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -562,6 +563,7 @@ public class User extends Observable implements Serializable {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Log.d("EXCEPTION", e.toString());
                     Log.d("INFO", "Cannot add mood to list");
                 }
             });
