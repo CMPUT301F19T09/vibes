@@ -64,7 +64,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                //MoodItem item = (MoodItem) parent.getItemAtPosition(position);
                 MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
                 boolean editable = event.getUser() == user;
 
@@ -109,7 +108,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
 
     private void setAdapter(MoodListAdapter adapter)
     {
-        adapter.destroy();
+        this.adapter.destroy();
         this.adapter = adapter;
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
@@ -141,10 +140,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener//, 
     @Override
     public void onResume()
     {
-        if (adapter != null)
-        {
-            UserManager.addUserObserver(user.getUid(), adapter);
-        }
         super.onResume();
     }
 

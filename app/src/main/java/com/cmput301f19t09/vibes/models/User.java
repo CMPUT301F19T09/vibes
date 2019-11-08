@@ -592,23 +592,31 @@ public class User extends Observable implements Serializable {
         }
     }
 
-    int observers = 0;
 
     @Override
     public synchronized void addObserver(Observer o)
     {
         super.addObserver(o);
-        observers++;
-        Log.d("TEST/User.addObserver", "User " + userName + " has " + observers + " observers");
-        Log.d("TEST/User.addObserver", "Observed by: " + o.getClass().getSimpleName());
+        logObservers("[ADDED " + o.getClass().getSimpleName() + "]");
     }
 
     @Override
     public synchronized void deleteObserver(Observer o)
     {
         super.deleteObserver(o);
-        observers--;
-        Log.d("TEST/User.deleteObserver", "User " + userName + " has " + observers + " observers");
-        Log.d("TEST/User.addObserver", "Remove observe by: " + o.getClass().getSimpleName());
+        logObservers("[DELTED " + o.getClass().getSimpleName() + "]");
+    }
+
+    @Override
+    public void notifyObservers()
+    {
+        super.notifyObservers();
+        logObservers("notifying observers");
+    }
+
+    private void logObservers(String msg)
+    {
+        Log.d("TEST/USERS", " " + getUserName() + " has " + countObservers() + " observers");
+        Log.d("USERS/" + getUserName(), "Has " + countObservers() + " observers " + msg);
     }
 }
