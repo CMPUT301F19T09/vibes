@@ -14,6 +14,7 @@
             android:layout_height="match_parent"
             android:text="Requests"
             android:textSize="32dp"
+            android:layout_marginLeft="8dp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/roboto_thin">
         </TextView>
@@ -37,6 +38,7 @@
             android:layout_height="match_parent"
             android:text="Following"
             android:textSize="32dp"
+            android:layout_marginLeft="8dp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/roboto_thin">
         </TextView>
