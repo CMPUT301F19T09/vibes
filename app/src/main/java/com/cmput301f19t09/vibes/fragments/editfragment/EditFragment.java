@@ -189,7 +189,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 user.addMood(moodEvent);
             }
             MainActivity main = (MainActivity) getActivity();
-            MoodListFragment moodList = MoodListFragment.newInstance(user, 0);
+            MoodListFragment moodList = MoodListFragment.newInstance(user.getUserName(), 0);
             main.setMainFragment(moodList);
         });
 

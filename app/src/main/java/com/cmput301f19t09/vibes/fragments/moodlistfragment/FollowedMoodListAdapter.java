@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,12 +50,20 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             if (!observed_users.contains(followed_user))
             {
+                /*
                 User user = new User(followed_user);
                 user.addObserver((Observable o, Object arg) ->
                 {
                     refreshEvent((User) o);
                 });
-                user.readData();
+
+                 */
+
+                User user = UserManager.getUser(followed_user);
+                UserManager.addUserObserver(followed_user, (Observable o, Object a) ->
+                {
+                    refreshEvent((User) o);
+                });
             }
         }
     }
@@ -110,5 +119,15 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         {
             refreshEvent(u);
         }
+    }
+
+    @Override
+    public void destroy()
+    {
+        for (String user : observed_users)
+        {
+            UserManager.removeUserObserver(user, this);
+        }
+        super.destroy();
     }
 }

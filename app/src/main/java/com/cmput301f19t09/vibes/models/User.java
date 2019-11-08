@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,17 +98,13 @@ public class User extends Observable implements Serializable {
         }
     }
 
-    public void readData() {
-        addSnapshotListener();
-    }
-
+    /*
     /**
      *
      * @param userName
      * @param firstName
      * @param lastName
      * @param email
-     */
     public User(String userName, String firstName, String lastName, String email) {
         this();
         this.userName = userName;
@@ -145,6 +143,7 @@ public class User extends Observable implements Serializable {
                     }
                 });
     }
+    */
     /**
      *
      * @param userName
@@ -194,9 +193,9 @@ public class User extends Observable implements Serializable {
 //        });
     }
 
-    private void addSnapshotListener() {
+    public ListenerRegistration getSnapshotListener() {
         documentReference = collectionReference.document(userName);
-        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        return documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Log.d("TEST", "User event");
@@ -637,5 +636,23 @@ public class User extends Observable implements Serializable {
                 }
             });
         }
+    }
+
+    int observers = 0;
+
+    @Override
+    public synchronized void addObserver(Observer o)
+    {
+        super.addObserver(o);
+        observers++;
+        Log.d("TEST/User.addObserver", "User " + userName + " has " + observers + " observers");
+    }
+
+    @Override
+    public synchronized void deleteObserver(Observer o)
+    {
+        super.deleteObserver(o);
+        observers--;
+        Log.d("TEST/User.deleteObserver", "User " + userName + " has " + observers + " observers");
     }
 }

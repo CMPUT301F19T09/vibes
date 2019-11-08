@@ -83,15 +83,15 @@ public class ProfileFragment extends Fragment implements Observer {
 
         if (otherUser == null) {
             followButton.setVisibility(View.INVISIBLE);
-            user.readData();
+            //user.readData();
             user.addMood();
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS_LOCKED);
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(user.getUserName(), MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
 
         } else {
             followButton.setVisibility(View.VISIBLE);
-            otherUser.readData();
+            //otherUser.readData();
             //MoodListFragment moodListFragment = MoodListFragment.newInstance(otherUser, MoodListFragment.OWN_MOODS_LOCKED);
             //FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             //fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();

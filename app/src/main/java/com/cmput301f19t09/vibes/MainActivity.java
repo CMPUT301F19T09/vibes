@@ -39,6 +39,7 @@ import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.Mood;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -69,12 +70,13 @@ public class MainActivity extends FragmentActivity {
         Intent intent = getIntent();
         String username = (String) intent.getSerializableExtra("username");
 
-        user = new User("testuser");
+        //user = new User("testuser");
+        user = UserManager.getUser("testuser");
 //        user = new User("testuser4", "Test", "User4", "testuser4@example.com");
 
         initListeners(); // Defines onClickListeners for the components defined above in the class.
 
-        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
+        setMainFragment(MoodListFragment.newInstance(user.getUserName(), MoodListFragment.OWN_MOODS));
         updateViewButton(); // Updates the view button only.
 
         FragmentManager manager = getSupportFragmentManager();
@@ -183,7 +185,7 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode) {
                     case LIST:
-                        setMainFragment(MoodListFragment.newInstance(user, MoodListFragment.OWN_MOODS));
+                        setMainFragment(MoodListFragment.newInstance(user.getUserName(), MoodListFragment.OWN_MOODS));
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
