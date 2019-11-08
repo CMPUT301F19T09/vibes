@@ -65,7 +65,6 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
 
         if (user == null)
         {
-            Log.d("TEST/FOLLOWING", "User is null");
             return view;
         }
 
