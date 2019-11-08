@@ -140,7 +140,7 @@ public class MainActivity extends FragmentActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMainFragment(EditFragment.newInstance(user));
+                setMainFragment(EditFragment.newInstance());
             }
         });
 
