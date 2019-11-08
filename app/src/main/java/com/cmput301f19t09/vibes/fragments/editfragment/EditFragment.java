@@ -6,14 +6,18 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.cmput301f19t09.vibes.MainActivity;
@@ -24,6 +28,7 @@ import com.cmput301f19t09.vibes.models.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -48,20 +53,29 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public static final String VIBES_USER = "com.cmput301f19t09.vibes.USER";
     private User user;
 
+    // date and time
     private TextView dateTextView;
     private TextView timeTextView;
+
+    // state setting
     private GridView stateGridView;
     private TextView stateTextView;
+    private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+
     private EditText editSituationView;
     private EditText editReasonView;
+
+    // location services
+    private Location location;
+    private Switch locationSwitch;
+    private boolean useLocation;
+
+    // buttons
     private Button buttonSubmitView;
     private Button buttonCancelView;
 
     private OnFragmentInteractionListener mListener;
-
-    // location services
-    private Location location;
 
     public EditFragment() {
         // Required empty public constructor
@@ -140,44 +154,101 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         location = new Location(""); // empty provider when not pulling from a location service
+        locationSwitch = view.findViewById(R.id.location_switch);
 
         if (moodSet) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
 
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
-            editSituationView.setText(moodEvent.getSocialSituation());
+            String situationString = Integer.toString(moodEvent.getSocialSituation());
+            editSituationView.setText(situationString);
             editReasonView.setText(moodEvent.getDescription());
+            emotionalState = moodEvent.getState();
+            stateTextView.setText(moodEvent.getState().getEmotion());
+
+            // all required fields are completed already
+            buttonSubmitView.setEnabled(true);
         }
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
+            // set moodEvent to be an empty new MoodEvent object for the current user
+            moodEvent = new MoodEvent(null, null, null, null, -1, null, user);
 
             // set the current date
             LocalDate date = LocalDate.now();
             dateTextView.setText(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            // can update immediately because cant be edited
+            moodEvent.setDate(dateTextView.getText().toString());
 
             // set the current time
             LocalTime time = LocalTime.now();
-            timeTextView.setText(time.format(DateTimeFormatter.ISO_LOCAL_TIME));
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            timeTextView.setText(time.format(timeFormatter));
+            // can update immediately because cant be edited
+            moodEvent.setTime(timeTextView.getText().toString());
 
             // TODO: fix location handling
+            // TODO: only set location if switch is set
             location.setLatitude(53.5461);
             location.setLongitude(-113.4938);
 
-            // set moodEvent to be an empty new MoodEvent object
-            moodEvent = new MoodEvent(null, null, null, null, 0, null, null);
-
         }
 
+        locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                useLocation = b; // b indicates whether switch is "ON" = 1 or "OFF" = 0
+            }
+        });
+
+        editReasonView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // auto-generated stub; do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String str = charSequence.toString();
+                String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
+
+                // reason must be 3 words or less
+                if (splitStr.length > 3) {
+                    buttonSubmitView.setEnabled(false); // disable the button
+                }
+                else {
+                    buttonSubmitView.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // auto-generated stub; do nothing
+            }
+        });
+
         buttonSubmitView.setOnClickListener(view1 -> {
-            moodEvent.setDate(dateTextView.getText().toString());
-            moodEvent.setTime(timeTextView.getText().toString());
             moodEvent.setState(emotionalState);
+
+            // set optional fields
             if (!editSituationView.getText().toString().isEmpty()) {
                 moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
             }
-            moodEvent.setLocation(location);
-            moodEvent.setDescription(editReasonView.getText().toString());
+
+            if (useLocation) {
+                moodEvent.setLocation(location);
+            }
+            else {
+                moodEvent.setLocation(null);
+            }
+
+            if (editReasonView.getText().toString().isEmpty()){
+                moodEvent.setDescription("");
+            }
+            else {
+                moodEvent.setDescription(editReasonView.getText().toString());
+            }
 
             if (!moodSet) {
                 // was adding a new mood
@@ -214,20 +285,11 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (adapterView.getId() == R.id.state_grid_view) {
-            // hardcoded positions match the hardcoded images specified in the ImageAdapter
-            switch (i) { // i is position of clicked image
-                case 0: {
-                    emotionalState = new EmotionalState("HAPPY");
-                    break;
-                }
-                case 1: {
-                    emotionalState = new EmotionalState("SAD");
-                    break;
-                }
-            }
+            emotionalState = new EmotionalState(stateKeys.get(i));
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
-            checkRequiredFields();
+            // a mood has been selected so all required fields have been set; allow submitting MoodEvent
+            buttonSubmitView.setEnabled(true);
         }
     }
 
@@ -244,19 +306,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    private void checkRequiredFields() {
-        // check if date and time have been set valid and no other field (except comment) is empty
-        if (emotionalState != null) {
-
-            // then enable button
-            buttonSubmitView.setEnabled(true);
-        }
-        else {
-            // disable button
-            buttonSubmitView.setEnabled(false);
-        }
     }
 
 }

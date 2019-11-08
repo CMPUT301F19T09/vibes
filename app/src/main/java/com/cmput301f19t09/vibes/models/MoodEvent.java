@@ -21,7 +21,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
     private EmotionalState state; // not optional
     private int socialSituation; // optional
     private Location location; // optional
-    private User user;
+    private User user; // the user that the mood is associated with
 
     public MoodEvent(LocalDate date, LocalTime time, String description,
                      EmotionalState state, int socialSituation, Location location, User user) {
@@ -40,6 +40,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.state = state;
     }
 
+    // return value of -1 indicates that socialSituation was not specified
     public int getSocialSituation() {
         return socialSituation;
     }
@@ -48,6 +49,7 @@ public class MoodEvent extends Event implements Serializable, Comparable {
         this.socialSituation = social_situation;
     }
 
+    // may return null if location was not specified
     public Location getLocation() {
         return location;
     }
