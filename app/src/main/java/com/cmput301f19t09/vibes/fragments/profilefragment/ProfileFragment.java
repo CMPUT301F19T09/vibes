@@ -138,13 +138,35 @@ public class ProfileFragment extends Fragment implements Observer {
                 });
                 setInfo(otherUser);
             } else {
-                // Not following the viewed user shows nothing
+//                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+//                    // Not following the viewed user shows nothing
+//                    followButton.setVisibility(View.VISIBLE);
+//                    followButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+////                        otherUser.addRequest(UserManager.getCurrentUserUID());
+////                        user.acceptRequest(otherUser.getUid());
+//                            user.removeRequest(otherUser.getUid());
+//                        }
+//                    });
+//                    setInfo(otherUser);
+//                } else {
+//                    followButton.setActivated(true);
+//                    followButton.setText("R E Q U E S T E D");
+//                    followButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            Toast.makeText(getContext(), "CANCEL", Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                }
                 followButton.setVisibility(View.VISIBLE);
                 followButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         otherUser.addRequest(UserManager.getCurrentUserUID());
 //                        user.acceptRequest(otherUser.getUid());
+//                        user.removeRequest(otherUser.getUid());
                     }
                 });
                 setInfo(otherUser);

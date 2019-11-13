@@ -264,6 +264,10 @@ public class User extends Observable implements Serializable {
         });
     }
 
+    /**
+     *
+     * @param otherUserUID
+     */
     public void addFollowing(String otherUserUID) {
         if (!followingList.contains(otherUserUID)) {
             followingList.add(otherUserUID);
@@ -283,32 +287,40 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param otherUserUID
+     */
     public void acceptRequest(String otherUserUID) {
-        if (requestedList.contains(otherUserUID)) {
-            requestedList.remove(otherUserUID);
-        }
+        removeRequest(otherUserUID);
 
         User otherUser = UserManager.getUser(otherUserUID);
         if (!otherUser.getFollowingList().contains(otherUserUID)) {
             otherUser.addFollowing(UserManager.getCurrentUserUID());
         }
-
-        documentReference = collectionReference.document(uid);
-        documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
     }
 
-    public void denyRequest() {
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void removeRequest(String otherUserUID) {
+        if (requestedList.contains(otherUserUID)) {
+            requestedList.remove(otherUserUID);
 
+            documentReference = collectionReference.document(uid);
+            documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
     }
     /**
      * Checks whether or mot the user already exists by checking UIDs
