@@ -95,14 +95,6 @@ public class ProfileFragment extends Fragment implements Observer {
         // Gets the current user from UserManager
         user = UserManager.getCurrentUser();
 
-        // TODO: Implementing in last checkpoint
-        followButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "REQUESTED", Toast.LENGTH_LONG).show();
-            }
-        });
-
         // Verifies if user exists
         if (user == null) {
             throw new RuntimeException("[ERROR]: USER IS NOT DEFINED");
@@ -148,6 +140,13 @@ public class ProfileFragment extends Fragment implements Observer {
             } else {
                 // Not following the viewed user shows nothing
                 followButton.setVisibility(View.VISIBLE);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        otherUser.addRequest(UserManager.getCurrentUserUID());
+//                        user.acceptRequest(otherUser.getUid());
+                    }
+                });
                 setInfo(otherUser);
             }
         }

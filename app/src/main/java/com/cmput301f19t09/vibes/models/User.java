@@ -247,6 +247,69 @@ public class User extends Observable implements Serializable {
         return requestedList;
     }
 
+    public void addRequest(String otherUserUID) {
+        requestedList.add(otherUserUID);
+
+        documentReference = collectionReference.document(uid);
+        documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    public void addFollowing(String otherUserUID) {
+        if (!followingList.contains(otherUserUID)) {
+            followingList.add(otherUserUID);
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
+    }
+
+    public void acceptRequest(String otherUserUID) {
+        if (requestedList.contains(otherUserUID)) {
+            requestedList.remove(otherUserUID);
+        }
+
+        User otherUser = UserManager.getUser(otherUserUID);
+        if (!otherUser.getFollowingList().contains(otherUserUID)) {
+            otherUser.addFollowing(UserManager.getCurrentUserUID());
+        }
+
+        documentReference = collectionReference.document(uid);
+        documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    public void denyRequest() {
+
+    }
     /**
      * Checks whether or mot the user already exists by checking UIDs
      * @param userExistListener A Listener to call back when user exists or not
