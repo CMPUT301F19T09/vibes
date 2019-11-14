@@ -209,7 +209,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             timeTextView.setText(time.format(timeFormatter));
             // can update immediately because cant be edited
-            moodEvent.setTime(timeTextView.getText().toString());
+            moodEvent.setTime(time);
 
             // TODO: fix location handling
             // TODO: only set location if switch is set
