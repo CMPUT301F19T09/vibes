@@ -123,6 +123,19 @@ public class Event implements Serializable {
     }
 
     /**
+     * Sets the time attribute. Time is used to indicate in part when an event
+     * occurred. An Event can have only one date.
+     *
+     * @param   time
+     *      Time of when an Event occurred. Must have the format HH:mm or will not be accepted.
+     * @return
+     *      True if time was set correctly, otherwise False.
+     */
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    /**
      * Getter for the description attribute.
      *
      * @return
@@ -165,7 +178,6 @@ public class Event implements Serializable {
      * @return
      *      Long UTC epoch representation of the combined date and time attribute.
      */
-    // returns the epoch time since dateTime converted to UTC
     public long getEpochUTC() {
         LocalDateTime dateTime = getLocalDateTime();
         // set timezone to utc
