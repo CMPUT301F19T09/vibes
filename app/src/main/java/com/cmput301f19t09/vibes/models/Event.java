@@ -127,9 +127,7 @@ public class Event implements Serializable {
      * occurred. An Event can have only one date.
      *
      * @param   time
-     *      Time of when an Event occurred. Must have the format HH:mm or will not be accepted.
-     * @return
-     *      True if time was set correctly, otherwise False.
+     *      Time of when an Event occurred.
      */
     public void setTime(LocalTime time) {
         this.time = time;
