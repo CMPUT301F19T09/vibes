@@ -18,6 +18,8 @@ public class ClusterPoint implements ClusterItem {
         mSnippet = snippet;
     }
 
+
+
     @Override
     public LatLng getPosition() {
         return mPosition;

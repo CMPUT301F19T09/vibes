@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.ArrayList;
@@ -41,12 +42,37 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, Observer{
+public class MapFragment extends Fragment implements OnMapReadyCallback, Observer,
+        ClusterManager.OnClusterClickListener<ClusterPoint>,
+        ClusterManager.OnClusterInfoWindowClickListener<ClusterPoint>,
+        ClusterManager.OnClusterItemClickListener<ClusterPoint>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterPoint> {
     GoogleMap googlemap;
 
     private ClusterManager<ClusterPoint> mClusterManager;
 
     boolean firstPointPut = false;
+
+    @Override
+    public boolean onClusterClick(Cluster<ClusterPoint> cluster) {
+        return false;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<ClusterPoint> cluster) {
+
+    }
+
+    @Override
+    public boolean onClusterItemClick(ClusterPoint clusterPoint) {
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(ClusterPoint clusterPoint) {
+
+    }
+
     /**
      * This is used to filter out the moods being showed;
      */
@@ -58,7 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     Filter filter;
     private List<String> observedUsers;
     private Map<String, MoodEvent> displayedEvents;
-
 
     /**
      * The map fragment shows the locations of the moods.
@@ -91,7 +116,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public String showUserPoint(UserPoint point){
         String id = "";
         if(googlemap != null){
-
             MarkerOptions options = new MarkerOptions();
             options.position(new LatLng(point.getLat(), point.getLong()));
             if(point.getReason()!=null){
@@ -108,6 +132,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 //            id = googlemap.addMarker(options).getId();
             ClusterPoint cp = new ClusterPoint(point.getLat(), point.getLong(), point.getEmotion(), point.getReason());
             mClusterManager.addItem(cp);
+
+//            mClusterManager.getMarkerCollection().addMarker().getId();
+
+//            mClusterManager.notify();
+//            mClusterManager.getClusterMarkerCollection().getMarkers();
 
             if(!firstPointPut ){
                 firstPointPut = true;
@@ -144,6 +173,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
 
+
+
     /**
      * Showing a user's mood
      * @param username
@@ -167,11 +198,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<ClusterPoint>(this.getContext(), googlemap);
-        mClusterManager.setRenderer(new CustomClusterRenderer(this.getContext(), googlemap, mClusterManager));
+        ClusterRenderer clusterRenderer = new CustomClusterRenderer(this.getContext(), googlemap, mClusterManager);
+        mClusterManager.setRenderer(clusterRenderer);
+
         mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<ClusterPoint>() {
             @Override
             public boolean onClusterClick(Cluster<ClusterPoint> cluster) {
 //                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clustor.getId()), filter == Filter.SHOW_MINE));
+//                cluster.
                 return true;
             }
         });
