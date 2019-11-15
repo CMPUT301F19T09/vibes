@@ -54,6 +54,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     private List<String> observedUsers;
     private Map<String, MoodEvent> displayedEvents;
 
+
     /**
      * The map fragment shows the locations of the moods.
      * It can show an interactive UserPoint, helping the mood to be able to get edited or viewed
@@ -76,8 +77,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle bundle = this.getArguments();
     }
 
     /**
