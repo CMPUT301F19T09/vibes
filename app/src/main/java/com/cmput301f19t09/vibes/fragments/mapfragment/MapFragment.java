@@ -30,6 +30,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +43,8 @@ import java.util.Observer;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, Observer{
     GoogleMap googlemap;
+
+    private ClusterManager<ClusterPoint> mClusterManager;
 
     boolean firstPointPut = false;
     /**
@@ -100,38 +105,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
             options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
 
-            id = googlemap.addMarker(options).getId();
+//            id = googlemap.addMarker(options).getId();
+            ClusterPoint cp = new ClusterPoint(point.getLat(), point.getLong(), point.getEmotion(), point.getReason());
+            mClusterManager.addItem(cp);
 
             if(!firstPointPut ){
                 firstPointPut = true;
-                CameraPosition googlePlex = CameraPosition.builder()
-                .target(new LatLng(point.getLat(), point.getLong()))
-                .zoom(3)
-                .bearing(0)
-                .tilt(45)
-                .build();
-
-                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 2000, null);
-
+                googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLat(), point.getLong()), 4));
             }
         }
         return id;
-    }
-
-    public Drawable scaleImage (Drawable image) {
-
-        if ((image == null) || !(image instanceof BitmapDrawable)) {
-            return image;
-        }
-
-        Bitmap b = ((BitmapDrawable)image).getBitmap();
-
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 32, 32, true);
-
-        image = new BitmapDrawable(getResources(), bitmapResized);
-
-        return image;
-
     }
 
     /**
@@ -179,16 +162,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap = mMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
         mMap.clear();
 
-        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<ClusterPoint>(this.getContext(), googlemap);
+        mClusterManager.setRenderer(new CustomClusterRenderer(this.getContext(), googlemap, mClusterManager));
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<ClusterPoint>() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(marker.getId()), filter == Filter.SHOW_MINE));
+            public boolean onClusterClick(Cluster<ClusterPoint> cluster) {
+//                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clustor.getId()), filter == Filter.SHOW_MINE));
                 return true;
             }
         });
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        // Add cluster items (markers) to the cluster manager.
+//        addItems();
+
+        // TODO: Take this back
+//        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//            @Override
+//            public boolean onMarkerClick(Marker marker) {
+//                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(marker.getId()), filter == Filter.SHOW_MINE));
+//                return true;
+//            }
+//        });
         switchFilter(Filter.SHOW_MINE);
     }
 
