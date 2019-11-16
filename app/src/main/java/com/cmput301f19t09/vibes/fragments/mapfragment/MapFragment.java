@@ -44,38 +44,38 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, Observer,
-        ClusterManager.OnClusterClickListener<ClusterPoint>,
-        ClusterManager.OnClusterInfoWindowClickListener<ClusterPoint>,
-        ClusterManager.OnClusterItemClickListener<ClusterPoint>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<ClusterPoint> {
+        ClusterManager.OnClusterClickListener<MoodEvent>,
+        ClusterManager.OnClusterInfoWindowClickListener<MoodEvent>,
+        ClusterManager.OnClusterItemClickListener<MoodEvent>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<MoodEvent> {
 
     GoogleMap googlemap;
 
-    private ClusterManager<ClusterPoint> mClusterManager;
+    private ClusterManager<MoodEvent> mClusterManager;
 
     boolean firstPointPut = false;
 
     @Override
-    public boolean onClusterClick(Cluster<ClusterPoint> cluster) {
-        return false;
-    }
-
-    @Override
-    public void onClusterInfoWindowClick(Cluster<ClusterPoint> cluster) {
-
-    }
-
-    @Override
-    public boolean onClusterItemClick(ClusterPoint clusterPoint) {
-//        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clusterPoint.getId()), filter == Filter.SHOW_MINE));
-//                cluster.
-        Toast.makeText(this.getContext(), "NOONONO",Toast.LENGTH_SHORT).show();
-        Log.d("MAP", "GET CONTEXT IS THE PROBLEM. clusterPoint is clicked.");
+    public boolean onClusterClick(Cluster<MoodEvent> event) {
+        Log.d("MAP", "cluster is clicked.");
         return true;
     }
 
     @Override
-    public void onClusterItemInfoWindowClick(ClusterPoint clusterPoint) {
+    public void onClusterInfoWindowClick(Cluster<MoodEvent> event) {
+        Log.d("MAP", "cluster info is clicked.");
+
+    }
+
+    @Override
+    public boolean onClusterItemClick(MoodEvent event) {
+        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
+        Toast.makeText(getActivity(), "NOONONO",Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(MoodEvent event) {
         Log.d("MAP", "clusterPoint info is clicked.");
     }
 
@@ -136,8 +136,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 //            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
 
 //            id = googlemap.addMarker(options).getId();
-            ClusterPoint cp = new ClusterPoint(event.getLocation().getLatitude(), event.getLocation().getLongitude(), event.getState().getEmotion(), event.getDescription());
-            mClusterManager.addItem(cp);
+            mClusterManager.addItem(event);
 
 //            mClusterManager.getMarkerCollection().addMarker().getId();
 //            mClusterManager.getClusterMarkerCollection().getMarkers();
@@ -189,26 +188,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<ClusterPoint>(this.getContext(), googlemap);
-        ClusterRenderer clusterRenderer = new CustomClusterRenderer(this.getContext(), googlemap, mClusterManager);
+        mClusterManager = new ClusterManager<>(getActivity(), googlemap);
+        ClusterRenderer clusterRenderer = new CustomClusterRenderer(getActivity(), googlemap, mClusterManager);
         mClusterManager.setRenderer(clusterRenderer);
-        googlemap.setOnCameraIdleListener(mClusterManager);
-        googlemap.setOnMarkerClickListener(mClusterManager);
-        googlemap.setOnInfoWindowClickListener(mClusterManager);
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
         mClusterManager.setOnClusterItemClickListener(this);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
+        googlemap.setOnCameraIdleListener(mClusterManager);
+        googlemap.setOnMarkerClickListener(mClusterManager);
+        googlemap.setOnInfoWindowClickListener(mClusterManager);
 
-        // Add cluster items (markers) to the cluster manager.
-//        addItems();
-
-        // TODO: Take this back
+        // TODO: Take this back to be implementd
 //        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 //            @Override
 //            public boolean onMarkerClick(Marker marker) {
