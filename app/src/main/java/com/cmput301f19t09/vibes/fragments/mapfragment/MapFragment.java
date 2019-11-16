@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -68,12 +69,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public boolean onClusterItemClick(ClusterPoint clusterPoint) {
 //        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clusterPoint.getId()), filter == Filter.SHOW_MINE));
 //                cluster.
-        return false;
+        Toast.makeText(this.getContext(), "NOONONO",Toast.LENGTH_SHORT).show();
+        Log.d("MAP", "GET CONTEXT IS THE PROBLEM. clusterPoint is clicked.");
+        return true;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(ClusterPoint clusterPoint) {
-
+        Log.d("MAP", "clusterPoint info is clicked.");
     }
 
     /**
@@ -90,7 +93,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * The map fragment shows the locations of the moods.
-     * It can show an interactive UserPoint, helping the mood to be able to get edited or viewed
+     * It can show an interactive MoodEvent, helping the mood to be able to get edited or viewed
      * by the user.
      */
     public MapFragment() {
@@ -113,7 +116,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
     /**
-     * Displays the UserPoint in the map.
+     * Displays the MoodEvent in the map.
      * @param event The MoodEvent that you're trying to show.
      */
     public String showMoodEvent(MoodEvent event){
@@ -137,8 +140,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             mClusterManager.addItem(cp);
 
 //            mClusterManager.getMarkerCollection().addMarker().getId();
-
-//            mClusterManager.notify();
 //            mClusterManager.getClusterMarkerCollection().getMarkers();
 
             if(!firstPointPut ){
@@ -152,7 +153,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     /**
      * Making a callback function for when the map object is ready.
      * As the map is read,
-     * The onMapReady function is called to go throught the given UserPoints.
+     * The onMapReady function is called to go throught the given MoodEvent.
      *
      * @param inflater
      * @param container
@@ -294,9 +295,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     private void showEvent(MoodEvent event)
     {
-//        UserPoint point = new UserPoint(event.getUser().getUserName(), event.getLocation().getLatitude(), event.getLocation().getLongitude(),
-//                event.getSocialSituation(), event.getState().getEmotion(), event.getDescription());
-
         String id = showMoodEvent(event);
 
         if (id != "")

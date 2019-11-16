@@ -1,7 +1,10 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +20,7 @@ import java.time.LocalTime;
  *
  * @TODO: Stricter restrictions on non-optional attributes.
  */
-public class MoodEvent extends Event implements Serializable, Comparable {
+public class MoodEvent extends Event implements Serializable, Comparable, ClusterItem {
     // date not optional
     // time not optional
     // description optional
@@ -189,5 +192,21 @@ public class MoodEvent extends Event implements Serializable, Comparable {
      */
     public LatLng getLanLng(){
         return new LatLng(this.location.getLatitude(), this.location.getLongitude());
+    }
+
+
+    @Override
+    public LatLng getPosition() {
+        return this.getLanLng();
+    }
+
+    @Override
+    public String getTitle() {
+        return this.getState().getEmotion();
+    }
+
+    @Override
+    public String getSnippet() {
+        return this.getDescription();
     }
 }
