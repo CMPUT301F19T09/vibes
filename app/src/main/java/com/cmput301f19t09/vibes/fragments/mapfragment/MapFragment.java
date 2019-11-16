@@ -21,6 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import com.google.android.gms.maps.model.*;
 import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.ClusterRenderer;
 
@@ -256,10 +257,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
+//    public GoogleMap getGooglemap(){return this.googlemap;}
+
     @Override
     public boolean onClusterClick(Cluster<MoodEvent> events) {
-        Log.d("MAP", "Cluster has " + events.getSize() + " events.");
-        return false;
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : events.getItems()) {
+            builder.include(item.getPosition());
+        }
+        // Get the LatLngBounds
+        final LatLngBounds bounds = builder.build();
+
+        // Animate camera to the bounds
+        try {
+            googlemap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     @Override
