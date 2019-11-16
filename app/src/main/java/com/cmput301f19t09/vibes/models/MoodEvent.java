@@ -186,7 +186,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     }
 
     /**
-     * Used in the maps fragment to get the location of the mood even in the
+     * Used in the maps fragment to get the location of the mood event in the
      * LatLng form
      * @return  Returns the LatLng of the location the moodevent has.
      */
@@ -194,17 +194,33 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
         return new LatLng(this.location.getLatitude(), this.location.getLongitude());
     }
 
-
+    /**
+     * Used in the maps fragment to get the position of the mood event.
+     * This function is called by the CustomClusterRenderer
+     * @return
+     */
     @Override
     public LatLng getPosition() {
         return this.getLanLng();
     }
 
+    /**
+     * Used in the maps fragment to get the title of the mood event.
+     * Curently it is set to being the emotion.
+     * This function is called by the CustomClusterRenderer.
+     * @return returns the emotion of the mood event
+     */
     @Override
     public String getTitle() {
         return this.getState().getEmotion();
     }
 
+    /**
+     * Used in the maps fragment to get the snippet of the mood event.
+     * Curently it is set to being the description.
+     * This function is called by the CustomClusterRenderer.
+     * @return Returns the description of the mood event.
+     */
     @Override
     public String getSnippet() {
         return this.getDescription();
