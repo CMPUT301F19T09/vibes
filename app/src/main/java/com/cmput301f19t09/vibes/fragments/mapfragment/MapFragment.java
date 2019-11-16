@@ -122,25 +122,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public String showMoodEvent(MoodEvent event){
         String id = "";
         if(googlemap != null){
-//            MarkerOptions options = new MarkerOptions();
-//            options.position(new LatLng(point.getLat(), point.getLong()));
-//            if(point.getReason()!=null){
-//                options.snippet(point.getReason());
-//            }
-//            if(point.getEmotion() != null){
-//                options.title(point.getEmotion());
-//            }
-
-//            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
-//            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
-//            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
-
-//            id = googlemap.addMarker(options).getId();
+            // Adding the event to the cluster manager
             mClusterManager.addItem(event);
 
-//            mClusterManager.getMarkerCollection().addMarker().getId();
-//            mClusterManager.getClusterMarkerCollection().getMarkers();
-
+            // If first marker, move the camera to the marker
             if(!firstPointPut ){
                 firstPointPut = true;
                 googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), 4));
@@ -171,6 +156,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         return view;
     }
 
+    /**
+     * Returns the googlemap object loaded in the map fragment.
+     * @return
+     */
     public GoogleMap getGooglemap(){
         return this.googlemap;
     }
@@ -201,14 +190,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap.setOnMarkerClickListener(mClusterManager);
         googlemap.setOnInfoWindowClickListener(mClusterManager);
 
-        // TODO: Take this back to be implementd
-//        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(marker.getId()), filter == Filter.SHOW_MINE));
-//                return true;
-//            }
-//        });
         switchFilter(Filter.SHOW_MINE);
     }
 
