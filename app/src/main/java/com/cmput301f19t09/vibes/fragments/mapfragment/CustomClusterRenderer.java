@@ -32,6 +32,13 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
         markerOptions.icon(bitmapDescriptorFromVector(this.context, emoticon, color));
     }
 
+    /**
+     * This is used to convert the drawable object into its bitmap descriptor.
+     * It is used for showing the image of the icon.
+     * @param context
+     * @param vectorResId
+     * @return
+     */
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);

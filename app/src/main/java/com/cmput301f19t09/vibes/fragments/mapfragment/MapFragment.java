@@ -1,11 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.mapfragment;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,13 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
-import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -27,14 +20,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.ClusterRenderer;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,34 +40,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         ClusterManager.OnClusterItemInfoWindowClickListener<MoodEvent> {
 
     GoogleMap googlemap;
-
     private ClusterManager<MoodEvent> mClusterManager;
-
     boolean firstPointPut = false;
-
-    @Override
-    public boolean onClusterClick(Cluster<MoodEvent> event) {
-        Log.d("MAP", "cluster is clicked.");
-        return true;
-    }
-
-    @Override
-    public void onClusterInfoWindowClick(Cluster<MoodEvent> event) {
-        Log.d("MAP", "cluster info is clicked.");
-
-    }
-
-    @Override
-    public boolean onClusterItemClick(MoodEvent event) {
-        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
-        Toast.makeText(getActivity(), "NOONONO",Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    @Override
-    public void onClusterItemInfoWindowClick(MoodEvent event) {
-        Log.d("MAP", "clusterPoint info is clicked.");
-    }
 
     /**
      * This is used to filter out the moods being showed;
@@ -157,14 +121,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
     /**
-     * Returns the googlemap object loaded in the map fragment.
-     * @return
-     */
-    public GoogleMap getGooglemap(){
-        return this.googlemap;
-    }
-
-    /**
      * This is a callback function. It is called when the map is ready.
      * @param mMap
      */
@@ -191,26 +147,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap.setOnInfoWindowClickListener(mClusterManager);
 
         switchFilter(Filter.SHOW_MINE);
-    }
-
-    /**
-     * This is used to convert the drawable object into its bitmap descriptor.
-     * It is used for showing the image of the icon.
-     * @param context
-     * @param vectorResId
-     * @return
-     */
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-        vectorDrawable.setBounds(0, 0, 64, 64);
-
-        Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = (Bitmap.createScaledBitmap(bitmap2, 64, 64, true));
-
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     public void switchFilter(Filter filter) {
@@ -322,5 +258,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             }
             showFollowedEvents();
         }
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<MoodEvent> event) {
+        Log.d("MAP", "cluster is clicked.");
+        return true;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<MoodEvent> event) {
+        Log.d("MAP", "cluster info is clicked.");
+    }
+
+    @Override
+    public boolean onClusterItemClick(MoodEvent event) {
+        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
+        Toast.makeText(getActivity(), "NOONONO",Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(MoodEvent event) {
+        Log.d("MAP", "clusterPoint info is clicked.");
     }
 }
