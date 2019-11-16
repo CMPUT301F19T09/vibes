@@ -259,7 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     @Override
     public boolean onClusterClick(Cluster<MoodEvent> events) {
         Log.d("MAP", "Cluster has " + events.getSize() + " events.");
-        return true;
+        return false;
     }
 
     @Override
@@ -269,7 +269,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     @Override
     public boolean onClusterItemClick(MoodEvent event) {
-        return true;
+        return false;
     }
 
     @Override
