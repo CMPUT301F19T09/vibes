@@ -1,7 +1,7 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
-
+import com.google.android.gms.maps.model.LatLng;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -180,5 +180,14 @@ public class MoodEvent extends Event implements Serializable, Comparable {
     @Override
     public int compareTo(Object o) {
         return this.getLocalDateTime().compareTo(((MoodEvent)o).getLocalDateTime());
+    }
+
+    /**
+     * Used in the maps fragment to get the location of the mood even in the
+     * LatLng form
+     * @return  Returns the LatLng of the location the moodevent has.
+     */
+    public LatLng getLanLng(){
+        return new LatLng(this.location.getLatitude(), this.location.getLongitude());
     }
 }

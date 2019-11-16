@@ -47,6 +47,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         ClusterManager.OnClusterInfoWindowClickListener<ClusterPoint>,
         ClusterManager.OnClusterItemClickListener<ClusterPoint>,
         ClusterManager.OnClusterItemInfoWindowClickListener<ClusterPoint> {
+
     GoogleMap googlemap;
 
     private ClusterManager<ClusterPoint> mClusterManager;
@@ -65,6 +66,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     @Override
     public boolean onClusterItemClick(ClusterPoint clusterPoint) {
+//        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clusterPoint.getId()), filter == Filter.SHOW_MINE));
+//                cluster.
         return false;
     }
 
@@ -111,26 +114,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * Displays the UserPoint in the map.
-     * @param point
+     * @param event The MoodEvent that you're trying to show.
      */
-    public String showUserPoint(UserPoint point){
+    public String showMoodEvent(MoodEvent event){
         String id = "";
         if(googlemap != null){
-            MarkerOptions options = new MarkerOptions();
-            options.position(new LatLng(point.getLat(), point.getLong()));
-            if(point.getReason()!=null){
-                options.snippet(point.getReason());
-            }
-            if(point.getEmotion() != null){
-                options.title(point.getEmotion());
-            }
+//            MarkerOptions options = new MarkerOptions();
+//            options.position(new LatLng(point.getLat(), point.getLong()));
+//            if(point.getReason()!=null){
+//                options.snippet(point.getReason());
+//            }
+//            if(point.getEmotion() != null){
+//                options.title(point.getEmotion());
+//            }
 
-            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
-            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
-            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
+//            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
+//            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
+//            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
 
 //            id = googlemap.addMarker(options).getId();
-            ClusterPoint cp = new ClusterPoint(point.getLat(), point.getLong(), point.getEmotion(), point.getReason());
+            ClusterPoint cp = new ClusterPoint(event.getLocation().getLatitude(), event.getLocation().getLongitude(), event.getState().getEmotion(), event.getDescription());
             mClusterManager.addItem(cp);
 
 //            mClusterManager.getMarkerCollection().addMarker().getId();
@@ -140,7 +143,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
             if(!firstPointPut ){
                 firstPointPut = true;
-                googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLat(), point.getLong()), 4));
+                googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), 4));
             }
         }
         return id;
@@ -172,18 +175,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         return this.googlemap;
     }
 
-
-
-
-    /**
-     * Showing a user's mood
-     * @param username
-     * @return
-     */
-    public UserPoint showMoodOf(String username){
-        return UserPoint.getMockUser();
-    }
-
     /**
      * This is a callback function. It is called when the map is ready.
      * @param mMap
@@ -200,15 +191,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         mClusterManager = new ClusterManager<ClusterPoint>(this.getContext(), googlemap);
         ClusterRenderer clusterRenderer = new CustomClusterRenderer(this.getContext(), googlemap, mClusterManager);
         mClusterManager.setRenderer(clusterRenderer);
-
-        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<ClusterPoint>() {
-            @Override
-            public boolean onClusterClick(Cluster<ClusterPoint> cluster) {
-//                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(clustor.getId()), filter == Filter.SHOW_MINE));
-//                cluster.
-                return true;
-            }
-        });
+        googlemap.setOnCameraIdleListener(mClusterManager);
+        googlemap.setOnMarkerClickListener(mClusterManager);
+        googlemap.setOnInfoWindowClickListener(mClusterManager);
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
@@ -305,9 +294,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     private void showEvent(MoodEvent event)
     {
-        UserPoint point = new UserPoint(event.getUser().getUserName(), event.getLocation().getLatitude(), event.getLocation().getLongitude(),
-                event.getSocialSituation(), event.getState().getEmotion(), event.getDescription());
-        String id = showUserPoint(point);
+//        UserPoint point = new UserPoint(event.getUser().getUserName(), event.getLocation().getLatitude(), event.getLocation().getLongitude(),
+//                event.getSocialSituation(), event.getState().getEmotion(), event.getDescription());
+
+        String id = showMoodEvent(event);
 
         if (id != "")
         {
