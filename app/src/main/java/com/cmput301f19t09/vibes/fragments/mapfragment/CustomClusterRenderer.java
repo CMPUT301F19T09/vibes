@@ -14,17 +14,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 
 public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
 
-    private IconGenerator mIconGenerator;
     private Context context;
 
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
-        mIconGenerator = new IconGenerator(context);
         this.setMinClusterSize(2);
     }
 
