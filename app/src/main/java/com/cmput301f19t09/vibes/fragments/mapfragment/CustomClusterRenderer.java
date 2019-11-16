@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-
 import androidx.core.content.ContextCompat;
-
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,9 +17,10 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
 public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
+
     private IconGenerator mIconGenerator;
-    private IconGenerator mClusterIconGenerator;
     private Context context;
+
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
@@ -29,17 +28,11 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
         this.setMinClusterSize(2);
     }
 
-
     @Override
     protected void onBeforeClusterItemRendered(MoodEvent event, MarkerOptions markerOptions) {
-//        mImageView.setImageResource(person.profilePhoto);
-        Bitmap icon = mIconGenerator.makeIcon();
-
-
         Integer emoticon = (Integer) EmotionalState.getMap().get(event.getState().getEmotion()).first;
         Integer color = (Integer)  EmotionalState.getMap().get(event.getState().getEmotion()).second;
         markerOptions.icon(bitmapDescriptorFromVector(this.context, emoticon, color));
-//        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(person.name);
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
