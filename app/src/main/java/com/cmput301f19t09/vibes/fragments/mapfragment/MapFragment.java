@@ -264,20 +264,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
-//    public GoogleMap getGooglemap(){return this.googlemap;}
-
+    /**
+     * Shows up a dialog when there are multiple moods in the same location in a cluster.
+     * @param events
+     */
     public void showDialogForMultipleEvents(Collection<MoodEvent> events){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-//        builderSingle.setIcon(R.drawable.ic_launcher);
         builderSingle.setTitle("Multiple moods in same location:-");
 
         ArrayList listEvents = new ArrayList(events);
 
         final MoodsDialogAdapter customAdapter = new MoodsDialogAdapter(context, listEvents);
-//        for(MoodEvent e: events){
-//            customAdapter.add(e.getState().getEmotion());
-//        }
 
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -291,21 +289,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             public void onClick(DialogInterface dialog, int which) {
                 MoodEvent eventSelected = customAdapter.getItem(which);
                 ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
-//                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-//                builderInner.setMessage(strName);
-//                builderInner.setTitle("Your Selected Mood is");
-//                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog,int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                builderInner.show();
             }
         });
         builderSingle.show();
     }
 
+    /**
+     * Triggered when you click on a cluster that has multiple moods in it.
+     * @param events
+     * @return
+     */
     @Override
     public boolean onClusterClick(Cluster<MoodEvent> events) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
