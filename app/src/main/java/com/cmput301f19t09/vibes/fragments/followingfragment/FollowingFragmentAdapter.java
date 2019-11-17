@@ -15,9 +15,9 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * FollowingFragmentAdapter is an ArrayAdapter that is used for both ListView's
@@ -51,7 +51,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
      * For every item in the userList passed in the constructor, the username,
      * first name, last name, and user picture of the layout are set to the values
      * corresponding to the user. A user's profile can be opened by clicking on the
-     * profile image.
+     * profile image. The list is sorted before the view is returned.
      */
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
@@ -94,6 +94,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
                 ((MainActivity) activity).setMainFragment(profileFragment);
             }
         });
+
+        Collections.sort(this.userList, User.sortByName);
+        notifyDataSetChanged();
 
         return view;
     }
