@@ -2,6 +2,9 @@ package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +20,7 @@ import java.time.LocalTime;
  *
  * @TODO: Stricter restrictions on non-optional attributes.
  */
-public class MoodEvent extends Event implements Serializable, Comparable {
+public class MoodEvent extends Event implements Serializable, Comparable, ClusterItem {
     // date not optional
     // time not optional
     // description optional
@@ -180,5 +183,46 @@ public class MoodEvent extends Event implements Serializable, Comparable {
     @Override
     public int compareTo(Object o) {
         return this.getLocalDateTime().compareTo(((MoodEvent)o).getLocalDateTime());
+    }
+
+    /**
+     * Used in the maps fragment to get the location of the mood event in the
+     * LatLng form
+     * @return  Returns the LatLng of the location the moodevent has.
+     */
+    public LatLng getLanLng(){
+        return new LatLng(this.location.getLatitude(), this.location.getLongitude());
+    }
+
+    /**
+     * Used in the maps fragment to get the position of the mood event.
+     * This function is called by the CustomClusterRenderer
+     * @return
+     */
+    @Override
+    public LatLng getPosition() {
+        return this.getLanLng();
+    }
+
+    /**
+     * Used in the maps fragment to get the title of the mood event.
+     * Curently it is set to being the emotion.
+     * This function is called by the CustomClusterRenderer.
+     * @return returns the emotion of the mood event
+     */
+    @Override
+    public String getTitle() {
+        return this.getState().getEmotion();
+    }
+
+    /**
+     * Used in the maps fragment to get the snippet of the mood event.
+     * Curently it is set to being the description.
+     * This function is called by the CustomClusterRenderer.
+     * @return Returns the description of the mood event.
+     */
+    @Override
+    public String getSnippet() {
+        return this.getDescription();
     }
 }
