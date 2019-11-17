@@ -22,18 +22,16 @@ public class MapFilter extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-
             selectedRadioBox = bundle.getInt("SELECTED");
             Log.d("MapFilter", "SelectedMode: " + this.selectedRadioBox);
         }
-
     }
 
     public static MapFilter getInstance(MapFragment.Filter filter){
-        int mode = -1;
+        int mode;
+
         if(filter == MapFragment.Filter.SHOW_EVERYONE) {
             mode = SHOW_EVERYONE;
         }else if(filter == MapFragment.Filter.SHOW_MINE){
@@ -41,6 +39,7 @@ public class MapFilter extends Fragment {
         }else{
             throw new RuntimeException("Error occured in getting instance of mapFilter");
         }
+
         Bundle filterBundle = new Bundle();
         filterBundle.putInt("SELECTED", mode);
         MapFilter filterFragment = new MapFilter();
@@ -93,13 +92,4 @@ public class MapFilter extends Fragment {
         // Inflate the layout for this fragment
         return v;
     }
-
-    public void  setFilterToYou(RadioButton v){
-
-    }
-
-    public void setFilterEveryone(RadioButton v){
-
-    }
-
 }

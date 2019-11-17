@@ -1,24 +1,17 @@
 package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogFragment;
-import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -26,22 +19,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, Observer{
-    GoogleMap googlemap;
+public class MapFragment extends Fragment implements OnMapReadyCallback, Observer,
+        ClusterManager.OnClusterClickListener<MoodEvent>,
+        ClusterManager.OnClusterInfoWindowClickListener<MoodEvent>,
+        ClusterManager.OnClusterItemClickListener<MoodEvent>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<MoodEvent> {
 
+    GoogleMap googlemap;
+    private ClusterManager<MoodEvent> mClusterManager;
     boolean firstPointPut = false;
+    Context context;
+
     /**
      * This is used to filter out the moods being showed;
      */
@@ -52,21 +53,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     Filter filter;
     private List<String> observedUsers;
-    private Map<String, MoodEvent> displayedEvents;
 
     /**
      * The map fragment shows the locations of the moods.
-     * It can show an interactive UserPoint, helping the mood to be able to get edited or viewed
+     * It can show an interactive MoodEvent, helping the mood to be able to get edited or viewed
      * by the user.
      */
-    public MapFragment() {
+    public MapFragment(Context context) {
         // Required empty public constructor
+        this.context = context;
         observedUsers = new ArrayList<>();
-        displayedEvents = new HashMap<>();
     }
 
-    public static MapFragment newInstance(){
-        return new MapFragment();
+    public static MapFragment newInstance(Context context){
+        return new MapFragment(context);
     }
 
     /**
@@ -76,69 +76,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle bundle = this.getArguments();
     }
 
     /**
-     * Displays the UserPoint in the map.
-     * @param point
+     * Displays the MoodEvent in the map.
+     * @param event The MoodEvent that you're trying to show.
      */
-    public String showUserPoint(UserPoint point){
-        String id = "";
+    public void showMoodEvent(MoodEvent event){
         if(googlemap != null){
-
-            MarkerOptions options = new MarkerOptions();
-            options.position(new LatLng(point.getLat(), point.getLong()));
-            if(point.getReason()!=null){
-                options.snippet(point.getReason());
-            }
-            if(point.getEmotion() != null){
-                options.title(point.getEmotion());
-            }
-
-            Integer emoticon = (Integer) EmotionalState.getMap().get(point.getEmotion()).first;
-            Integer color = (Integer)  EmotionalState.getMap().get(point.getEmotion()).second;
-            options.icon(bitmapDescriptorFromVector(getActivity(), emoticon, color));
-
-            id = googlemap.addMarker(options).getId();
-
+            // Adding the event to the cluster manager
+            mClusterManager.addItem(event);
+            mClusterManager.cluster();
+            // If first marker, move the camera to the marker
             if(!firstPointPut ){
                 firstPointPut = true;
-                CameraPosition googlePlex = CameraPosition.builder()
-                .target(new LatLng(point.getLat(), point.getLong()))
-                .zoom(3)
-                .bearing(0)
-                .tilt(45)
-                .build();
-
-                googlemap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 2000, null);
-
+                googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), 4));
             }
         }
-        return id;
-    }
-
-    public Drawable scaleImage (Drawable image) {
-
-        if ((image == null) || !(image instanceof BitmapDrawable)) {
-            return image;
-        }
-
-        Bitmap b = ((BitmapDrawable)image).getBitmap();
-
-        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 32, 32, true);
-
-        image = new BitmapDrawable(getResources(), bitmapResized);
-
-        return image;
-
     }
 
     /**
      * Making a callback function for when the map object is ready.
      * As the map is read,
-     * The onMapReady function is called to go throught the given UserPoints.
+     * The onMapReady function is called to go throught the given MoodEvent.
      *
      * @param inflater
      * @param container
@@ -153,22 +113,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         mapFragment.getMapAsync(this);
         getChildFragmentManager().beginTransaction().add(R.id.filter_root, MapFilter.getInstance(Filter.SHOW_MINE), "mapFilter").commit();
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
-
         return view;
-    }
-
-    public GoogleMap getGooglemap(){
-        return this.googlemap;
-    }
-
-
-    /**
-     * Showing a user's mood
-     * @param username
-     * @return
-     */
-    public UserPoint showMoodOf(String username){
-        return UserPoint.getMockUser();
     }
 
     /**
@@ -180,51 +125,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap = mMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
         mMap.clear();
 
-        googlemap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(displayedEvents.get(marker.getId()), filter == Filter.SHOW_MINE));
-                return true;
-            }
-        });
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<>(getActivity(), googlemap);
+        ClusterRenderer clusterRenderer = new CustomClusterRenderer(getActivity(), googlemap, mClusterManager);
+        mClusterManager.setRenderer(clusterRenderer);
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        googlemap.setOnCameraIdleListener(mClusterManager);
+        googlemap.setOnMarkerClickListener(mClusterManager);
+        googlemap.setOnInfoWindowClickListener(mClusterManager);
+
         switchFilter(Filter.SHOW_MINE);
     }
 
-    /**
-     * This is used to convert the drawable object into its bitmap descriptor.
-     * It is used for showing the image of the icon.
-     * @param context
-     * @param vectorResId
-     * @return
-     */
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-        vectorDrawable.setBounds(0, 0, 64, 64);
-
-        Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = (Bitmap.createScaledBitmap(bitmap2, 64, 64, true));
-
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
     public void switchFilter(Filter filter) {
-        if (googlemap == null)
+        if (googlemap == null) {
+            Log.e("SWITCH FILTER", "NO GOOGLEMAP DEFINED");
             return;
+        }
 
         this.filter = filter;
         User user = UserManager.getCurrentUser();
-        Log.d("TEST/Map", "Showing own events");
+        clusterCleanUp();
         if (filter == Filter.SHOW_MINE) {
+            Log.d("TEST/Map", "Showing own events");
             removeObservers();
             showUserEvents();
         } else if (filter == Filter.SHOW_EVERYONE) {
-            Log.d("TEST/Map", "Showing other events");
+            Log.d("TEST/Map", "Showing everyone's events");
             for (String id : user.getFollowingList())
             {
                 Log.d("TEST/Map", "Adding " + id);
@@ -242,12 +178,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
                     }
                 });
             }
+        }else{
+            throw new RuntimeException("Map filter is not recognized.");
         }
     }
 
     private void showFollowedEvents()
     {
-        googlemap.clear();
         for (String id : observedUsers)
         {
             User user = UserManager.getUser(id);
@@ -260,8 +197,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     private void showUserEvents()
     {
-        googlemap.clear();
-        displayedEvents.clear();
         for (MoodEvent event : UserManager.getCurrentUser().getMoodEvents()) {
             showEvent(event);
         }
@@ -269,14 +204,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     private void showEvent(MoodEvent event)
     {
-        UserPoint point = new UserPoint(event.getUser().getUserName(), event.getLocation().getLatitude(), event.getLocation().getLongitude(),
-                event.getSocialSituation(), event.getState().getEmotion(), event.getDescription());
-        String id = showUserPoint(point);
-
-        if (id != "")
-        {
-            displayedEvents.put(id, event);
-        }
+        showMoodEvent(event);
     }
 
     private void removeObservers()
@@ -294,9 +222,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         super.onPause();
     }
 
+    public void clusterCleanUp(){
+        mClusterManager.clearItems();
+        mClusterManager.cluster();
+        Log.d("TEST/Map", "Cleared the cluster items");
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         Log.d("TEST/Map", "Current User Update");
+        clusterCleanUp();
         if (filter == Filter.SHOW_MINE)
         {
             showUserEvents();
@@ -324,5 +259,52 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             }
             showFollowedEvents();
         }
+    }
+
+//    public GoogleMap getGooglemap(){return this.googlemap;}
+
+    public void showDialogForMultipleEvents(Collection<MoodEvent> events){
+        
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<MoodEvent> events) {
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : events.getItems()) {
+            builder.include(item.getPosition());
+        }
+        // Get the LatLngBounds
+        final LatLngBounds bounds = builder.build();
+        Log.d("LatLngBounds", bounds.toString());
+
+        if(bounds.northeast.equals(bounds.southwest)){
+            Log.d("DEV", "This cluster has multiple in the same point.");
+            showDialogForMultipleEvents(events.getItems());
+            return true;
+        }
+        // Animate camera to the bounds
+        try {
+            googlemap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<MoodEvent> events) {
+        Log.d("MAP", "cluster info is clicked.");
+    }
+
+    @Override
+    public boolean onClusterItemClick(MoodEvent event) {
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(MoodEvent event) {
+        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
+        Log.d("MAP", "clusterPoint info is clicked.");
     }
 }
