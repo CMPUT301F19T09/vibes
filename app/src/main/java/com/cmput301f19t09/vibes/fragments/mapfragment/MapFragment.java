@@ -1,12 +1,15 @@
 package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
@@ -264,7 +267,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 //    public GoogleMap getGooglemap(){return this.googlemap;}
 
     public void showDialogForMultipleEvents(Collection<MoodEvent> events){
-        
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
+//        builderSingle.setIcon(R.drawable.ic_launcher);
+        builderSingle.setTitle("Multiple moods in same location:-");
+
+        ArrayList listEvents = new ArrayList(events);
+
+        final MoodsDialogAdapter customAdapter = new MoodsDialogAdapter(context, listEvents);
+//        for(MoodEvent e: events){
+//            customAdapter.add(e.getState().getEmotion());
+//        }
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(customAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MoodEvent eventSelected = customAdapter.getItem(which);
+                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
+//                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+//                builderInner.setMessage(strName);
+//                builderInner.setTitle("Your Selected Mood is");
+//                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog,int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                builderInner.show();
+            }
+        });
+        builderSingle.show();
     }
 
     @Override
