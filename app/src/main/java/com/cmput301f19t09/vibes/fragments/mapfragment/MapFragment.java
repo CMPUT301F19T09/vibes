@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.mapfragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.ClusterRenderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -39,6 +41,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     GoogleMap googlemap;
     private ClusterManager<MoodEvent> mClusterManager;
     boolean firstPointPut = false;
+    Context context;
 
     /**
      * This is used to filter out the moods being showed;
@@ -56,13 +59,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
      * It can show an interactive MoodEvent, helping the mood to be able to get edited or viewed
      * by the user.
      */
-    public MapFragment() {
+    public MapFragment(Context context) {
         // Required empty public constructor
+        this.context = context;
         observedUsers = new ArrayList<>();
     }
 
-    public static MapFragment newInstance(){
-        return new MapFragment();
+    public static MapFragment newInstance(Context context){
+        return new MapFragment(context);
     }
 
     /**
@@ -259,6 +263,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
 //    public GoogleMap getGooglemap(){return this.googlemap;}
 
+    public void showDialogForMultipleEvents(Collection<MoodEvent> events){
+        
+    }
+
     @Override
     public boolean onClusterClick(Cluster<MoodEvent> events) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
@@ -267,7 +275,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
         // Get the LatLngBounds
         final LatLngBounds bounds = builder.build();
+        Log.d("LatLngBounds", bounds.toString());
 
+        if(bounds.northeast.equals(bounds.southwest)){
+            Log.d("DEV", "This cluster has multiple in the same point.");
+            showDialogForMultipleEvents(events.getItems());
+            return true;
+        }
         // Animate camera to the bounds
         try {
             googlemap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));

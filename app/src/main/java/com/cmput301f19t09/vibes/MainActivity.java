@@ -164,7 +164,7 @@ public class MainActivity extends FragmentActivity {
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
-                        setMainFragment(MapFragment.newInstance());
+                        setMainFragment(MapFragment.newInstance(getApplicationContext()));
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
