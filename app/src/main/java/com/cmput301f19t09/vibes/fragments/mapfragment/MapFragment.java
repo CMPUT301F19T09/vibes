@@ -1,12 +1,15 @@
 package com.cmput301f19t09.vibes.fragments.mapfragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
@@ -261,12 +264,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
-//    public GoogleMap getGooglemap(){return this.googlemap;}
-
+    /**
+     * Shows up a dialog when there are multiple moods in the same location in a cluster.
+     * @param events
+     */
     public void showDialogForMultipleEvents(Collection<MoodEvent> events){
-        
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
+        builderSingle.setTitle("Multiple moods in same location:-");
+
+        ArrayList listEvents = new ArrayList(events);
+
+        final MoodsDialogAdapter customAdapter = new MoodsDialogAdapter(context, listEvents);
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(customAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MoodEvent eventSelected = customAdapter.getItem(which);
+                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
+            }
+        });
+        builderSingle.show();
     }
 
+    /**
+     * Triggered when you click on a cluster that has multiple moods in it.
+     * @param events
+     * @return
+     */
     @Override
     public boolean onClusterClick(Cluster<MoodEvent> events) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
