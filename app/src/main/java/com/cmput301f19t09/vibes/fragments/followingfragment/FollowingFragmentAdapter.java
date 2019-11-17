@@ -51,7 +51,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
      * For every item in the userList passed in the constructor, the username,
      * first name, last name, and user picture of the layout are set to the values
      * corresponding to the user. A user's profile can be opened by clicking on the
-     * profile image.
+     * profile image. The list is sorted before the view is returned.
      */
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;

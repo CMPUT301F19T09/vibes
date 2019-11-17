@@ -454,6 +454,8 @@ public class User extends Observable implements Serializable {
     }
 
     /**
+     * A comparator that is used for sort a list of users by firstName+lastName
+     *
      * Ref:https://www.thejavaprogrammer.com/sort-arraylist-objects-java/
      */
     public static Comparator<User> sortByName = new Comparator<User>() {
