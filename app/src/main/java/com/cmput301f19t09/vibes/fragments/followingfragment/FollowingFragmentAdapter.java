@@ -15,9 +15,9 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * FollowingFragmentAdapter is an ArrayAdapter that is used for both ListView's
@@ -94,6 +94,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
                 ((MainActivity) activity).setMainFragment(profileFragment);
             }
         });
+
+        Collections.sort(this.userList, User.sortByName);
+        notifyDataSetChanged();
 
         return view;
     }

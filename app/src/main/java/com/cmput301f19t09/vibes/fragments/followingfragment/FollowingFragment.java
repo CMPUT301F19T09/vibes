@@ -85,8 +85,6 @@ public class FollowingFragment extends Fragment {
                 // Gets the list of username's of the users that are being followed by the
                 // current user
                 List<String> followingUsernames = user.getFollowingList();
-                //Sorts users by username
-                Collections.sort(followingUsernames);
                 // For every username, a user object is initialized and the data of that user is read
                 for (String username : followingUsernames) {
                     User followee = new User(username);
@@ -102,8 +100,6 @@ public class FollowingFragment extends Fragment {
                 }
                 // Gets the list of username's of the users that the user requests to follow
                 List<String> requestedUsernames = user.getRequestedList();
-                //Sorts users by username
-                Collections.sort(requestedUsernames);
                 // For every username, a user object is initialized and the data of that user is read
                 for (String username : requestedUsernames) {
                     User requester = new User(username);
