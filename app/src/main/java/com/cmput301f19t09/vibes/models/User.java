@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -526,4 +527,16 @@ public class User extends Observable implements Serializable {
             });
         }
     }
+
+    /**
+     * A comparator that is used for sort a list of users by firstName+lastName
+     *
+     * Ref:https://www.thejavaprogrammer.com/sort-arraylist-objects-java/
+     */
+    public static Comparator<User> sortByName = new Comparator<User>() {
+        @Override
+        public int compare(User user1, User user2) {
+            return (user1.getFirstName()+user1.getLastName()).compareTo(user2.getFirstName()+user2.getLastName());
+        }
+    };
 }
