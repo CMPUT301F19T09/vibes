@@ -1,5 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -103,27 +105,25 @@ public class ProfileFragment extends Fragment implements Observer {
         // Show's your own profile if other user wasn't passed in, set's the info, and gets the child
         // fragment MoodListFragment of the mood list of the current user
         if (otherUser == null) {
-            followButton.setVisibility(View.INVISIBLE);
-            UserManager.addUserObserver(user.getUid(), this);
+            updateButton("OWN");
+
             setInfo(user);
             MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
-
         } else {
             // Checks if the user is following the other user and show their latest mood event by
             // calling the child fragment MoodDetailsFragment
+            UserManager.addUserObserver(otherUser.getUid(), this);
+            setInfo(otherUser);
             if (user.getFollowingList().contains(otherUser.getUid())) {
-                followButton.setVisibility(View.INVISIBLE);
+                updateButton("FOLLOWING");
 
                 if (otherUser.isLoaded()) {
-                    Log.d("TEST", "Other user loaded");
                     setInfo(otherUser);
                     FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                     transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
                     transaction.commit();
-                } else {
-                    Log.d("TEST", "Other user not loaded");
                 }
 
                 otherUser.addObserver(new Observer() {
@@ -138,38 +138,15 @@ public class ProfileFragment extends Fragment implements Observer {
                 });
                 setInfo(otherUser);
             } else {
-//                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-//                    // Not following the viewed user shows nothing
-//                    followButton.setVisibility(View.VISIBLE);
-//                    followButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-////                        otherUser.addRequest(UserManager.getCurrentUserUID());
-////                        user.acceptRequest(otherUser.getUid());
-//                            user.removeRequest(otherUser.getUid());
-//                        }
-//                    });
-//                    setInfo(otherUser);
-//                } else {
-//                    followButton.setActivated(true);
-//                    followButton.setText("R E Q U E S T E D");
-//                    followButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            Toast.makeText(getContext(), "CANCEL", Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//                }
-                followButton.setVisibility(View.VISIBLE);
-                followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        otherUser.addRequest(UserManager.getCurrentUserUID());
-//                        user.acceptRequest(otherUser.getUid());
-//                        user.removeRequest(otherUser.getUid());
+                if (otherUser.isLoaded()) {
+                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                        updateButton("NONE");
+                        setInfo(otherUser);
+                    } else {
+                        updateButton("REQUESTED");
+                        setInfo(otherUser);
                     }
-                });
-                setInfo(otherUser);
+                }
             }
         }
         return view;
@@ -183,6 +160,53 @@ public class ProfileFragment extends Fragment implements Observer {
     @Override
     public void update(Observable user, Object object) {
         setInfo((User) user);
+    }
+
+    public void updateButton(String mode) {
+        switch (mode) {
+            case "OWN":
+                followButton.setVisibility(View.INVISIBLE);
+                break;
+            case "REQUESTED":
+                followButton.setText("R E Q U E S T E D");
+                followButton.setTextColor(Color.parseColor("#FF6A88"));
+                followButton.setBackgroundResource(R.drawable.rounded_button_outline);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "CANCEL", Toast.LENGTH_LONG).show();
+                        user.removeRequest(otherUser.getUid());
+                        updateButton("NONE");
+                    }
+                });
+                break;
+            case "FOLLOWING":
+                followButton.setText("U N F O L L O W");
+                followButton.setTextColor(Color.parseColor("#A2A2A2"));
+                followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
+                        user.removeFollowing(otherUser.getUid());
+                        updateButton("NONE");
+                    }
+                });
+                break;
+            case "NONE":
+                followButton.setText("F O L L O W");
+                followButton.setTextColor(Color.parseColor("#FFFFFF"));
+                followButton.setBackgroundResource(R.drawable.rounded_button);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "FOLLOW", Toast.LENGTH_LONG).show();
+                        user.addRequest(otherUser.getUid());
+                        updateButton("REQUESTED");
+                    }
+                });
+                break;
+        }
     }
 
     /**

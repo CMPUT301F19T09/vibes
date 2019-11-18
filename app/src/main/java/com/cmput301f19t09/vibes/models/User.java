@@ -288,6 +288,25 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    public void removeFollowing(String otherUserUID) {
+        if (followingList.contains(otherUserUID)) {
+            followingList.remove(otherUserUID);
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
+    }
+
     /**
      *
      * @param otherUserUID
