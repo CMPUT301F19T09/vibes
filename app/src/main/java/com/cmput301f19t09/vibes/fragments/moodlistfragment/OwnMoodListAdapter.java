@@ -34,7 +34,6 @@ public class OwnMoodListAdapter extends MoodListAdapter
         List<MoodEvent> events = user.getMoodEvents();
         if (events == null)
         {
-            Log.d("TEST/OwnMoodListAdapter", "null MoodEvent list");
             return;
         }
 
