@@ -36,12 +36,10 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -57,10 +55,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -299,7 +295,10 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
             // TODO: fix location handling
             if (!checkPermissions()) { // permissions were denied
-                requestPermissions(); // prompt user for permission
+                requestPermissionFragment(); // prompt user for permission
+            }
+            else {
+                startLocationUpdates();
             }
 
 //            location.setLatitude(53.5461);
@@ -466,13 +465,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     }
 
     /**
-     * If your app doesn't already have the permission it needs, the app must call one of the requestPermissions()
+     * If your app doesn't already have the permission it needs, the app must call one of the requestPermissionFragment()
      * methods to request the appropriate permissions. Your app passes the permissions it wants and an integer
      * request code that you specify to identify this permission request. This method functions asynchronously.
      * It returns right away, and after the user responds to the prompt, the system calls the app's callback
-     * method with the results, passing the same request code that the app passed to requestPermissions().
+     * method with the results, passing the same request code that the app passed to requestPermissionFragment().
      */
-    private void requestPermissions() {
+    private void requestPermissionFragment() {
         /**
          * shouldShowRequestPermissionRationale(), returns true if the user has previously denied the request,
          * and returns false if a user has denied a permission and selected the Don't ask again option in the
@@ -491,7 +490,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         @Override
                         public void onClick(View view) {
                             // Request permission
-                            ActivityCompat.requestPermissions(getActivity(),
+                            requestPermissions(
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
@@ -501,7 +500,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(getActivity(),
+            requestPermissions(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
@@ -513,7 +512,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionResult");
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
                 // If user interaction was interrupted, the permission request is cancelled and you
@@ -590,7 +589,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                Log.d("LOCATION", "updated");
+//                Log.d("LOCATION", "updated");
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
                     mLocation = location;
@@ -635,6 +634,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      * runtime permission has been granted.
      */
     private void startLocationUpdates() {
+        Log.d("SL", "location updates started");
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
