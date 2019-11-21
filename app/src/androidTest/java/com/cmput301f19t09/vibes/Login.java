@@ -28,8 +28,8 @@ public class Login {
      * Class method callable using Login.setUp() for intent tests to login a default test user.
      */
     public static void setUp() throws InterruptedException {
-        onView(withId(R.id.email_field)).perform(typeText("tz@gmail.com"));
-        onView(withId(R.id.password_field)).perform(typeText("111111"));
+        onView(withId(R.id.email_field)).perform(typeText("intenttest@gmail.com"));
+        onView(withId(R.id.password_field)).perform(typeText("000000"));
         onView(withId(R.id.password_field)).perform(closeSoftKeyboard());
         onView(withId(R.id.login_button)).perform(click());
         // sleep to allow time for login to process and view to switch
