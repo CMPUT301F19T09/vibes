@@ -48,10 +48,16 @@ exports.getMostRecentMoodEvent = functions.https.onCall((data, context) =>
                     return null;
                 });
     });
-
-exports.sortMoodEvents = functions.firestore
-    .document('users/{uid}')
+/*
+exports.sortMoodEvents = functions.firestore.document('users/{USER_UID}')
     .onWrite((change, context) =>
     {
-        let user = db.collection('users').doc(context.params.uid);
+        let uid = context.params.USER_ID;
+        let user = db.collection('users').doc(uid);
+
+        let data = change.after.data();
+        let old_data = change.before.data();
+        
+        for (int i = 0; i < 
     });
+*/

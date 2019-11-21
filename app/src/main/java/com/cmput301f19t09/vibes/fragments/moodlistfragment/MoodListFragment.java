@@ -55,30 +55,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     public MoodListFragment()
     {
         this.id = gid++;
-        Map<String, Object> testMap = new HashMap<>();
-        testMap.put("uid", UserManager.getCurrentUserUID());
-        //String[] filters = {"ANTICIPATION"};
-        List<String> filters = new ArrayList<>();
-        filters.add("ANTICIPATION");
-        testMap.put("filters", filters);
-        testMap.put("push", true);
-        FirebaseFunctions.getInstance().getHttpsCallable("getMostRecentMoodEvent").call(testMap)
-                .continueWith(new Continuation<HttpsCallableResult, Object>() {
-                    @Override
-                    public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        //Log.d("TEST/Firebase", );
-                        if (task.getResult().getData() == null) Log.d("TEST/Firebase", "null return");
-                        Map<String, Object> result = (Map) task.getResult().getData();
-                        Log.d("TEST/Firebase/MostRecent", "username: " + (String) result.get("username"));
-                        Log.d("TEST/Firebase/MostRecent", "emotion: " + (String) result.get("emotion"));
-                        Log.d("TEST/Firebase/MostRecent", "reason: " + (String) result.get("reason"));
-                        //Log.d("TEST/Firebase/MostRecent", "username: " + (String) result.get("username"));
-                        //Log.d("TEST/Firebase/MostRecent", "username: " + (String) result.get("username"));
-                        //Log.d("TEST/Firebase/MostRecent", "username: " + (String) result.get("username"));
-                        //Log.d("TEST/Firebase", task.getResult().toString());
-                        return null;
-                    }
-                });
+
     }
 
     /*

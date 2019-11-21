@@ -31,6 +31,7 @@ import java.util.Observer;
 public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
 {
     protected List<MoodEvent> data;
+    protected List<String> filters;
     protected User user;
     private Context context;
 
@@ -147,7 +148,10 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         initializeData();
     }
 
-    public void initializeData() { }
+    public void initializeData()
+    {
+        data = new ArrayList<>();
+    }
 
     public abstract void refreshData();
 

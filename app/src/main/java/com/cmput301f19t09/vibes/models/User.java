@@ -2,8 +2,10 @@ package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.R;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -18,6 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.function.Consumer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -362,6 +367,74 @@ public class User extends Observable implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public void getMostRecentMoodEvent(List<String> filters, final Consumer<MoodEvent> callback) {
+        Map<String, Object> query = new HashMap<>();
+
+        query.put("uid", uid);
+        query.put("filters", filters);
+
+        Log.d("Test/User", "Calling Firebase Function");
+        FirebaseFunctions.getInstance().getHttpsCallable("getMostRecentMoodEvent").call(query)
+                .continueWith(new Continuation<HttpsCallableResult, Object>() {
+                    @Override
+                    public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        //Log.d("TEST/Firebase", );
+                        //if (task.getResult().getData() == null) Log.d("TEST/Firebase", "null return");
+
+                        Log.d("Test/User", "Firebase Function AAA");
+                        Map<String, Object> result = (Map) task.getResult().getData();
+
+                        if (result == null)
+                        {
+                            Log.d("TEST/FilteredRecent", "NULL RESULT");
+                            callback.accept(null);
+                        }
+
+                        Log.d("Test/User", "Result has " + result.size() + " fields");
+
+                        String emotion = (String) result.get("emotion");
+                        Log.d("Test/User", "Firebase Function 1");
+                        String reason = (String) result.get("reason");
+                        Log.d("Test/User", "Firebase Function 2");
+                        Number social = (Number) result.get("social");
+                        Log.d("Test/User", "Firebase Function 3");
+                        Number timestamp = (Number) result.get("timestamp");
+                        Log.d("Test/User", "Firebase Function 4");
+                        String username = (String) result.get("username");
+                        Log.d("Test/User", "Firebase Function 5");
+                        Map<String, Double> locationObject = (HashMap) result.get("location");
+
+                        Log.d("Test/User", "Firebase Function BBB");
+                        // Requires a timestamp
+                        if (timestamp == null) {
+                            throw new RuntimeException("[MOOD_ERROR]: Timestamp isn't defined");
+                        }
+
+                        LocalDateTime time = LocalDateTime.ofEpochSecond(
+                                timestamp.longValue(),
+                                0,
+                                ZoneOffset.UTC
+                        );
+
+                        Location location = new Location("");
+                        location.setLatitude(locationObject.get("_latitude"));
+                        location.setLongitude(locationObject.get("_longitude"));
+
+                        MoodEvent event = new MoodEvent(time.toLocalDate(),
+                                time.toLocalTime(),
+                                reason,
+                                new EmotionalState(emotion),
+                                social.intValue(),
+                                location,
+                                User.this);
+
+                        Log.d("TEST/User", "Calling callback");
+                        callback.accept(event);
+                        return null;
+                    }
+                });
     }
 
     /**
