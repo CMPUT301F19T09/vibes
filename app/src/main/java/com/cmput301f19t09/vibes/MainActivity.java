@@ -177,6 +177,7 @@ public class MainActivity extends FragmentActivity {
          */
 
         if (entryCount != 0 &&
+                tag != null &&
                 tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName()))
         {
             Log.d(logTag, "Skipping transaction, fragment already shown");
@@ -288,31 +289,20 @@ public class MainActivity extends FragmentActivity {
 
     public void setEditFragment(MoodEvent event, int index)
     {
-        String tag = null;
         Fragment instance = null;
 
-        // Create an add version of the fragment
         if (index == -1)
         {
-            tag = EditFragment.class.getSimpleName();
-            instance = getFragmentInstance(tag);
+            instance = EditFragment.newInstance();
+            Log.d(logTag, "Creating new instance of (add) EditFragment");
         }
-
-        if (instance == null)
+        else
         {
-            if (index == -1)
-            {
-                instance = EditFragment.newInstance();
-                Log.d(logTag, "Creating new instance of (add) EditFragment");
-            }
-            else
-            {
-                instance = EditFragment.newInstance(event, index);
-                Log.d(logTag, "Creating new instance of (edit) EditFragment");
-            }
+            instance = EditFragment.newInstance(event, index);
+            Log.d(logTag, "Creating new instance of (edit) EditFragment");
         }
 
-        setMainFragment(instance, tag);
+        setMainFragment(instance, null);
     }
 
     public void setFollowingFragment()
@@ -375,17 +365,17 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
-
-        boolean loop = manager.getBackStackEntryCount() > 1;
-
         Log.d(logTag, manager.getBackStackEntryCount() + " entries in backstack");
 
-        while (loop)
+        if (manager.getBackStackEntryCount() > 1)
         {
-            manager.popBackStack();
+            manager.popBackStackImmediate();
+        }
 
-            loop = manager.getBackStackEntryCount() > 1 &&
-                    manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null;
+        while (manager.getBackStackEntryCount() > 1 &&
+                manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null)
+        {
+            manager.popBackStackImmediate();
         }
     }
 }

@@ -383,7 +383,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     user.editMood(moodEvent, moodEventListIndex);
                 }
                 MainActivity main = (MainActivity) EditFragment.this.getActivity();
-                main.setListFragment(MoodListFragment.OWN_MOODS);
+                main.onBackPressed();
+                //main.setListFragment(MoodListFragment.OWN_MOODS);
             }
         });
 
