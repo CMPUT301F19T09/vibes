@@ -21,6 +21,7 @@ import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.fragments.searchfragment.SearchFragment;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
@@ -99,6 +100,7 @@ public class MainActivity extends FragmentActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setMainFragment(SearchFragment.newInstance());
             }
         });
 
