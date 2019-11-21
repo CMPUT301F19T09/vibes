@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -16,12 +18,14 @@ import android.widget.ImageButton;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 
 import java.util.List;
+import java.util.Random;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.fragments.searchfragment.SearchFragment;
+import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
@@ -37,6 +41,9 @@ public class MainActivity extends FragmentActivity {
     int fragment_root;
     private User user;
 
+    //TODO: DEBUG, REMOVE THIS
+    private final String logTag = "TEST/MainActivity";
+    
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
 
     @Override
@@ -49,9 +56,9 @@ public class MainActivity extends FragmentActivity {
         user = UserManager.getCurrentUser();
 
         // Defines onClickListeners for the components defined above in the class.
-        intializeViews();
+        initialize();
 
-        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
+        setListFragment(MoodListFragment.OWN_MOODS);
 
         /*
             Add a backstack listener to change what the "view" (list/map) button displays
@@ -78,7 +85,7 @@ public class MainActivity extends FragmentActivity {
     /*
      *  Initializes the views in the main activity layout
      */
-    private void intializeViews() {
+    private void initialize() {
 
         fragment_root = R.id.main_fragment_root;
         currentButtonMode = ButtonMode.MAP;
@@ -93,28 +100,32 @@ public class MainActivity extends FragmentActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMainFragment(EditFragment.newInstance());
+                //setMainFragment(EditFragment.newInstance());
+                setEditFragment();
             }
         });
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMainFragment(SearchFragment.newInstance());
+                //setMainFragment(SearchFragment.newInstance());
+                setSearchFragment();
             }
         });
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMainFragment(ProfileFragment.newInstance());
+                //setMainFragment(ProfileFragment.newInstance());
+                setProfileFragment();
             }
         });
 
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMainFragment(FollowingFragment.newInstance(UserManager.getCurrentUser()));
+                //setMainFragment(FollowingFragment.newInstance(UserManager.getCurrentUser()));
+                setFollowingFragment();
             }
         });
 
@@ -128,11 +139,13 @@ public class MainActivity extends FragmentActivity {
 
                 switch (currentButtonMode) {
                     case LIST:
-                        setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
+                        //setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
+                        setListFragment(MoodListFragment.OWN_MOODS);
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
-                        setMainFragment(MapFragment.newInstance(getApplicationContext()));
+                        //setMainFragment(MapFragment.newInstance(getApplicationContext()));
+                        setMapFragment();
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
@@ -148,33 +161,182 @@ public class MainActivity extends FragmentActivity {
         @param fragment
             the fragment to place in the main view
      */
-    public void setMainFragment(Fragment fragment) {
+    public void setMainFragment(Fragment fragment, String tag) {
         FragmentManager manager = getSupportFragmentManager();
-        String name = fragment.getClass().getSimpleName();
+
+        int entryCount = manager.getBackStackEntryCount();
 
         /*
-            If there already exists an instance of this fragment on the backstack, simply reuse
-            it with new arguments
-         */
-        if (manager.findFragmentByTag(name) != null)
+        if (entryCount != 0 &&
+                (manager.getBackStackEntryAt(entryCount - 1).getName() != null &&
+                manager.getBackStackEntryAt(entryCount - 1).getName().equals(tag)))
         {
-            Fragment oldInstance = manager.findFragmentByTag(name);
-            oldInstance.setArguments(fragment.getArguments());
-            fragment = oldInstance;
+            Log.d(logTag, "Skipping transaction, fragment already shown");
+            return;
+        }
+         */
+
+        if (entryCount != 0 &&
+                tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName()))
+        {
+            Log.d(logTag, "Skipping transaction, fragment already shown");
+            return;
         }
 
-        /*
-            If the new fragment i
-         */
-        if ((manager.getBackStackEntryCount() > 0 &&
-                !manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName().equals(name)) ||
-            manager.getBackStackEntryCount() == 0)
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(fragment_root, fragment, tag);
+
+        transaction.addToBackStack(tag);
+
+        transaction.commit();
+
+        Log.d(logTag, "Currently " + manager.getBackStackEntryCount() + " fragments on the backstack");
+    }
+
+    private Fragment getFragmentInstance(String tag)
+    {
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment instance = manager.findFragmentByTag(tag);
+
+        return instance;
+    }
+
+    public void setMainFragment(Fragment f) {}
+
+    public void setListFragment(int arg)
+    {
+        String tag = MoodListFragment.class.getSimpleName();
+        Fragment instance = getFragmentInstance(tag);
+
+        if (instance == null)
         {
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(fragment_root, fragment, name);
-            transaction.addToBackStack(name);
-            transaction.commit();
+            Log.d(logTag, "Creating new instance of MoodListFragment");
+            instance = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS);
         }
+        else
+        {
+            Log.d(logTag, "Reusing instance of MoodListFragment");
+        }
+
+        setMainFragment(instance, tag);
+    }
+
+    public void setMapFragment()
+    {
+        String tag = MapFragment.class.getSimpleName();
+        Fragment instance = getFragmentInstance(tag);
+
+        if (instance == null)
+        {
+            Log.d(logTag, "Creating new instance of MapFragment");
+            instance = MapFragment.newInstance(getApplicationContext());
+        }
+        else
+        {
+            Log.d(logTag, "Reusing MapFragment");
+
+        }
+
+        setMainFragment(instance, tag);
+    }
+
+    public void setProfileFragment()
+    {
+        setProfileFragment(null);
+    }
+
+    public void setProfileFragment(String uid)
+    {
+        String tag = ProfileFragment.class.getSimpleName();
+
+        if (uid != null)
+        {
+            tag += uid;
+        }
+        else
+        {
+            tag += UserManager.getCurrentUserUID();
+        }
+
+        Fragment instance = getFragmentInstance(tag);
+
+        if (instance == null)
+        {
+            if (uid == null)
+            {
+                Log.d(logTag, "Creating new instance of main user profile");
+                instance = ProfileFragment.newInstance();
+            }
+            else
+            {
+                Log.d(logTag, "Creating new instance of " + uid + " profile");
+                instance = ProfileFragment.newInstance(uid);
+            }
+        }
+        else
+        {
+            Log.d(logTag, "Reusing instance of ProfileFragment");
+        }
+
+        setMainFragment(instance, tag);
+    }
+
+    public void setEditFragment()
+    {
+        setEditFragment(null, -1);
+    }
+
+    public void setEditFragment(MoodEvent event, int index)
+    {
+        String tag = null;
+        Fragment instance = null;
+
+        // Create an add version of the fragment
+        if (index == -1)
+        {
+            tag = EditFragment.class.getSimpleName();
+            instance = getFragmentInstance(tag);
+        }
+
+        if (instance == null)
+        {
+            if (index == -1)
+            {
+                instance = EditFragment.newInstance();
+                Log.d(logTag, "Creating new instance of (add) EditFragment");
+            }
+            else
+            {
+                instance = EditFragment.newInstance(event, index);
+                Log.d(logTag, "Creating new instance of (edit) EditFragment");
+            }
+        }
+
+        setMainFragment(instance, tag);
+    }
+
+    public void setFollowingFragment()
+    {
+        String tag = FollowingFragment.class.getSimpleName();
+        Fragment instance = getFragmentInstance(tag);
+
+        if (instance == null)
+        {
+            instance = FollowingFragment.newInstance();
+            Log.d(logTag, "Creating new instance of FollowingFragment");
+        }
+        else
+        {
+            Log.d(logTag, "Reusing instance of FollowingFragment");
+        }
+
+        setMainFragment(instance, tag);
+    }
+
+    public void setSearchFragment()
+    {
+        Fragment instance = SearchFragment.newInstance();
+        setMainFragment(instance, null);
     }
 
     /*
@@ -214,14 +376,17 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (manager.getBackStackEntryCount() > 1) {
+        boolean loop = manager.getBackStackEntryCount() > 1;
+
+        Log.d(logTag, manager.getBackStackEntryCount() + " entries in backstack");
+
+        while (loop)
+        {
             manager.popBackStack();
+
+            loop = manager.getBackStackEntryCount() > 1 &&
+                    manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null;
         }
-    }
-
-    public void openListFragment()
-    {
-
     }
 }
 

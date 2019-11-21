@@ -2,6 +2,7 @@ package com.cmput301f19t09.vibes.fragments.profilefragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,7 @@ public class ProfileFragment extends Fragment implements Observer {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("TEST/ProfileFragment", "Creating View");
         View view = inflater.inflate(R.layout.user_profile, container, false);
 
         // Get specific views

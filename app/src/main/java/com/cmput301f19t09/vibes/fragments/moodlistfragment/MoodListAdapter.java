@@ -152,7 +152,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     public abstract void refreshData();
 
     // When this is called, remove this object as an observer of User
-    public void destroy()
+    public void removeObservers()
     {
         UserManager.removeUserObserver(user.getUid(), this);
     }

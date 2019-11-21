@@ -193,7 +193,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
                         }
 
                         // Open an edit fragment for the mood
-                        ((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event, mood_index));
+                        //((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event, mood_index));
+                        ((MainActivity) getActivity()).setEditFragment(event, mood_index);
                     }
                 });
 
@@ -223,12 +224,15 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
                         if (user == eventUser) {
                             // Open own profile
-                            profileFragment = ProfileFragment.newInstance();
+                            //profileFragment = ProfileFragment.newInstance();
+                            ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment();
                         } else {
                             // Open other user's profile
-                            profileFragment = ProfileFragment.newInstance(eventUser.getUid());
+                            //profileFragment = ProfileFragment.newInstance(eventUser.getUid());
+                            ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment(eventUser.getUid());
                         }
-                        ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setMainFragment(profileFragment);
+                        //((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setMainFragment(profileFragment);
+                        //((MainActivity)getActivity()).setProi
                     }
                 });
 
