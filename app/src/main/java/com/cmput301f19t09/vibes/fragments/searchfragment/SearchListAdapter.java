@@ -67,6 +67,7 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
     }
 
     public void refreshData(List<String> userList) {
+        data.clear();
         clear();
         notifyDataSetChanged();
 
