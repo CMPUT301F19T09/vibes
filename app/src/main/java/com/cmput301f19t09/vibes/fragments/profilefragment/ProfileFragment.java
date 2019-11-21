@@ -105,46 +105,59 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser == null) {
             updateButton("OWN");
 
-            setInfo(user);
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+//            setInfo(user);
+//            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+//            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
         } else {
             // Checks if the user is following the other user and show their latest mood event by
             // calling the child fragment MoodDetailsFragment
             UserManager.addUserObserver(otherUser.getUid(), this);
-            setInfo(otherUser);
+//            setInfo(otherUser);
             if (user.getFollowingList().contains(otherUser.getUid())) {
                 updateButton("FOLLOWING");
 
-                if (otherUser.isLoaded()) {
-                    setInfo(otherUser);
-                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
-                    transaction.commit();
-                }
-
-                otherUser.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable o, Object arg) {
-                        User u = (User) o;
-                        ProfileFragment.this.setInfo(u);
-                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
-                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
-                        transaction.commit();
-                    }
-                });
-                setInfo(otherUser);
+//                if (otherUser.isLoaded()) {
+//                    setInfo(otherUser);
+//                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+//                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+//                    transaction.commit();
+//                }
+//
+//                otherUser.addObserver(new Observer() {
+//                    @Override
+//                    public void update(Observable o, Object arg) {
+//                        User u = (User) o;
+//                        ProfileFragment.this.setInfo(u);
+//                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
+//                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+//                        transaction.commit();
+//                    }
+//                });
+//                setInfo(otherUser);
             } else {
                 if (otherUser.isLoaded()) {
                     if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
                         updateButton("NONE");
-                        setInfo(otherUser);
+//                        setInfo(otherUser);
                     } else {
                         updateButton("REQUESTED");
                         setInfo(otherUser);
                     }
                 }
+
+                otherUser.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable observable, Object o) {
+                        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                            updateButton("NONE");
+//                            setInfo(otherUser);
+                        } else {
+                            updateButton("REQUESTED");
+//                            setInfo(otherUser);
+                        }
+                    }
+                });
             }
         }
         return view;
@@ -164,6 +177,10 @@ public class ProfileFragment extends Fragment implements Observer {
         switch (mode) {
             case "OWN":
                 followButton.setVisibility(View.INVISIBLE);
+                setInfo(user);
+                MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+                FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
                 break;
             case "REQUESTED":
                 followButton.setText("R E Q U E S T E D");
@@ -177,6 +194,7 @@ public class ProfileFragment extends Fragment implements Observer {
                         updateButton("NONE");
                     }
                 });
+                setInfo(otherUser);
                 break;
             case "FOLLOWING":
                 followButton.setText("U N F O L L O W");
@@ -188,8 +206,30 @@ public class ProfileFragment extends Fragment implements Observer {
                         Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
                         user.removeFollowing(otherUser.getUid());
                         updateButton("NONE");
+                        System.out.println(getChildFragmentManager().getFragments());
+                        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                        fragmentTransaction.remove(getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1));
+                        fragmentTransaction.commit();
                     }
                 });
+                if (otherUser.isLoaded()) {
+                    setInfo(otherUser);
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+                    transaction.commit();
+                }
+
+                otherUser.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        User u = (User) o;
+                        ProfileFragment.this.setInfo(u);
+                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
+                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                        transaction.commit();
+                    }
+                });
+                setInfo(otherUser);
                 break;
             case "NONE":
                 followButton.setText("F O L L O W");
@@ -203,6 +243,7 @@ public class ProfileFragment extends Fragment implements Observer {
                         updateButton("REQUESTED");
                     }
                 });
+                setInfo(otherUser);
                 break;
         }
     }
