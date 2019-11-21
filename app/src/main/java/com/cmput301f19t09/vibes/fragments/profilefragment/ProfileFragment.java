@@ -1,7 +1,13 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +23,12 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -181,6 +190,12 @@ public class ProfileFragment extends Fragment implements Observer {
                 MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
                 FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                 fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+                profilePictureImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openFileExplorer();
+                    }
+                });
                 break;
             case "REQUESTED":
                 followButton.setText("R E Q U E S T E D");
@@ -271,5 +286,39 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser != null) {
             UserManager.removeUserObservers(otherUser.getUid());
         }
+    }
+
+    public void openFileExplorer() {
+        System.out.println(user.getProfileURL());
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+
+        startActivityForResult(intent, 42);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 42) {
+            Uri uri = null;
+
+            if (data != null) {
+                uri = data.getData();
+                Glide.with(this).load(uri).into(profilePictureImageView);
+                user.changeProfilePicture(uri);
+                System.out.println(user.getProfileURL());
+            }
+        }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getActivity().getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 }
