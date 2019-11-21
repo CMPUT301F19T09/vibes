@@ -74,31 +74,6 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-    /**
-     * Stacks two fragments on top of each other. It is different than replaceFragment().
-     * You have to define the fragments, combine the fragments with
-     * their bundles then send it into this function.
-     * You can later access the fragments using the fragmentTitles you have used.
-     *
-     * @param fragment1
-     * @param fragmentTitle
-     * @param fragment2
-     * @param fragmentTitle2
-     */
-    public void stackFragment(Fragment fragment1, String fragmentTitle, Fragment fragment2, String fragmentTitle2) {
-        ViewGroup root = findViewById(R.id.main_fragment_root);
-        root.removeAllViewsInLayout();
-
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        transaction.add(R.id.main_fragment_root, fragment1, fragmentTitle);
-        transaction.add(R.id.main_fragment_root, fragment2, fragmentTitle2);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-
     /*
      *  Initializes the views in the main activity layout
      */
@@ -124,22 +99,13 @@ public class MainActivity extends FragmentActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMainFragment(SearchFragment.newInstance());
             }
         });
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
-//                replaceFragment(ProfileFragment.class);
                 setMainFragment(ProfileFragment.newInstance());
-
-//                getSupportFragmentManager().findFragmentById()
-//                User user = new User("testuser");
-                //setMainFragment(ProfileFragment.newInstance(user, true));
-
-//                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
             }
         });
 
