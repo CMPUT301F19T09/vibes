@@ -148,11 +148,31 @@ public class MainActivity extends FragmentActivity {
      */
     public void setMainFragment(Fragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
+        String name = fragment.getClass().getSimpleName();
 
-        transaction.replace(fragment_root, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        /*
+            If there already exists an instance of this fragment on the backstack, simply reuse
+            it with new arguments
+         */
+        if (manager.findFragmentByTag(name) != null)
+        {
+            Fragment oldInstance = manager.findFragmentByTag(name);
+            oldInstance.setArguments(fragment.getArguments());
+            fragment = oldInstance;
+        }
+
+        /*
+            If the new fragment i
+         */
+        if ((manager.getBackStackEntryCount() > 0 &&
+                !manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName().equals(name)) ||
+            manager.getBackStackEntryCount() == 0)
+        {
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.replace(fragment_root, fragment, name);
+            transaction.addToBackStack(name);
+            transaction.commit();
+        }
     }
 
     /*
@@ -195,6 +215,11 @@ public class MainActivity extends FragmentActivity {
         if (manager.getBackStackEntryCount() > 1) {
             manager.popBackStack();
         }
+    }
+
+    public void openListFragment()
+    {
+
     }
 }
 
