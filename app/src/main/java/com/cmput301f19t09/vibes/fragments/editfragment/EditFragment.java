@@ -265,7 +265,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
-                String situationString = Integer.toString(moodEvent.getSocialSituation());
+                String situationString = Double.toString(moodEvent.getSocialSituation());
                 editSituationView.setText(situationString);
             }
             editReasonView.setText(moodEvent.getDescription());
@@ -350,7 +350,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
                 // set optional fields
                 if (!editSituationView.getText().toString().isEmpty()) {
-                    moodEvent.setSocialSituation(Integer.parseInt(editSituationView.getText().toString()));
+                    moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
                 }
 
                 if (useLocation) {

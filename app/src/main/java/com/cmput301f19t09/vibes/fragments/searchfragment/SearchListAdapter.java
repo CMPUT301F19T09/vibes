@@ -26,6 +26,7 @@ public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
     protected List<User> data;
     protected User user;
     private Context context;
+    private List<String> observed_users;
 
     public SearchListAdapter(Context context) {
         super(context, 0);
@@ -43,11 +44,13 @@ public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
 
         if (item == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            item = inflater.inflate(R.layout.search_list_item, null);
+            item = inflater.inflate(R.layout.search_list_item, parent, false);
 
         }
 
-        User user = data.get(position);
+        if (!data.isEmpty() || position < data.size()) {
+            User user = data.get(position);
+        }
 
         if (user == null) {
             return item;
@@ -64,17 +67,33 @@ public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
         return item;
     }
 
-    public void refreshData() {
-        clear();
+    public void refreshData(List<String> userList) {
+        System.out.println(userList);
         data = new ArrayList<User>();
 
-        List<User> users = null;
-        if (users == null) {
+        if (userList == null) {
             return;
         }
 
-        for (User user : users) {
-            data.add(user);
+        for (String userUID : userList) {
+//            data.add(user);
+            if (!observed_users.contains(userUID)) {
+                User user = UserManager.getUser(userUID);
+                observed_users.add(userUID);
+
+                if (user.isLoaded()) {
+                    data.add(user);
+                }
+
+                UserManager.addUserObserver(userUID, this);
+
+//                UserManager.addUserObserver(userUID, new Observer() {
+//                    @Override
+//                    public void update(Observable observable, Object o) {
+//                        SearchListAdapter.this.refreshData();
+//                    }
+//                });
+            }
         }
 
         data.sort(new Comparator<User>() {
@@ -90,12 +109,12 @@ public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        refreshData();
+        refreshData(null);
     }
 
     private void initialize() {
         UserManager.addUserObserver(user.getUid(), this);
-        refreshData();
+        observed_users = new ArrayList<String>();
     }
 
     public void destroy() {
