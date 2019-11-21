@@ -22,19 +22,14 @@ import java.util.Observer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
-    protected List<User> data;
-    protected User user;
+public class SearchListAdapter extends ArrayAdapter<String> implements Observer {
+    protected List<String> data;
     private Context context;
-    private List<String> observed_users;
 
     public SearchListAdapter(Context context) {
         super(context, 0);
         this.context = context;
-        this.user = UserManager.getCurrentUser();
-        this.data = new ArrayList<User>();
-
-        initialize();
+        this.data = new ArrayList<String>();
     }
 
     @NonNull
@@ -48,76 +43,70 @@ public class SearchListAdapter extends ArrayAdapter<User> implements Observer {
 
         }
 
-        if (!data.isEmpty() || position < data.size()) {
-            User user = data.get(position);
-        }
+        String userUID = data.get(position);
 
-        if (user == null) {
+        if (userUID == null) {
             return item;
         }
 
-        ImageView userProfile = item.findViewById(R.id.search_profile_picture);
-        TextView userFullName = item.findViewById(R.id.search_full_name);
-        TextView userUserName = item.findViewById(R.id.search_username);
-        Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
-        userProfile.setClipToOutline(true);
+        User user = UserManager.getUser(userUID);
 
-        userFullName.setText(user.getFirstName() + " " + user.getLastName());
-        userUserName.setText(user.getUserName());
+        if (user.isLoaded()) {
+
+            ImageView userProfile = item.findViewById(R.id.search_profile_picture);
+            TextView userFullName = item.findViewById(R.id.search_full_name);
+            TextView userUserName = item.findViewById(R.id.search_username);
+            Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
+            userProfile.setClipToOutline(true);
+
+            userFullName.setText(user.getFirstName() + " " + user.getLastName());
+            userUserName.setText(user.getUserName());
+
+        }
         return item;
     }
 
     public void refreshData(List<String> userList) {
-        System.out.println(userList);
-        data = new ArrayList<User>();
+        clear();
+        notifyDataSetChanged();
 
         if (userList == null) {
             return;
         }
 
         for (String userUID : userList) {
-//            data.add(user);
-            if (!observed_users.contains(userUID)) {
-                User user = UserManager.getUser(userUID);
-                observed_users.add(userUID);
-
-                if (user.isLoaded()) {
-                    data.add(user);
-                }
-
-                UserManager.addUserObserver(userUID, this);
-
-//                UserManager.addUserObserver(userUID, new Observer() {
-//                    @Override
-//                    public void update(Observable observable, Object o) {
-//                        SearchListAdapter.this.refreshData();
-//                    }
-//                });
-            }
+            data.add(userUID);
         }
 
-        data.sort(new Comparator<User>() {
-            @Override
-            public int compare(User user1, User user2) {
-                return user1.getFirstName().compareTo(user2.getFirstName());
-            }
-        });
-
         addAll(data);
-        notifyDataSetChanged();
+
+//        for (String userUID : userList) {
+//            User user = UserManager.getUser(userUID);
+//
+//                if (user.isLoaded()) {
+//                    data.add(user);
+//                }
+//
+//            user.readData(new User.FirebaseCallback() {
+//                @Override
+//                public void onCallback(User user) {
+//                    data.add(user);
+//                    addAll(data);
+//                    notifyDataSetChanged();
+//                }
+//            });
+//        }
+
+//        data.sort(new Comparator<User>() {
+//            @Override
+//            public int compare(User user1, User user2) {
+//                return user1.getFirstName().compareTo(user2.getFirstName());
+//            }
+//        });
     }
 
     @Override
     public void update(Observable observable, Object o) {
         refreshData(null);
-    }
-
-    private void initialize() {
-        UserManager.addUserObserver(user.getUid(), this);
-        observed_users = new ArrayList<String>();
-    }
-
-    public void destroy() {
-        UserManager.removeUserObserver(user.getUid(), this);
     }
 }

@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.search_fragment, container, false);
 
         final EditText searchField = view.findViewById(R.id.search_edittext);
-        ListView searchList = view.findViewById(R.id.search_listview);
+        final ListView searchList = view.findViewById(R.id.search_listview);
         ImageButton searchButton = view.findViewById(R.id.search_button);
         searchButton.setImageResource(R.drawable.ic_search_grey_36dp);
 
@@ -77,36 +77,15 @@ public class SearchFragment extends Fragment {
         searchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                if (searchField.getText().length() > 0) {
-//                    collectionReference.orderBy("username")
-//                            .startAt(searchField.getText().toString())
-//                            .endAt(searchField.getText().toString() + "\uf8ff")
-//                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            QuerySnapshot documentSnapshots = task.getResult();
-//
-//                            if (!userList.isEmpty()) {
-//                                userList.clear();
-//                            }
-//
-//                            for (QueryDocumentSnapshot document : documentSnapshots) {
-//                                userList.add(document.getId());
-//                            }
-//
-//                            adapter.refreshData(userList);
-//                        }
-//                    });
-//                }
-            }
+                if (!userList.isEmpty()) {
+                    userList.clear();
+                    adapter.refreshData(userList);
+                }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
                 if (searchField.getText().length() > 0) {
                     collectionReference.orderBy("username")
                             .startAt(searchField.getText().toString())
@@ -116,10 +95,6 @@ public class SearchFragment extends Fragment {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             QuerySnapshot documentSnapshots = task.getResult();
 
-                            if (!userList.isEmpty()) {
-                                userList.clear();
-                            }
-
                             for (QueryDocumentSnapshot document : documentSnapshots) {
                                 userList.add(document.getId());
                             }
@@ -128,6 +103,10 @@ public class SearchFragment extends Fragment {
                         }
                     });
                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
             }
         });
         return view;
