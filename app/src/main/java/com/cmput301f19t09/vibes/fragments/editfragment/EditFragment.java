@@ -76,7 +76,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     // the fragment initialization parameters
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
     private MoodEvent moodEvent;
-    private boolean moodSet;
+    private boolean editing;
     private User user;
     public static final String VIBES_INDEX = "com.cmput301f19t09.vibes.INDEX";
     private int moodEventListIndex;
@@ -97,7 +97,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     // location services
     private Location mLocation = null;
     private Switch locationSwitch;
-    private boolean useLocation;
+    private boolean useLocation = false;
     private FusedLocationProviderClient fusedLocationClient;
 
     /**
@@ -191,7 +191,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      * Check if arguments were set on fragment initialization. If no arguments were
      * set then we did not pass in a MoodEvent and its index meaning we were not
      * editing an existing MoodEvent but rather, were creating a new one. Sets the
-     * global moodSet variable to indicate in onCreateView whether we are editing or
+     * global editing variable to indicate in onCreateView whether we are editing or
      * adding. Saves the passed in MoodEvent and its index if we are editing for calling
      * User.editMood() on submit button press.
      */
@@ -199,23 +199,24 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // create an instance of the Fused Location Provider Client
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        mSettingsClient = LocationServices.getSettingsClient(getContext());
-
-        // Kick off the process of building the LocationCallback, LocationRequest, and
-        // LocationSettingsRequest objects.
-        createLocationCallback();
-        createLocationRequest();
-        buildLocationSettingsRequest();
-
         if (getArguments() != null) { // a MoodEvent was passed so set fields based on it
             moodEvent = (MoodEvent) getArguments().getSerializable(VIBES_MOODEVENT);
             moodEventListIndex = getArguments().getInt(VIBES_INDEX);
-            moodSet = true;
+            editing = true;
         }
         else { // we didn't pass a MoodEvent so we are creating a new one
-            moodSet = false;
+            editing = false;
+
+            // only set up location api when we need it (when creating a new mood event)
+            // create an instance of the Fused Location Provider Client
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            mSettingsClient = LocationServices.getSettingsClient(getContext());
+
+            // Kick off the process of building the LocationCallback, LocationRequest, and
+            // LocationSettingsRequest objects.
+            createLocationCallback();
+            createLocationRequest();
+            buildLocationSettingsRequest();
         }
     }
 
@@ -259,7 +260,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         locationSwitch = view.findViewById(R.id.location_switch);
 
-        if (moodSet) {
+        if (editing) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
 
             dateTextView.setText(moodEvent.getDateString());
@@ -271,6 +272,15 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             editReasonView.setText(moodEvent.getDescription());
             emotionalState = moodEvent.getState();
             stateTextView.setText(moodEvent.getState().getEmotion());
+
+            // set the use location slider based on whether the mood event has a location or not
+            if (moodEvent.getLocation() != null) {
+                // set the slider to ON
+                useLocation = true;
+                locationSwitch.setChecked(true);
+            }
+            // turn of slider interaction as locations should not be editable
+            locationSwitch.setEnabled(false);
 
             // all required fields are completed already
             buttonSubmitView.setEnabled(true);
@@ -293,17 +303,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // can update immediately because cant be edited
             moodEvent.setTime(time);
 
-            // TODO: fix location handling
             if (!checkPermissions()) { // permissions were denied
                 requestPermissionFragment(); // prompt user for permission
             }
             else {
-                startLocationUpdates();
+                startLocationUpdates(); // we have permissions so begin location updates
             }
-
-//            location.setLatitude(53.5461);
-//            location.setLongitude(-113.4938);
-
         }
 
         locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -344,8 +349,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         buttonSubmitView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view1) {
-                stopLocationUpdates();
-
                 moodEvent.setState(emotionalState);
 
                 // set optional fields
@@ -353,21 +356,30 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
                 }
 
-                if (useLocation) {
-                    moodEvent.setLocation(mLocation);
-                } else {
+                // set location
+                if (useLocation) { // user specified to use location
+                    if (!editing) { // if we are adding a mood
+                        // then pull location data from GPS
+                        moodEvent.setLocation(mLocation);
+
+                        // log
+                        if (mLocation != null) {
+                            String logLocation = Location.convert(
+                                    mLocation.getLatitude(), Location.FORMAT_DEGREES)
+                                    + " "
+                                    + Location.convert(mLocation.getLongitude(), Location.FORMAT_DEGREES
+                            );
+                            Log.d("LOCATION_SET", logLocation);
+                        } else {
+                            Log.d("LOCATION_DEVICE", "device location is null");
+                        }
+
+                    } // otherwise we are editing a mood and it is already set so dont touch it
+                } else { // user does not want to use location
                     moodEvent.setLocation(null);
+                    Log.d("LOCATION_SET", "location set to null");
                 }
-                if (mLocation != null) {
-                    String logLocation = Location.convert(
-                            mLocation.getLatitude(), Location.FORMAT_DEGREES)
-                            + " "
-                            + Location.convert(mLocation.getLongitude(), Location.FORMAT_DEGREES
-                    );
-                    Log.d("LOCATION", logLocation);
-                } else {
-                    Log.d("LOCATION", "location is null");
-                }
+
 
                 if (editReasonView.getText().toString().isEmpty()) {
                     moodEvent.setDescription("");
@@ -375,8 +387,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     moodEvent.setDescription(editReasonView.getText().toString());
                 }
 
-                if (!moodSet) {
+                if (!editing) {
                     // was adding a new mood
+                    stopLocationUpdates();
                     user.addMood(moodEvent);
                 } else {
                     // was editing
@@ -454,6 +467,26 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(actionStringId), listener).show();
     }
+
+    /**
+     * Used the following links for grabbing location from GPS but code was modified for our use:
+     * https://developer.android.com/training/location/receive-location-updates
+     * https://github.com/android/location-samples/tree/master/LocationUpdates
+     *
+     * Copyright 2019 Google LLC
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     * http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
 
     /**
      * Return the current state of the permissions needed.
@@ -609,6 +642,10 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         mLocationSettingsRequest = builder.build();
     }
 
+    /**
+     * Check whether the user provided the required location settings and handle the
+     * cases appropriately.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
