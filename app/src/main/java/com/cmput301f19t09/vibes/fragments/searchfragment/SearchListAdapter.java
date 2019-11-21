@@ -29,7 +29,7 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
     public SearchListAdapter(Context context) {
         super(context, 0);
         this.context = context;
-        this.data = new ArrayList<String>();
+        this.data = new ArrayList<>();
     }
 
     @NonNull
@@ -43,19 +43,19 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
         }
 
+        final ImageView userProfile = item.findViewById(R.id.search_profile_picture);
+        final TextView userFullName = item.findViewById(R.id.search_full_name);
+        final TextView userUserName = item.findViewById(R.id.search_username);
+
         String userUID = data.get(position);
 
         if (userUID == null) {
             return item;
         }
 
-        User user = UserManager.getUser(userUID);
+        final User user = UserManager.getUser(userUID);
 
         if (user.isLoaded()) {
-
-            ImageView userProfile = item.findViewById(R.id.search_profile_picture);
-            TextView userFullName = item.findViewById(R.id.search_full_name);
-            TextView userUserName = item.findViewById(R.id.search_username);
             Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
             userProfile.setClipToOutline(true);
 
@@ -63,6 +63,17 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
             userUserName.setText(user.getUserName());
 
         }
+
+        UserManager.addUserObserver(userUID, new Observer() {
+            @Override
+            public void update(Observable observable, Object o) {
+                Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
+                userProfile.setClipToOutline(true);
+
+                userFullName.setText(user.getFirstName() + " " + user.getLastName());
+                userUserName.setText(user.getUserName());
+            }
+        });
         return item;
     }
 
