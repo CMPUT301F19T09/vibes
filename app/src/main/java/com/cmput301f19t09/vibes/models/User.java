@@ -129,12 +129,14 @@ public class User extends Observable implements Serializable {
 
                 // Gets profile picture from FireBase Storage if not null
                 if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
                     setChanged();
                     notifyObservers();
                 } else {
                     storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             profileURL = uri;
@@ -180,12 +182,14 @@ public class User extends Observable implements Serializable {
 
                 // Gets profile picture from FireBase Storage if not null
                 if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
                     firebaseCallback.onCallback(User.this);
                     loadedData = true;
                 } else {
                     storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             profileURL = uri;
@@ -252,7 +256,8 @@ public class User extends Observable implements Serializable {
         requestedList.add(otherUserUID);
 
         documentReference = collectionReference.document(uid);
-        documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+        documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
@@ -274,7 +279,8 @@ public class User extends Observable implements Serializable {
             followingList.add(otherUserUID);
 
             documentReference = collectionReference.document(uid);
-            documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -293,7 +299,8 @@ public class User extends Observable implements Serializable {
             followingList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
-            documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -329,7 +336,8 @@ public class User extends Observable implements Serializable {
             requestedList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
-            documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -393,6 +401,7 @@ public class User extends Observable implements Serializable {
                 Long timestamp = (Long) moodEvent.get("timestamp");
                 String username = (String) moodEvent.get("username");
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
+                Location location;
 
                 // Checks if there are 7 fields
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
@@ -414,10 +423,13 @@ public class User extends Observable implements Serializable {
                         ZoneOffset.UTC
                 );
 
-                // Not implemented yet (hardcoded)
-                Location location = new Location("");
-                location.setLatitude(locationGeoPoint.getLatitude());
-                location.setLongitude(locationGeoPoint.getLongitude());
+                if (locationGeoPoint != null) {
+                    location = new Location("");
+                    location.setLatitude(locationGeoPoint.getLatitude());
+                    location.setLongitude(locationGeoPoint.getLongitude());
+                } else {
+                    location = null;
+                }
 
                 MoodEvent event = new MoodEvent(time.toLocalDate(),
                         time.toLocalTime(),
@@ -471,7 +483,12 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
             mood.put("photo", null); // Photo not implemented yet
             mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
             mood.put("reason", moodEvent.getDescription());
@@ -479,7 +496,8 @@ public class User extends Observable implements Serializable {
             mood.put("username", moodEvent.getUser().getUserName());
 
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", FieldValue.arrayUnion(mood))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -504,7 +522,12 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
             mood.put("photo", null); // Photo not implemented yet
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
@@ -513,7 +536,8 @@ public class User extends Observable implements Serializable {
 
             moods.set(index.intValue(), mood);
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", moods)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -535,7 +559,8 @@ public class User extends Observable implements Serializable {
         } else {
             moods.remove(index.intValue());
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", moods)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -555,7 +580,8 @@ public class User extends Observable implements Serializable {
     public static Comparator<User> sortByName = new Comparator<User>() {
         @Override
         public int compare(User user1, User user2) {
-            return (user1.getFirstName()+user1.getLastName()).compareTo(user2.getFirstName()+user2.getLastName());
+            return (user1.getFirstName() + user1.getLastName())
+                    .compareTo(user2.getFirstName() + user2.getLastName());
         }
     };
 }

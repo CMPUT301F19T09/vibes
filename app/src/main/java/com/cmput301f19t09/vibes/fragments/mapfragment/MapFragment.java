@@ -87,12 +87,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public void showMoodEvent(MoodEvent event){
         if(googlemap != null){
             // Adding the event to the cluster manager
-            mClusterManager.addItem(event);
-            mClusterManager.cluster();
-            // If first marker, move the camera to the marker
-            if(!firstPointPut ){
-                firstPointPut = true;
-                googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), 4));
+            if (event.getLocation() != null) {
+                mClusterManager.addItem(event);
+                mClusterManager.cluster();
+                // If first marker, move the camera to the marker
+                if (!firstPointPut) {
+                    firstPointPut = true;
+                    googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), 4));
+                }
             }
         }
     }
