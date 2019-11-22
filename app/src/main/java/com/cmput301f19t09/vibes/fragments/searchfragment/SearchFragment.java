@@ -16,7 +16,10 @@ import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -43,7 +46,7 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         collectionReference = db.collection("users");
-        userList = new ArrayList<String>();
+        userList = new ArrayList<>();
     }
 
     @Nullable
@@ -83,9 +86,15 @@ public class SearchFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!userList.isEmpty()) {
                     userList.clear();
-                    adapter.refreshData(userList);
                 }
 
+                if (searchField.getText().length() == 0) {
+                    if (!userList.isEmpty()) {
+                        userList.clear();
+                    }
+
+                    adapter.refreshData(userList);
+                }
                 if (searchField.getText().length() > 0) {
                     collectionReference.orderBy("username")
                             .startAt(searchField.getText().toString())
