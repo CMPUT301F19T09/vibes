@@ -88,28 +88,15 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageView
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/reason_container"
-            android:id="@+id/photo_layout">
+            android:id="@+id/photo_image"
+            android:src="@drawable/camera_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
 
-<!--            <ImageButton-->
-<!--                android:id="@+id/button_take_photo"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:background="0xffffffff"-->
-<!--                android:src="@drawable/camera_image"-->
-<!--                android:layout_marginLeft="10dp"/>-->
-
-            <ImageView
-                android:src="@drawable/camera_image"
-                android:background="@color/design_default_color_primary_dark"
-                android:layout_width="100dp"
-                android:layout_height="100dp"/>
-        </LinearLayout>
         <TextView
             android:id="@+id/location_text_view"
             android:layout_width="wrap_content"
@@ -122,7 +109,7 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
+            app:layout_constraintTop_toBottomOf="@id/photo_image" />
 
         <Switch
             android:id="@+id/location_switch"
@@ -133,7 +120,7 @@
             android:fontFamily="@font/roboto_regular"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
+            app:layout_constraintTop_toBottomOf="@id/photo_image" />
 
         <TextView
             android:id="@+id/date_text_view"
