@@ -177,12 +177,12 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     Remove any observers that observed_users have
      */
     @Override
-    public void destroy()
+    public void removeObservers()
     {
         for (String user : observed_users)
         {
             UserManager.removeUserObservers(user);
         }
-        super.destroy();
+        super.removeObservers();
     }
 }

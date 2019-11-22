@@ -90,8 +90,8 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
                 // A ProfileFragment that corresponds to the clicked on user
                 // is created and is made the current fragment
                 ProfileFragment profileFragment;
-                profileFragment = ProfileFragment.newInstance(user.getUid());
-                ((MainActivity) activity).setMainFragment(profileFragment);
+                //profileFragment = ProfileFragment.newInstance(user.getUid());
+                ((MainActivity) activity).setProfileFragment(user.getUid());
             }
         });
 
