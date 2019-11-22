@@ -52,52 +52,17 @@ exports.getMostRecentMoodEvent = functions.https.onCall((data, context) =>
 exports.searchUsers = functions.https.onCall((data, context) =>
 {
     let search = data.search.toLowerCase();
-    let users = db.collection('users').orderBy('first');
     let uids = [];
-    return users.get().then(snapshot =>
+    return db.collection('users').orderBy('username')
+        .startAt(search)
+        .endAt(search + '\uf8ff').get().then(snapshot =>
         {
             snapshot.forEach(doc =>
                 {
-                    let user = doc.data();
-                    let username = user.username.toLowerCase();
-                    let firstname = user.first.toLowerCase();
-                    let lastname = user.last.toLowerCase();
-                    let fullname = firstname + lastname;
-                    let fullnamespace = firstname + ' ' + lastname;
-
-
-                    if (username.includes(search) ||
-                        firstname.includes(search) ||
-                        lastname.includes(search) ||
-                        fullname.includes(search) ||
-                        fullnamespace.includes(search))
-                    {
-                        console.log('user ' + doc.id + ' => ' + username);
-                        uids.push(doc.id);
-                    }
+                    console.log('returning ' + doc.id);
+                    uids.push(doc.id);
                 });
 
             return uids;
         });
-});
-
-exports.createUser = functions.https.onCall((data, context) =>
-{
-});
-
-exports.deleteUser = functions.https.onCall((data, context) =>
-{
-    let uid = data.uid;
-
-    let users = db.collection('users');
-    let user = users.doc(uid);
-    users.get().then(snapshot =>
-    {
-        snapshot.forEach(doc =>
-        {
-            let other_user = doc.data();
-
-            if (other_user.following_list
-        }
-    });
 });
