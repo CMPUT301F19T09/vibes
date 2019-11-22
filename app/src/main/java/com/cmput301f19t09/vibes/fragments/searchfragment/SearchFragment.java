@@ -84,17 +84,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (!userList.isEmpty()) {
-                    userList.clear();
-                }
 
-                if (searchField.getText().length() == 0) {
-                    if (!userList.isEmpty()) {
-                        userList.clear();
-                    }
-
-                    adapter.refreshData(userList);
-                }
                 if (searchField.getText().length() > 0) {
                     collectionReference.orderBy("username")
                             .startAt(searchField.getText().toString())
@@ -104,6 +94,11 @@ public class SearchFragment extends Fragment {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             QuerySnapshot documentSnapshots = task.getResult();
 
+                            if (searchField.getText().length() == 0) {
+                                return;
+                            }
+                            userList.clear();
+                            adapter.clear();
                             for (QueryDocumentSnapshot document : documentSnapshots) {
                                 userList.add(document.getId());
                             }
