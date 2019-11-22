@@ -97,6 +97,7 @@ public class SearchFragment extends Fragment {
                             if (searchField.getText().length() == 0) {
                                 return;
                             }
+
                             userList.clear();
                             adapter.clear();
                             for (QueryDocumentSnapshot document : documentSnapshots) {
@@ -111,6 +112,11 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                if (searchField.getText().length() == 0) {
+                    userList.clear();
+                    adapter.clear();
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
         return view;

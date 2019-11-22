@@ -54,13 +54,61 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("TEST/MoodListFragment", "on create");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        Log.d("TEST/MoodListFragment", "on start");
+        displayType = getArguments().getInt("type");
+
+        if (displayType == OWN_MOODS_LOCKED)
+        {
+            filterFragment.disableRadioButtons();
+        }
+
+        MoodListAdapter newAdapter;
+
+        switch (displayType)
+        {
+            case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
+                newAdapter = new FollowedMoodListAdapter(getContext());
+                break;
+            case OWN_MOODS:         // Show own moods
+            case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
+            default:
+                newAdapter = new OwnMoodListAdapter(getContext());
+                break;
+        }
+
+        setAdapter(newAdapter);
+
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("TEST/MoodListFragment", "on resume");
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("TEST/MoodListFragment", "being destroyed!!!");
+        super.onDestroy();
+    }
+
     /*
-    Intializes the View and adapter
-     */
+                    Intializes the View and adapter
+                     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        Log.d("TEST/MoodListFragment", "onCreateView");
         View view = inflater.inflate(R.layout.mood_list, container, false);
 
         ListView listView = view.findViewById(R.id.ml_listview);
@@ -82,27 +130,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
             }
         });
 
-        Bundle arguments = getArguments();
-
-        displayType = arguments.getInt("type");
-        user = UserManager.getCurrentUser();
-
-        /*
-        Set the adapter to the one specified by displayType
-         */
-        switch (displayType)
-        {
-            case OWN_MOODS:         // Show own moods
-            case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
-                adapter = new OwnMoodListAdapter(getContext());
-                break;
-            case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
-                adapter = new FollowedMoodListAdapter(getContext());
-                break;
-        }
-
-        listView.setAdapter(adapter);
-
         // Create a filter fragment and add it to the view
         // this allows switching between own moods and others' moods
         filterFragment = MoodListFilterFragment.newInstance();
@@ -114,11 +141,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
         filterFragment.addOnFilterListener(this);
 
-        if (displayType == OWN_MOODS_LOCKED)
-        {
-            filterFragment.disableRadioButtons();
-        }
-
         return view;
     }
 
@@ -129,7 +151,10 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      */
     private void setAdapter(MoodListAdapter adapter)
     {
-        this.adapter.destroy();
+        if (this.adapter != null)
+        {
+            this.adapter.removeObservers();
+        }
         this.adapter = adapter;
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
@@ -170,7 +195,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     @Override
     public void onPause()
     {
-        adapter.destroy();
+        Log.d("TEST/MoodListFragment", "on pause");
+        adapter.removeObservers();
         super.onPause();
     }
 

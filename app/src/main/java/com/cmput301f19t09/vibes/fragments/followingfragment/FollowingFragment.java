@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +37,8 @@ public class FollowingFragment extends Fragment {
      * Given a User object (corresponding to the current user), the constructor returns
      * a FollowingFragment that corresponds to the passed in user.
      */
-    public static FollowingFragment newInstance(User user) {
+    public static FollowingFragment newInstance() {
         FollowingFragment followingFragment = new FollowingFragment();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("user", user);
-        followingFragment.setArguments(bundle);
         return followingFragment;
     }
 
@@ -74,7 +73,7 @@ public class FollowingFragment extends Fragment {
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
         // Gets the user object provided
-        User user = (User) getArguments().getSerializable("user");
+        User user = UserManager.getCurrentUser();
 
         // Initializes ArrayList's for the users that are being followed and
         // the users that have requested to follow the current user.

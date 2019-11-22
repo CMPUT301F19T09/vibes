@@ -1,6 +1,5 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -221,7 +221,6 @@ public class ProfileFragment extends Fragment implements Observer {
                         Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
                         user.removeFollowing(otherUser.getUid());
                         updateButton("NONE");
-                        System.out.println(getChildFragmentManager().getFragments());
                         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
                         fragmentTransaction.remove(getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1));
                         fragmentTransaction.commit();
