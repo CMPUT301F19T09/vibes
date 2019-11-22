@@ -325,8 +325,9 @@ public class MainActivity extends FragmentActivity {
 
     public void setSearchFragment()
     {
+        String tag = SearchFragment.class.getSimpleName();
         Fragment instance = SearchFragment.newInstance();
-        setMainFragment(instance, null);
+        setMainFragment(instance, tag);
     }
 
     /*
