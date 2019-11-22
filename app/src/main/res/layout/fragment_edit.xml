@@ -18,6 +18,14 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/top_of_fragment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <GridView
             android:id="@+id/state_grid_view"
             android:layout_width="wrap_content"
@@ -31,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/top_of_fragment"/>
 
         <TextView
             android:id="@+id/state_text_view"

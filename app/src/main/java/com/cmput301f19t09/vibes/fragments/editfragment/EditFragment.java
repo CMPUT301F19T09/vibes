@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +28,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +62,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
@@ -90,6 +94,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView stateTextView;
     private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+
+    private ImageView photoImage;
+    static final int REQUEST_IMAGE_CAPTURE = 2;
 
     private EditText editSituationView;
     private EditText editReasonView;
@@ -250,12 +257,25 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         stateGridView = view.findViewById(R.id.state_grid_view);
         stateGridView.setAdapter(new ImageAdapter(getActivity()));
         stateGridView.setOnItemClickListener(this);
+        stateGridView.getLayoutParams().height = 640;
         stateTextView = view.findViewById(R.id.state_text_view);
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
         editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
+
+        photoImage = view.findViewById(R.id.photo_image);
+        photoImage.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+              if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                  startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+              }
+
+          }
+        });
 
         locationSwitch = view.findViewById(R.id.location_switch);
 
@@ -616,7 +636,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
-                    case Activity.RESULT_OK:
+                    case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
@@ -626,6 +646,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         break;
                 }
                 break;
+            case REQUEST_IMAGE_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    photoImage.setImageBitmap(imageBitmap);
+            }
         }
     }
 
