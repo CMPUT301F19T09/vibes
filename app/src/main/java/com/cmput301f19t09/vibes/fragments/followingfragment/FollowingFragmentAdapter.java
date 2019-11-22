@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,6 +94,25 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
                 ProfileFragment profileFragment;
                 //profileFragment = ProfileFragment.newInstance(user.getUid());
                 ((MainActivity) activity).setProfileFragment(user.getUid());
+            }
+        });
+
+        Button confirmButton = view.findViewById(R.id.btn_confirm);
+        System.out.println(confirmButton);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                User currentUser = UserManager.getCurrentUser();
+                currentUser.acceptRequest(user.getUid());
+            }
+        });
+
+        Button deleteButton = view.findViewById(R.id.btn_delete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                User currentUser = UserManager.getCurrentUser();
+                currentUser.removeRequest(user.getUid());
             }
         });
 
