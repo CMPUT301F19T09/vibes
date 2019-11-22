@@ -1,7 +1,13 @@
 package com.cmput301f19t09.vibes.fragments.profilefragment;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +23,12 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -95,14 +104,6 @@ public class ProfileFragment extends Fragment implements Observer {
         // Gets the current user from UserManager
         user = UserManager.getCurrentUser();
 
-        // TODO: Implementing in last checkpoint
-        followButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "REQUESTED", Toast.LENGTH_LONG).show();
-            }
-        });
-
         // Verifies if user exists
         if (user == null) {
             throw new RuntimeException("[ERROR]: USER IS NOT DEFINED");
@@ -111,44 +112,61 @@ public class ProfileFragment extends Fragment implements Observer {
         // Show's your own profile if other user wasn't passed in, set's the info, and gets the child
         // fragment MoodListFragment of the mood list of the current user
         if (otherUser == null) {
-            followButton.setVisibility(View.INVISIBLE);
-            UserManager.addUserObserver(user.getUid(), this);
-            setInfo(user);
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+            updateButton("OWN");
 
+//            setInfo(user);
+//            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+//            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//            fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
         } else {
             // Checks if the user is following the other user and show their latest mood event by
             // calling the child fragment MoodDetailsFragment
+            UserManager.addUserObserver(otherUser.getUid(), this);
+//            setInfo(otherUser);
             if (user.getFollowingList().contains(otherUser.getUid())) {
-                followButton.setVisibility(View.INVISIBLE);
+                updateButton("FOLLOWING");
 
+//                if (otherUser.isLoaded()) {
+//                    setInfo(otherUser);
+//                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+//                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+//                    transaction.commit();
+//                }
+//
+//                otherUser.addObserver(new Observer() {
+//                    @Override
+//                    public void update(Observable o, Object arg) {
+//                        User u = (User) o;
+//                        ProfileFragment.this.setInfo(u);
+//                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
+//                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+//                        transaction.commit();
+//                    }
+//                });
+//                setInfo(otherUser);
+            } else {
                 if (otherUser.isLoaded()) {
-                    Log.d("TEST", "Other user loaded");
-                    setInfo(otherUser);
-                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
-                    transaction.commit();
-                } else {
-                    Log.d("TEST", "Other user not loaded");
+                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                        updateButton("NONE");
+//                        setInfo(otherUser);
+                    } else {
+                        updateButton("REQUESTED");
+                        setInfo(otherUser);
+                    }
                 }
 
                 otherUser.addObserver(new Observer() {
                     @Override
-                    public void update(Observable o, Object arg) {
-                        User u = (User) o;
-                        ProfileFragment.this.setInfo(u);
-                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
-                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
-                        transaction.commit();
+                    public void update(Observable observable, Object o) {
+                        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                            updateButton("NONE");
+//                            setInfo(otherUser);
+                        } else {
+                            updateButton("REQUESTED");
+//                            setInfo(otherUser);
+                        }
                     }
                 });
-                setInfo(otherUser);
-            } else {
-                // Not following the viewed user shows nothing
-                followButton.setVisibility(View.VISIBLE);
-                setInfo(otherUser);
             }
         }
         return view;
@@ -162,6 +180,87 @@ public class ProfileFragment extends Fragment implements Observer {
     @Override
     public void update(Observable user, Object object) {
         setInfo((User) user);
+    }
+
+    public void updateButton(String mode) {
+        switch (mode) {
+            case "OWN":
+                followButton.setVisibility(View.INVISIBLE);
+                setInfo(user);
+                MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+                FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+                profilePictureImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openFileExplorer();
+                    }
+                });
+                break;
+            case "REQUESTED":
+                followButton.setText("R E Q U E S T E D");
+                followButton.setTextColor(Color.parseColor("#FF6A88"));
+                followButton.setBackgroundResource(R.drawable.rounded_button_outline);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "CANCEL", Toast.LENGTH_LONG).show();
+                        user.removeRequest(otherUser.getUid());
+                        updateButton("NONE");
+                    }
+                });
+                setInfo(otherUser);
+                break;
+            case "FOLLOWING":
+                followButton.setText("U N F O L L O W");
+                followButton.setTextColor(Color.parseColor("#A2A2A2"));
+                followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
+                        user.removeFollowing(otherUser.getUid());
+                        updateButton("NONE");
+                        System.out.println(getChildFragmentManager().getFragments());
+                        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+                        fragmentTransaction.remove(getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1));
+                        fragmentTransaction.commit();
+                    }
+                });
+                if (otherUser.isLoaded()) {
+                    setInfo(otherUser);
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+                    transaction.commit();
+                }
+
+                otherUser.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        User u = (User) o;
+                        ProfileFragment.this.setInfo(u);
+                        FragmentTransaction transaction = ProfileFragment.this.getChildFragmentManager().beginTransaction();
+                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                        transaction.commit();
+                    }
+                });
+                setInfo(otherUser);
+                break;
+            case "NONE":
+                followButton.setText("F O L L O W");
+                followButton.setTextColor(Color.parseColor("#FFFFFF"));
+                followButton.setBackgroundResource(R.drawable.rounded_button);
+                followButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getContext(), "FOLLOW", Toast.LENGTH_LONG).show();
+                        user.addRequest(otherUser.getUid());
+                        updateButton("REQUESTED");
+                    }
+                });
+                setInfo(otherUser);
+                break;
+        }
     }
 
     /**
@@ -187,5 +286,39 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser != null) {
             UserManager.removeUserObservers(otherUser.getUid());
         }
+    }
+
+    public void openFileExplorer() {
+        System.out.println(user.getProfileURL());
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+
+        startActivityForResult(intent, 42);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 42) {
+            Uri uri = null;
+
+            if (data != null) {
+                uri = data.getData();
+                Glide.with(this).load(uri).into(profilePictureImageView);
+                user.changeProfilePicture(uri);
+                System.out.println(user.getProfileURL());
+            }
+        }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getActivity().getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 }

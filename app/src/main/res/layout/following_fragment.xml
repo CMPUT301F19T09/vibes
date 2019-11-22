@@ -1,54 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/followingFragment"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#FF99AC">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Requests"
-            android:textSize="32dp"
-            android:layout_marginLeft="8dp"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/roboto_thin">
-        </TextView>
-
-    </LinearLayout>
-
-    <ListView
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/requested_list">
-    </ListView>
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#FF99AC">
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Following"
-            android:textSize="32dp"
-            android:layout_marginLeft="8dp"
-            android:textColor="@android:color/white"
-            android:fontFamily="@font/roboto_thin">
-        </TextView>
+            android:layout_height="48dp"
+            android:background="#FF99AC">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Requests"
+                android:textSize="32dp"
+                android:layout_marginLeft="8dp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/roboto_thin">
+            </TextView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:id="@+id/requested_list">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#FF99AC">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Following"
+                android:textSize="32dp"
+                android:layout_marginLeft="8dp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/roboto_thin">
+            </TextView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:id="@+id/following_list">
+        </LinearLayout>
     </LinearLayout>
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/following_list">
-    </ListView>
-
-</LinearLayout>
+</ScrollView>

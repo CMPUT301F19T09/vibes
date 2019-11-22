@@ -24,6 +24,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -134,12 +135,14 @@ public class User extends Observable implements Serializable {
 
                 // Gets profile picture from FireBase Storage if not null
                 if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
                     setChanged();
                     notifyObservers();
                 } else {
                     storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             profileURL = uri;
@@ -185,12 +188,14 @@ public class User extends Observable implements Serializable {
 
                 // Gets profile picture from FireBase Storage if not null
                 if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
                     firebaseCallback.onCallback(User.this);
                     loadedData = true;
                 } else {
                     storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             profileURL = uri;
@@ -253,6 +258,104 @@ public class User extends Observable implements Serializable {
         return requestedList;
     }
 
+    public void addRequest(String otherUserUID) {
+        requestedList.add(otherUserUID);
+
+        documentReference = collectionReference.document(uid);
+        documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void addFollowing(String otherUserUID) {
+        if (!followingList.contains(otherUserUID)) {
+            followingList.add(otherUserUID);
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
+    }
+
+    public void removeFollowing(String otherUserUID) {
+        if (followingList.contains(otherUserUID)) {
+            followingList.remove(otherUserUID);
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void acceptRequest(String otherUserUID) {
+        removeRequest(otherUserUID);
+
+        User otherUser = UserManager.getUser(otherUserUID);
+        if (!otherUser.getFollowingList().contains(otherUserUID)) {
+            otherUser.addFollowing(UserManager.getCurrentUserUID());
+        }
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void removeRequest(String otherUserUID) {
+        if (requestedList.contains(otherUserUID)) {
+            requestedList.remove(otherUserUID);
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }
+    }
     /**
      * Checks whether or mot the user already exists by checking UIDs
      * @param userExistListener A Listener to call back when user exists or not
@@ -304,6 +407,7 @@ public class User extends Observable implements Serializable {
                 Long timestamp = (Long) moodEvent.get("timestamp");
                 String username = (String) moodEvent.get("username");
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
+                Location location;
 
                 // Checks if there are 7 fields
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
@@ -325,10 +429,13 @@ public class User extends Observable implements Serializable {
                         ZoneOffset.UTC
                 );
 
-                // Not implemented yet (hardcoded)
-                Location location = new Location("");
-                location.setLatitude(locationGeoPoint.getLatitude());
-                location.setLongitude(locationGeoPoint.getLongitude());
+                if (locationGeoPoint != null) {
+                    location = new Location("");
+                    location.setLatitude(locationGeoPoint.getLatitude());
+                    location.setLongitude(locationGeoPoint.getLongitude());
+                } else {
+                    location = null;
+                }
 
                 MoodEvent event = new MoodEvent(time.toLocalDate(),
                         time.toLocalTime(),
@@ -450,7 +557,12 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
             mood.put("photo", null); // Photo not implemented yet
             mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
             mood.put("reason", moodEvent.getDescription());
@@ -458,7 +570,8 @@ public class User extends Observable implements Serializable {
             mood.put("username", moodEvent.getUser().getUserName());
 
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", FieldValue.arrayUnion(mood))
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -483,7 +596,12 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
             mood.put("photo", null); // Photo not implemented yet
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
@@ -492,7 +610,8 @@ public class User extends Observable implements Serializable {
 
             moods.set(index.intValue(), mood);
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", moods)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -514,7 +633,8 @@ public class User extends Observable implements Serializable {
         } else {
             moods.remove(index.intValue());
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            documentReference.update("moods", moods)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                 }
@@ -526,6 +646,36 @@ public class User extends Observable implements Serializable {
         }
     }
 
+    public void changeProfilePicture(Uri uri) {
+        storageReference = storage.getReference(picturePath);
+        storageReference.putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+        collectionReference = db.collection("users");
+        collectionReference.document(uid).update("profile_picture", picturePath)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
     /**
      * A comparator that is used for sort a list of users by firstName+lastName
      *
@@ -534,7 +684,8 @@ public class User extends Observable implements Serializable {
     public static Comparator<User> sortByName = new Comparator<User>() {
         @Override
         public int compare(User user1, User user2) {
-            return (user1.getFirstName()+user1.getLastName()).compareTo(user2.getFirstName()+user2.getLastName());
+            return (user1.getFirstName() + user1.getLastName())
+                    .compareTo(user2.getFirstName() + user2.getLastName());
         }
     };
 }

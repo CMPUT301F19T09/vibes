@@ -48,16 +48,56 @@ exports.getMostRecentMoodEvent = functions.https.onCall((data, context) =>
                     return null;
                 });
     });
-/*
-exports.sortMoodEvents = functions.firestore.document('users/{USER_UID}')
-    .onWrite((change, context) =>
-    {
-        let uid = context.params.USER_ID;
-        let user = db.collection('users').doc(uid);
 
-        let data = change.after.data();
-        let old_data = change.before.data();
-        
-        for (int i = 0; i < 
+exports.searchUsers = functions.https.onCall((data, context) =>
+{
+    let search = data.search.toLowerCase();
+    let users = db.collection('users').orderBy('first');
+    let uids = [];
+    return users.get().then(snapshot =>
+        {
+            snapshot.forEach(doc =>
+                {
+                    let user = doc.data();
+                    let username = user.username.toLowerCase();
+                    let firstname = user.first.toLowerCase();
+                    let lastname = user.last.toLowerCase();
+                    let fullname = firstname + lastname;
+                    let fullnamespace = firstname + ' ' + lastname;
+
+
+                    if (username.includes(search) ||
+                        firstname.includes(search) ||
+                        lastname.includes(search) ||
+                        fullname.includes(search) ||
+                        fullnamespace.includes(search))
+                    {
+                        console.log('user ' + doc.id + ' => ' + username);
+                        uids.push(doc.id);
+                    }
+                });
+
+            return uids;
+        });
+});
+
+exports.createUser = functions.https.onCall((data, context) =>
+{
+});
+
+exports.deleteUser = functions.https.onCall((data, context) =>
+{
+    let uid = data.uid;
+
+    let users = db.collection('users');
+    let user = users.doc(uid);
+    users.get().then(snapshot =>
+    {
+        snapshot.forEach(doc =>
+        {
+            let other_user = doc.data();
+
+            if (other_user.following_list
+        }
     });
-*/
+});

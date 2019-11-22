@@ -1,9 +1,12 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,10 +44,10 @@ public class FollowingFragment extends Fragment {
     }
 
     // Class variables
-    private ListView followingListView;
+    private LinearLayout followingLinearLayout;
     private FollowingFragmentAdapter followingAdapter;
     private ArrayList<User> followingList;
-    private ListView requestedListView;
+    private LinearLayout requestedLinearLayout;
     private FollowingFragmentAdapter requestedAdapter;
     private ArrayList<User> requestedList;
 
@@ -95,6 +98,7 @@ public class FollowingFragment extends Fragment {
                             // followingList and we notify a change in the data set
                             followingList.add(user);
                             followingAdapter.notifyDataSetChanged();
+                            followingLinearLayout.addView(followingAdapter.getView(followingAdapter.getCount()-1, null ,null));
                         }
                     });
                 }
@@ -110,6 +114,7 @@ public class FollowingFragment extends Fragment {
                             // requestedList and we notify a change in the data set
                             requestedList.add(user);
                             requestedAdapter.notifyDataSetChanged();
+                            requestedLinearLayout.addView(requestedAdapter.getView(requestedAdapter.getCount()-1, null ,null));
                         }
                     });
                 }
@@ -122,8 +127,7 @@ public class FollowingFragment extends Fragment {
         followingAdapter = new FollowingFragmentAdapter(getActivity(), followingList);
         followingAdapter.setLayout(R.layout.following_list);
         followingAdapter.setActivity(getActivity());
-        followingListView = view.findViewById(R.id.following_list);
-        followingListView.setAdapter(followingAdapter);
+        followingLinearLayout = view.findViewById(R.id.following_list);
 
         // requestedAdapter is created and is given the correct layout (followingAdapter
         // is given a different layout). requestedListView is provided a view and has
@@ -131,8 +135,7 @@ public class FollowingFragment extends Fragment {
         requestedAdapter = new FollowingFragmentAdapter(getActivity(), requestedList);
         requestedAdapter.setLayout(R.layout.requested_list);
         requestedAdapter.setActivity(getActivity());
-        requestedListView = view.findViewById(R.id.requested_list);
-        requestedListView.setAdapter(requestedAdapter);
+        requestedLinearLayout = view.findViewById(R.id.requested_list);
 
         return view;
     }
