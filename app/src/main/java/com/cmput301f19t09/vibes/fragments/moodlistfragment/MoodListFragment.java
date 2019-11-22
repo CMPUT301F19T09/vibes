@@ -55,14 +55,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("TEST/MoodListFragment", "on create");
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onStart() {
-        Log.d("TEST/MoodListFragment", "on start");
         displayType = getArguments().getInt("type");
 
         if (displayType == OWN_MOODS_LOCKED)
@@ -91,14 +84,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
     @Override
     public void onResume() {
-        Log.d("TEST/MoodListFragment", "on resume");
+        adapter.initializeData();
         super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d("TEST/MoodListFragment", "being destroyed!!!");
-        super.onDestroy();
     }
 
     /*
@@ -195,7 +182,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     @Override
     public void onPause()
     {
-        Log.d("TEST/MoodListFragment", "on pause");
         adapter.removeObservers();
         super.onPause();
     }

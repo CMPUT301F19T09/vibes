@@ -167,32 +167,17 @@ public class MainActivity extends FragmentActivity {
 
         int entryCount = manager.getBackStackEntryCount();
 
-        /*
-        if (entryCount != 0 &&
-                (manager.getBackStackEntryAt(entryCount - 1).getName() != null &&
-                manager.getBackStackEntryAt(entryCount - 1).getName().equals(tag)))
-        {
-            Log.d(logTag, "Skipping transaction, fragment already shown");
-            return;
-        }
-         */
-
         if (entryCount != 0 &&
                 tag != null &&
                 tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName()))
         {
-            Log.d(logTag, "Skipping transaction, fragment already shown");
             return;
         }
 
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(fragment_root, fragment, tag);
-
         transaction.addToBackStack(tag);
-
         transaction.commit();
-
-        Log.d(logTag, "Currently " + manager.getBackStackEntryCount() + " fragments on the backstack");
     }
 
     private Fragment getFragmentInstance(String tag)
@@ -212,12 +197,7 @@ public class MainActivity extends FragmentActivity {
 
         if (instance == null)
         {
-            Log.d(logTag, "Creating new instance of MoodListFragment");
             instance = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS);
-        }
-        else
-        {
-            Log.d(logTag, "Reusing instance of MoodListFragment");
         }
 
         setMainFragment(instance, tag);
@@ -230,13 +210,7 @@ public class MainActivity extends FragmentActivity {
 
         if (instance == null)
         {
-            Log.d(logTag, "Creating new instance of MapFragment");
             instance = MapFragment.newInstance(getApplicationContext());
-        }
-        else
-        {
-            Log.d(logTag, "Reusing MapFragment");
-
         }
 
         setMainFragment(instance, tag);
@@ -266,18 +240,12 @@ public class MainActivity extends FragmentActivity {
         {
             if (uid == null)
             {
-                Log.d(logTag, "Creating new instance of main user profile");
                 instance = ProfileFragment.newInstance();
             }
             else
             {
-                Log.d(logTag, "Creating new instance of " + uid + " profile");
                 instance = ProfileFragment.newInstance(uid);
             }
-        }
-        else
-        {
-            Log.d(logTag, "Reusing instance of ProfileFragment");
         }
 
         setMainFragment(instance, tag);
@@ -292,15 +260,8 @@ public class MainActivity extends FragmentActivity {
     {
         Fragment instance = null;
 
-        if (index == -1)
-        {
+        if (index == -1) {
             instance = EditFragment.newInstance();
-            Log.d(logTag, "Creating new instance of (add) EditFragment");
-        }
-        else
-        {
-            instance = EditFragment.newInstance(event, index);
-            Log.d(logTag, "Creating new instance of (edit) EditFragment");
         }
 
         setMainFragment(instance, null);
@@ -314,11 +275,6 @@ public class MainActivity extends FragmentActivity {
         if (instance == null)
         {
             instance = FollowingFragment.newInstance();
-            Log.d(logTag, "Creating new instance of FollowingFragment");
-        }
-        else
-        {
-            Log.d(logTag, "Reusing instance of FollowingFragment");
         }
 
         setMainFragment(instance, tag);
@@ -367,7 +323,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
-        Log.d(logTag, manager.getBackStackEntryCount() + " entries in backstack");
 
         if (manager.getBackStackEntryCount() > 1)
         {

@@ -107,7 +107,6 @@ public class MoodListFilterFragment extends Fragment
 
     public void disableRadioButtons()
     {
-        Log.d("TEST/MLFF", "disable buttons");
         View view = getView();
 
         view.findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
