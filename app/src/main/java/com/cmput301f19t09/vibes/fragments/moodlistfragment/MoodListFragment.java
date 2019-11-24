@@ -90,8 +90,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /*
-                    Intializes the View and adapter
-                     */
+    Intializes the View and adapter
+    */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -198,7 +198,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         Log.d("d", "selectedFilterEmotion = " + emotion);
 
         MoodListAdapter newAdapter;
-
         switch (displayType)
         {
             case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
@@ -210,7 +209,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
                 newAdapter = new OwnMoodListAdapter(getContext(), emotion);
                 break;
         }
-
         setAdapter(newAdapter);
         super.onStart();
     }

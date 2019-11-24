@@ -31,10 +31,13 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     private List<String> observed_users;
     private String selectedEmotion;
 
-
     public FollowedMoodListAdapter(Context context, @Nullable String emotion)
     {
         super(context);
+        this.selectedEmotion = emotion;
+        if(emotion != null){
+            Log.d("FollowedMoodListAdapter", "Started with emotion: " + emotion);
+        }
     }
 
     /*
@@ -110,6 +113,12 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             }
         };
 
+        if(this.selectedEmotion != null){
+            if(!user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
+                return;
+            }
+        }
+
         /*
         Iterate through the list and check if an event associated with user exists, if it does,
         replace that event with the most recent MoodEvent
@@ -117,6 +126,14 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         boolean replaced = false;
         for (MoodEvent event : data)
         {
+            Log.d("FollowedMoodListener", "event:"+event.getState().getEmotion() + " , checking with: " + this.selectedEmotion);
+//            if(this.selectedEmotion != null){
+//                if(!(event.getState().getEmotion().equals(this.selectedEmotion))){
+//
+//                }
+//            }
+//            data.remove(event);
+
             if (event.getUser().getUid().equals(user.getUid()))
             {
                 clear();
@@ -126,24 +143,20 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
                     if(user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
                         // Selected emotion
                         data.add(user.getMostRecentMoodEvent());
-                        Log.d("OwnMoodListAdapter", "Event is added");
+                        Log.d("FollowedMoodListener", "Event is added");
                     }else{
                         // Don't add
                     }
                 }else{
                     // There is no filtering emotion
                     data.add(user.getMostRecentMoodEvent());
-
                 }
+
                 //Collections.sort(data);
                 data.sort(reverse_chronolgical);
-
                 addAll(data);
-
                 replaced = true;
-
                 Log.d("TEST", "Replaced the event");
-
                 break;
             }
         }
@@ -154,8 +167,19 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         if (! replaced)
         {
             clear();
-
-            data.add(user.getMostRecentMoodEvent());
+            if(this.selectedEmotion != null){
+                if(user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
+                    // Selected emotion
+                    data.add(user.getMostRecentMoodEvent());
+                    Log.d("FollowedMoodListener", "Event is added");
+                }else{
+                    // Don't add
+                }
+            }else{
+                // There is no filtering emotion
+                data.add(user.getMostRecentMoodEvent());
+            }
+//            data.add(user.getMostRecentMoodEvent());
             data.sort(reverse_chronolgical);
             //Collections.sort(data);
 
