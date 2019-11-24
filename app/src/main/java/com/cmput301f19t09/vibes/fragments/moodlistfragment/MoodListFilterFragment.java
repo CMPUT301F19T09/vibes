@@ -126,7 +126,7 @@ public class MoodListFilterFragment extends Fragment
                 {
                     for (MoodFilterListener listener : listeners)
                     {
-                        listener.showOwnMoods();
+                        listener.showOwnMoods(null);
                     }
                 }
             });

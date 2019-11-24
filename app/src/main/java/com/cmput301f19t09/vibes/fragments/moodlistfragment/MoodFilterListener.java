@@ -1,5 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 /*
@@ -8,7 +10,7 @@ should possibly be replaced with observers
  */
 public interface MoodFilterListener extends Serializable
 {
-    void showOwnMoods();
+    void showOwnMoods(@Nullable String emotion);
     void showFollowedMoods();
 
     void addFilter(int filter);
