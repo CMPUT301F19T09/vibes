@@ -66,3 +66,30 @@ exports.searchUsers = functions.https.onCall((data, context) =>
             return uids;
         });
 });
+
+exports.deleteUser = functions.https.onCall((data, context) =>
+{
+    let uid = data.uid;
+
+    //Remove references to UID
+    db.collection('users').get().then(snapshot => {
+        if (snapshot.empty) {
+            console.log('Users snapshot is empty');
+        }
+
+        snapshot.forEach(doc => {
+            let followed = doc.data().following_list;
+            let requests = doc.data().requested_list;
+
+            if ( followed.includes(uid) )
+            {
+                console.log(doc.data().username + ' follows user');
+            }
+
+            if ( requests.includes(uid) )
+            {
+                console.log(doc.data().username + ' has a request from user');
+            }
+        });
+    });
+});
