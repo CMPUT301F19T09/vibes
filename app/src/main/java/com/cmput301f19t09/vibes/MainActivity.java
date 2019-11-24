@@ -260,8 +260,10 @@ public class MainActivity extends FragmentActivity {
     {
         Fragment instance = null;
 
-        if (index == -1) {
+        if (event == null) {
             instance = EditFragment.newInstance();
+        } else {
+            instance = EditFragment.newInstance(event, index);
         }
 
         setMainFragment(instance, null);
