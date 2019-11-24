@@ -35,6 +35,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     MoodListAdapter adapter;
     private int displayType;
     private String selectedFilterEmotion;
+    private int filter;
     private User user;
     private MoodListFilterFragment filterFragment;
 
@@ -191,18 +192,18 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
 
-//    public void addFilter(int filter)
-//    {
-//        this.filter |= filter;
-//    }
-//
-//    public void removeFilter(int filter)
-//    {
-//        this.filter ^= filter;
-//    }
-//
-//    public void clearFilter()
-//    {
-//        this.filter &= 0;
-//    }
+    public void addFilter(int filter)
+    {
+        this.filter |= filter;
+    }
+
+    public void removeFilter(int filter)
+    {
+        this.filter ^= filter;
+    }
+
+    public void clearFilter()
+    {
+        this.filter &= 0;
+    }
 }

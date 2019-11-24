@@ -8,10 +8,10 @@ should possibly be replaced with observers
  */
 public interface MoodFilterListener extends Serializable
 {
-//    void showOwnMoods();
-//    void showFollowedMoods();
-//
-//    void addFilter(int filter);
-//    void removeFilter(int filter);
-//    void clearFilter();
+    void showOwnMoods();
+    void showFollowedMoods();
+
+    void addFilter(int filter);
+    void removeFilter(int filter);
+    void clearFilter();
 }

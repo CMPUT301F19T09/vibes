@@ -161,8 +161,9 @@ public class MoodListFilterFragment extends Fragment
     public void filter(String emotion){
         // Reach MapFragment
         FragmentManager manager = ((MainActivity)getActivity()).getSupportFragmentManager();
-        Fragment instance = manager.findFragmentByTag(MoodListFragment.class.getSimpleName());
-
+        MoodListFragment instance = (MoodListFragment)manager.findFragmentByTag(MoodListFragment.class.getSimpleName());
+        Log.d("MoodListFilterFragment", "");
+        instance.setSelectedFilterEmotion(emotion);
 
     }
 
