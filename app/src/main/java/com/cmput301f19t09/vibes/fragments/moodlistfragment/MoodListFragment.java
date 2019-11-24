@@ -187,6 +187,12 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
+    /**
+     * Setter for selectedFilterEmotion,
+     * it sets the current filter
+     * to the emotion state string.
+     * @param emotion
+     */
     public void setSelectedFilterEmotion(String emotion){
         this.selectedFilterEmotion = emotion;
     }
