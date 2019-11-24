@@ -3,6 +3,8 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -27,8 +29,10 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 
     // Maintain a list of the UIDs of users that this user observes
     private List<String> observed_users;
+    private String selectedEmotion;
 
-    public FollowedMoodListAdapter(Context context)
+
+    public FollowedMoodListAdapter(Context context, @Nullable String emotion)
     {
         super(context);
     }
@@ -66,6 +70,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
                 create an Observer that updates the entry for that user whenever that User is changed
                  */
                 User user = UserManager.getUser(followed_user);
+
                 observed_users.add(followed_user);
 
                 /*
@@ -112,14 +117,24 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         boolean replaced = false;
         for (MoodEvent event : data)
         {
-
-
             if (event.getUser().getUid().equals(user.getUid()))
             {
                 clear();
 
                 data.remove(event);
-                data.add(user.getMostRecentMoodEvent());
+                if(this.selectedEmotion != null){
+                    if(user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
+                        // Selected emotion
+                        data.add(user.getMostRecentMoodEvent());
+                        Log.d("OwnMoodListAdapter", "Event is added");
+                    }else{
+                        // Don't add
+                    }
+                }else{
+                    // There is no filtering emotion
+                    data.add(user.getMostRecentMoodEvent());
+
+                }
                 //Collections.sort(data);
                 data.sort(reverse_chronolgical);
 

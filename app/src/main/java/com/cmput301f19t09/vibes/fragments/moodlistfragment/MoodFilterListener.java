@@ -11,7 +11,7 @@ should possibly be replaced with observers
 public interface MoodFilterListener extends Serializable
 {
     void showOwnMoods(@Nullable String emotion);
-    void showFollowedMoods();
+    void showFollowedMoods(@Nullable String emotion);
 
     void addFilter(int filter);
     void removeFilter(int filter);
