@@ -71,13 +71,10 @@ exports.deleteUser = functions.https.onCall((data, context) =>
 {
     let uid = data.uid;
 
-    //Remove references to UID
+    console.log('searching for references to ' + uid);
     db.collection('users').get().then(snapshot => {
-        if (snapshot.empty) {
-            console.log('Users snapshot is empty');
-        }
-
         snapshot.forEach(doc => {
+            console.log('checking ' + doc.data().username);
             let followed = doc.data().following_list;
             let requests = doc.data().requested_list;
 
