@@ -34,12 +34,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.BuildConfig;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -676,11 +678,23 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 break;
             case REQUEST_IMAGE_CAPTURE:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK && data != null) {
                     Bundle extras = data.getExtras();
                     imageBitmap = (Bitmap) extras.get("data");
                     photoImage.setImageBitmap(imageBitmap);
-            }
+                }
+                break;
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK && data != null) {
+                    Uri uri = data.getData();
+                    try {
+                        imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    photoImage.setImageBitmap(imageBitmap);
+                }
+                break;
         }
     }
 
