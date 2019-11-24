@@ -277,6 +277,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
           @Override
           public void onClick(View v) {
               Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
               if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                   startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
               }
@@ -284,6 +285,18 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
           }
         });
         galleryButton = view.findViewById(R.id.gallery_button);
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                galleryIntent.setType("image/*");
+
+                if (galleryIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(galleryIntent, REQUEST_IMAGE_GALLERY);
+                }
+            }
+        });
         clearButton = view.findViewById(R.id.clear_photo_button);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
