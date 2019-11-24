@@ -70,7 +70,6 @@ public class MoodListFilterFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                // Open filter dialog
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 builderSingle.setTitle("Select a mood filter:");
 
