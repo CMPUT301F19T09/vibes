@@ -5,12 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/filter_button"
+        android:layout_width="40dp"
         android:layout_height="0dp"
+        android:background="#00FFFFFF"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_filter_list_black_36dp"
+        tools:srcCompat="@drawable/ic_filter_list_black_36dp" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,18 +33,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/filter_button"
-        app:layout_constraintStart_toEndOf="@+id/view"
+        app:layout_constraintStart_toEndOf="@+id/space"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/filter_button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#00FFFFFF"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_filter_list_black_36dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

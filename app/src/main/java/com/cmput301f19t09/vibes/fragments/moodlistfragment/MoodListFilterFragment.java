@@ -54,10 +54,12 @@ public class MoodListFilterFragment extends Fragment
         view = inflater.inflate(R.layout.mood_list_filter, container, false);
 
         View adapterSelectorLayout = view.findViewById(R.id.adapter_selector);
+
         RadioButton ownMoodsButton = adapterSelectorLayout.findViewById(R.id.radioYou);
         RadioButton followedMoodsButton = adapterSelectorLayout.findViewById(R.id.radioFollowed);
-
         ImageButton filterButton = view.findViewById(R.id.filter_button);
+
+        filterButton.setBackgroundResource(R.drawable.ic_filter_list_black_36dp);
 
         //TODO: Open the filter dialog
         filterButton.setOnClickListener(new View.OnClickListener()
@@ -68,48 +70,46 @@ public class MoodListFilterFragment extends Fragment
                 // Open filter dialog
             }
         });
-        ownMoodsButton.setOnClickListener(new View.OnClickListener()
+
+        /*
+        If it isnt locked, add listeners to the radio buttons
+         */
+        if (!locked)
         {
-            @Override
-            public void onClick(View v)
+            ownMoodsButton.setOnClickListener(new View.OnClickListener()
             {
-                for (MoodFilterListener listener : listeners)
+                @Override
+                public void onClick(View v)
                 {
-                    listener.showOwnMoods();
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showOwnMoods();
+                    }
                 }
-            }
-        });
+            });
 
-        followedMoodsButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
+            followedMoodsButton.setOnClickListener(new View.OnClickListener()
             {
-                for (MoodFilterListener listener : listeners)
+                @Override
+                public void onClick(View v)
                 {
-                    listener.showFollowedMoods();
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showFollowedMoods();
+                    }
                 }
-            }
-        });
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-    {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (locked)
-        {
-            getView().findViewById(R.id.radioGroup).setVisibility(View.GONE);
+            });
         }
+        else
+        {
+            view.findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
+        }
+
+        return view;
     }
 
     public void disableRadioButtons()
     {
-        View view = getView();
-
-        view.findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
         locked = true;
     }
 
