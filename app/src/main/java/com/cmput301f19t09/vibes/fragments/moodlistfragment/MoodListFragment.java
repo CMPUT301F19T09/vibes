@@ -186,22 +186,19 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
-    /*
-    Set the filter for mood types
-    TODO: Create docs, but this stuff isn't implemented yet
-     */
-    public void addFilter(int filter)
-    {
-        this.filter |= filter;
-    }
 
-    public void removeFilter(int filter)
-    {
-        this.filter ^= filter;
-    }
-
-    public void clearFilter()
-    {
-        this.filter &= 0;
-    }
+//    public void addFilter(int filter)
+//    {
+//        this.filter |= filter;
+//    }
+//
+//    public void removeFilter(int filter)
+//    {
+//        this.filter ^= filter;
+//    }
+//
+//    public void clearFilter()
+//    {
+//        this.filter &= 0;
+//    }
 }

@@ -14,10 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.dialogs.MoodFilterDialog;
+import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +151,18 @@ public class MoodListFilterFragment extends Fragment
         return view;
     }
 
+    /**
+     * The purpose of this function:
+     * -    After selecting an emotion with the filter dialog,
+     * This function is called to start the filterization of the
+     * mood list in the main activity.
+     * @param emotion
+     */
     public void filter(String emotion){
+        // Reach MapFragment
+        FragmentManager manager = ((MainActivity)getActivity()).getSupportFragmentManager();
+        Fragment instance = manager.findFragmentByTag(MoodListFragment.class.getSimpleName());
+
 
     }
 
