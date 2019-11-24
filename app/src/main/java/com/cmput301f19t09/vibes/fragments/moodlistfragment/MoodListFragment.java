@@ -195,6 +195,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      */
     public void setSelectedFilterEmotion(String emotion){
         this.selectedFilterEmotion = emotion;
+        Log.d("d", "selectedFilterEmotion = " + emotion);
     }
 
 

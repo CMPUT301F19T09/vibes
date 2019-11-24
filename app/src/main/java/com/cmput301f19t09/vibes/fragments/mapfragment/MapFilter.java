@@ -72,7 +72,7 @@ public class MapFilter extends Fragment {
                     // Setting it to be mine if it is everyone
                     //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
                     selectedRadioBox = SHOW_MINE;
-                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE);
+                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE, null);
                 }
             }
         });
@@ -84,7 +84,7 @@ public class MapFilter extends Fragment {
                     // Setting it to be everyone if it is only mine.
                     //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
                     selectedRadioBox = SHOW_EVERYONE;
-                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE);
+                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE, null);
                 }
             }
         });
