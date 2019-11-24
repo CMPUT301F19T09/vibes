@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,8 +96,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
 
+    private Bitmap imageBitmap;
     private ImageView photoImage;
+    private Button captureButton;
     static final int REQUEST_IMAGE_CAPTURE = 2;
+    private Button galleryButton;
+    static final int REQUEST_IMAGE_GALLERY = 3;
+    private Button clearButton;
 
     private EditText editSituationView;
     private EditText editReasonView;
@@ -266,7 +272,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         photoImage = view.findViewById(R.id.photo_image);
-        photoImage.setOnClickListener(new View.OnClickListener() {
+        captureButton = view.findViewById(R.id.capture_button);
+        captureButton.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
               Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -275,6 +282,15 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
               }
 
           }
+        });
+        galleryButton = view.findViewById(R.id.gallery_button);
+        clearButton = view.findViewById(R.id.clear_photo_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageBitmap = null;
+                photoImage.setImageResource(R.drawable.camera_image);
+            }
         });
 
         locationSwitch = view.findViewById(R.id.location_switch);
@@ -649,7 +665,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK) {
                     Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    imageBitmap = (Bitmap) extras.get("data");
                     photoImage.setImageBitmap(imageBitmap);
             }
         }
@@ -707,6 +723,4 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private void stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
-
-
 }

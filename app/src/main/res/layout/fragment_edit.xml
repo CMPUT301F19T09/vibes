@@ -96,14 +96,58 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageView
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reason_container"
-            android:id="@+id/photo_image"
-            android:src="@drawable/camera_image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"/>
+        <LinearLayout
+            android:id="@+id/photo_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/reason_container">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/photo_image"
+                android:id="@+id/photo_buttons"
+                android:weightSum="3">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/capture_button"
+                    android:text="Camera"
+                    android:layout_weight="1">
+                </Button>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gallery_button"
+                    android:text="Gallery"
+                    android:layout_weight="1">
+                </Button>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/clear_photo_button"
+                    android:text="Clear"
+                    android:layout_weight="1">
+                </Button>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/photo_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/camera_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/photo_buttons" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/location_text_view"
@@ -117,7 +161,7 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_image" />
+            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
 
         <Switch
             android:id="@+id/location_switch"
@@ -128,7 +172,7 @@
             android:fontFamily="@font/roboto_regular"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_image" />
+            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
 
         <TextView
             android:id="@+id/date_text_view"
