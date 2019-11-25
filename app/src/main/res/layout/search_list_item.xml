@@ -60,7 +60,7 @@
                 android:id="@+id/search_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_thin"
+                android:fontFamily="@font/roboto_regular"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
