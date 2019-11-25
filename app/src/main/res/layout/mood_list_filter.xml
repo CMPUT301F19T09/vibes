@@ -7,16 +7,17 @@
 
     <ImageButton
         android:id="@+id/filter_button"
-        android:layout_width="40dp"
+        android:layout_width="32dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
         android:background="#00FFFFFF"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_filter_list_black_36dp"
-        tools:srcCompat="@drawable/ic_filter_list_black_36dp" />
+        app:srcCompat="@drawable/ic_filter_none_black_24dp"
+        tools:srcCompat="@drawable/ic_filter_none_black_24dp" />
 
     <Space
         android:id="@+id/space"
