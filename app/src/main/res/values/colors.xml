@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#D81B60</color>
     <color name="highlight">#313233</color>
+    <color name="moodListBackground">#F5F5F5</color>
+    <color name="moodItemShadow">#E9E9E9</color>
 </resources>

@@ -20,6 +20,7 @@ import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.dialogs.MoodFilterDialog;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
+import com.cmput301f19t09.vibes.models.EmotionalState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +63,13 @@ public class MoodListFilterFragment extends Fragment
 
         RadioButton ownMoodsButton = adapterSelectorLayout.findViewById(R.id.radioYou);
         RadioButton followedMoodsButton = adapterSelectorLayout.findViewById(R.id.radioFollowed);
+
+        ownMoodsButton.setSelected(true);
+        followedMoodsButton.setSelected(false);
+
         ImageButton filterButton = view.findViewById(R.id.filter_button);
 
-        filterButton.setBackgroundResource(R.drawable.ic_filter_list_black_36dp);
+        filterButton.setBackgroundResource(R.drawable.ic_filter_none_black_24dp);
 
         filterButton.setOnClickListener(new View.OnClickListener()
         {
@@ -75,15 +80,18 @@ public class MoodListFilterFragment extends Fragment
                 builderSingle.setTitle("Select a mood filter:");
 
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
-                arrayAdapter.add("HAPPINESS");
-                arrayAdapter.add("TRUST");
-                arrayAdapter.add("FEAR");
-                arrayAdapter.add("SURPRISE");
-                arrayAdapter.add("SADNESS");
-                arrayAdapter.add("DISGUST");
-                arrayAdapter.add("ANGER");
-                arrayAdapter.add("ANTICIPATION");
-                arrayAdapter.add("LOVE");
+
+                List<String> keys = EmotionalState.getListOfKeys();
+                for (int i = 0; i < keys.size(); i++)
+                {
+                    String replacement = keys.get(i);
+                    replacement = replacement.substring(0, 1) + replacement.substring(1, replacement.length()).toLowerCase();
+                    keys.set(i, replacement);
+                }
+
+                arrayAdapter.addAll(keys);
+                final String noFilter = "No Filter";
+                arrayAdapter.add(noFilter);
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -95,18 +103,25 @@ public class MoodListFilterFragment extends Fragment
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        final String strName = arrayAdapter.getItem(which);
+                        String strName = arrayAdapter.getItem(which);
+                        strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
+                        /*
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your filter is");
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog,int which) {
+                                if (strName.equals("No Filter")) strName = null;
                                 filter(strName);
                                 dialog.dismiss();
                             }
                         });
                         builderInner.show();
+
+                         */
+
+                        filter(strName);
                     }
                 });
                 builderSingle.show();
