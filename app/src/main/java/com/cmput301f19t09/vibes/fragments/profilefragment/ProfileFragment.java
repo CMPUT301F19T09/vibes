@@ -117,6 +117,9 @@ public class ProfileFragment extends Fragment implements Observer {
 
                 UserManager.addUserObserver(otherUser.getUid(), this);
                 if (user.getFollowingList().contains(otherUser.getUid())) {
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
+                    transaction.commit();
                     updateButton("FOLLOWING");
                 } else {
                     if (otherUser.isLoaded()) {
@@ -160,7 +163,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setVisibility(View.INVISIBLE);
                 setInfo(user);
                 MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
-                fragmentTransaction.add(R.id.user_mood_list, moodListFragment).commit();
+                fragmentTransaction.add(R.id.user_mood_list, moodListFragment, MoodListFragment.class.getSimpleName()).commit();
                 profilePictureImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -191,8 +194,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 otherUser.addObserver(new Observer() {
                     @Override
                     public void update(Observable observable, Object o) {
-                        User u = (User) o;
-                        ProfileFragment.this.setInfo(u);
+                        setInfo(otherUser);
                     }
                 });
 
@@ -210,14 +212,16 @@ public class ProfileFragment extends Fragment implements Observer {
                         user.removeFollowing(otherUser.getUid());
                         updateButton("NONE");
                         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        transaction.remove(getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1));
-                        transaction.commit();
+                        if (getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()) != null) {
+                            transaction.remove(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+                            transaction.commit();
+                        }
                     }
                 });
 
                 if (otherUser.isLoaded()) {
                     setInfo(otherUser);
-                    fragmentTransaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()));
+                    fragmentTransaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
                     fragmentTransaction.commit();
                 }
 
@@ -228,7 +232,7 @@ public class ProfileFragment extends Fragment implements Observer {
                         User u = (User) o;
                         ProfileFragment.this.setInfo(u);
                         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()));
+                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
                         transaction.commit();
                     }
                 });
@@ -247,8 +251,10 @@ public class ProfileFragment extends Fragment implements Observer {
                         otherUser.addRequest(user.getUid());
                         updateButton("REQUESTED");
                         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        transaction.remove(getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1));
-                        transaction.commit();
+                        if (getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()) != null) {
+                            transaction.remove(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+                            transaction.commit();
+                        }
                     }
                 });
 
@@ -260,8 +266,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 otherUser.addObserver(new Observer() {
                     @Override
                     public void update(Observable observable, Object o) {
-                        User u = (User) o;
-                        ProfileFragment.this.setInfo(u);
+                        setInfo(otherUser);
                     }
                 });
 
