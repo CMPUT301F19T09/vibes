@@ -9,7 +9,6 @@ import android.widget.RadioButton;
 
 import androidx.fragment.app.Fragment;
 
-import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 
 public class MapFilter extends Fragment {
