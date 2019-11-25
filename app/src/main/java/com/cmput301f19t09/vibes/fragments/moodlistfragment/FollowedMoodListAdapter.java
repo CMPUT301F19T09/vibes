@@ -19,8 +19,7 @@ import java.util.Observer;
 Subclass of MoodListAdapter, this loads the each of the most recent MoodEvents of the User that the
 current user follows
  */
-public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
-{
+public class FollowedMoodListAdapter extends MoodListAdapter implements Observer {
     interface FollowedUserListener extends Observer
     {
         @Override
@@ -211,6 +210,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         super.removeObservers();
     }
 
+    /**
+     * Set the filter of the followed
+     * mood list to only show the selected mood.
+     * @param filter
+     */
     @Override
     public void setFilter(String filter) {
         this.filterChanged = true;

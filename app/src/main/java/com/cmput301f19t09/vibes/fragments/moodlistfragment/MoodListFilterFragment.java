@@ -71,7 +71,6 @@ public class MoodListFilterFragment extends Fragment
 
         filterButton.setBackgroundResource(R.drawable.ic_filter_none_black_24dp);
 
-        //TODO: Open the filter dialog
         filterButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -130,7 +129,7 @@ public class MoodListFilterFragment extends Fragment
         });
 
         /*
-        If it isnt locked, add listeners to the radio buttons
+        If it isn't locked, add listeners to the radio buttons
          */
         if (!locked)
         {
