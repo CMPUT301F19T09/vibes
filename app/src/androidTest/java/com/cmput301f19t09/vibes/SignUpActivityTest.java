@@ -48,10 +48,10 @@ public class SignUpActivityTest {
     @Test
     public void signUpUser() throws InterruptedException {
         navigateToSignUp();
-        onView(withId(R.id.username_field)).perform(typeText("signupuser"));
-        onView(withId(R.id.email_field)).perform(typeText("signup@example.com"));
-        onView(withId(R.id.first_name_field)).perform(typeText("SignupFN"));
-        onView(withId(R.id.last_name_field)).perform(typeText("SignupLN"));
+        onView(withId(R.id.username_field)).perform(typeText("?signupuser"));
+        onView(withId(R.id.email_field)).perform(typeText("?signup@example.com"));
+        onView(withId(R.id.first_name_field)).perform(typeText("?SignupFN"));
+        onView(withId(R.id.last_name_field)).perform(typeText("?SignupLN"));
         onView(withId(R.id.password_field)).perform(typeText("000000"));
         closeSoftKeyboard();
         onView(withId(R.id.confirm_password_field)).perform(typeText("000000"));
@@ -61,10 +61,10 @@ public class SignUpActivityTest {
         Thread.sleep(5000); // delay to let sign up complete
         onView(withId(R.id.login_activity)).check(matches(isDisplayed()));
 
-        Login.setUp("signup@example.com", "000000");
+        Login.setUp("?signup@example.com", "000000");
         Thread.sleep(1000); // delay to load anything in the background
 
-        // use firebase function to delete the newly creeated user so that we can rerun the test
+        // use firebase function to delete the newly created user so that we can rerun the test
         DeleteUser.deleteUser(UserManager.getCurrentUserUID());
     }
 

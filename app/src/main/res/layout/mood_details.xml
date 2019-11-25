@@ -55,7 +55,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/user_image"
         app:layout_constraintStart_toStartOf="@+id/full_name"
-        tools:text="Want to kill myself!" />
+        tools:text="Want to tickle myself!" />
 
     <ImageView
         android:id="@+id/emotion_image"

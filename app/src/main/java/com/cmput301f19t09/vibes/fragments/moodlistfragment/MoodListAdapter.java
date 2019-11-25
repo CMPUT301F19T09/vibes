@@ -138,9 +138,13 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         return item;
     }
 
+    public List<MoodEvent> getData() {
+        return data;
+    }
+
     /*
-    Add this class as an observer to the main user and call the initializeData fucntion
-     */
+        Add this class as an observer to the main user and call the initializeData fucntion
+         */
     private void initialize()
     {
         UserManager.addUserObserver(user.getUid(), this);

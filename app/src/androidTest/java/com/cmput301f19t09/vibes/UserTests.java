@@ -1,16 +1,13 @@
 package com.cmput301f19t09.vibes;
 
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
 
-import androidx.test.espresso.assertion.ViewAssertions;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -27,6 +24,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 
@@ -47,8 +45,97 @@ public class UserTests {
     @Rule
     public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+
     /**
-     * Login to the default test account.
+     * Must be signed in before calling. Populates the mood list with 3 mood events.
+     */
+    public static void createMoodList() throws InterruptedException {
+        try {
+            Thread.sleep(100);
+            onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+            onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+        } catch (NoMatchingViewException e) {
+            Log.d("TESTERROR", e.toString());
+            return;
+        }
+
+        Thread.sleep(200);
+        int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
+        Log.d("MOODLISTSETUPCOUNT", "start: " + start);
+
+        // navigate to EditFragment
+        onView(withId(R.id.main_add_button)).perform(click());
+        // create a new MoodEvent - 1
+        // select LOVE
+        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(2).perform(click());
+        onView(withId(R.id.button_submit_view)).perform(click());
+        Thread.sleep(100);
+
+        // repeat to create two more MoodEvents - 2
+        // navigate to EditFragment
+        onView(withId(R.id.main_add_button)).perform(click());
+        // create a new MoodEvent
+        // select SURPRISE
+        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(3).perform(click());
+        onView(withId(R.id.edit_reason_view)).perform(typeText("2nd test moodevent"));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_submit_view)).perform(click());
+
+        Thread.sleep(100);
+        // 3
+        // navigate to EditFragment
+        onView(withId(R.id.main_add_button)).perform(click());
+        // create a new MoodEvent
+        // select TRUST
+        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(6).perform(click());
+        onView(withId(R.id.edit_reason_view)).perform(typeText("thisistwentycharacte"));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_submit_view)).perform(click());
+
+        // confirm we are back with MoodListFragment displayed
+        Thread.sleep(100);
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+
+        // confirm we are back with MoodListFragment displayed
+        Thread.sleep(100);
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+
+        // confirm that the number of mood events in the list is the same as when we started the test
+        Thread.sleep(200);
+        int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
+        Log.d("MOODLISTCOUNT", "start: " + end);
+        assertEquals(start + 3, end);
+    }
+
+    /**
+     * Must be signed in before calling. Deletes the specified number of mood events from MoodList.
+     *
+     * @param   num
+     *      number of mood events to delete
+     */
+    public static void deleteMoods(int num) throws InterruptedException {
+        try {
+            Thread.sleep(100);
+            onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+            onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+        } catch (NoMatchingViewException e) {
+            Log.d("TESTERROR", e.toString());
+            return;
+        }
+
+        // select each MoodEvent and delete them
+        for (int i = 0; i < num; i ++) {
+            onData(anything()).inAdapterView(withId(R.id.ml_listview)).atPosition(0).perform(click());
+            onView(withId(R.id.mood_details_root)).check(matches(isDisplayed()));
+            onView(withId(R.id.delete_button)).perform(click());
+            Thread.sleep(200);
+        }
+    }
+
+    /**
+     * Login to ?userhelper test account.
      */
     @Before
     public void setUp() {
@@ -67,16 +154,18 @@ public class UserTests {
     @Test
     public void testAddRemoveMoodEvent() throws InterruptedException {
         // check that MainActivity is displayed for navigation and that MoodListFragment is displayed
+        Thread.sleep(100);
         onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
         onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
 
-        Thread.sleep(200);
+        Thread.sleep(100);
         int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + start);
 
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
+        Thread.sleep(100);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent - 1
@@ -85,7 +174,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that a mood was added to the mood list
-        Thread.sleep(200);
+        Thread.sleep(100);
         int intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 1, intermediate);
@@ -94,6 +183,7 @@ public class UserTests {
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
+        Thread.sleep(100);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent
@@ -104,7 +194,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that another mood was added to the mood list
-        Thread.sleep(200);
+        Thread.sleep(100);
         intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 2, intermediate);
@@ -113,6 +203,7 @@ public class UserTests {
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
+        Thread.sleep(100);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent
@@ -123,7 +214,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that another mood was added to the mood list
-        Thread.sleep(200);
+        Thread.sleep(100);
         intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 3, intermediate);
@@ -137,17 +228,56 @@ public class UserTests {
             onData(anything()).inAdapterView(withId(R.id.ml_listview)).atPosition(0).perform(click());
             onView(withId(R.id.mood_details_root)).check(matches(isDisplayed()));
             onView(withId(R.id.delete_button)).perform(click());
-            Thread.sleep(100);
+            Thread.sleep(200);
         }
 
         // confirm we are back with MoodListFragment displayed
+        Thread.sleep(100);
         onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
         onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
 
         // confirm that the number of mood events in the list is the same as when we started the test
-        Thread.sleep(200);
+        Thread.sleep(100);
         int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + end);
         assertEquals(start, end);
+    }
+
+    /**
+     * Creates three new mood events and checks whether the latest mood is the last created.
+     * Confirms that the details of the mood event match what was provided when created - therefore
+     * confirms functionality of User.addMood. Tests the layout of MoodDetailsFragment.
+     */
+    @Test
+    public void testGetMostRecent() throws InterruptedException {
+        createMoodList();
+        Thread.sleep(100);
+        // confirm we are back with MoodListFragment displayed
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+
+        // click on the latest item in the list
+        Thread.sleep(100);
+        onData(anything()).inAdapterView(withId(R.id.ml_listview)).atPosition(0).perform(click());
+
+        Thread.sleep(100);
+        onView(withId(R.id.mood_details_root)).check(matches(isDisplayed()));
+
+        // the item display should match the last one we added so it should be the TRUST mood event
+        onView(withId(R.id.user_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.emotion_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.full_name)).check(matches(withText("?user ?helper")));
+        onView(withId(R.id.username)).check(matches(withText("?userhelper")));
+        onView(withId(R.id.reason)).check(matches(withText("thisistwentycharacte")));
+
+        // check remaining details fragment layout elements
+        onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirm_button)).check(matches(isDisplayed()));
+
+        // return to ListView and delete the created events
+        onView(withId(R.id.confirm_button)).perform(click());
+        Thread.sleep(100);
+        deleteMoods(3);
     }
 }

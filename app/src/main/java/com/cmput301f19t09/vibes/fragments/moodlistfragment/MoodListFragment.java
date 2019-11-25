@@ -148,9 +148,13 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         adapter.refreshData();
     }
 
+    public MoodListAdapter getAdapter() {
+        return adapter;
+    }
+
     /*
-    Set the adapter to an OwnMoodListAdapter
-     */
+        Set the adapter to an OwnMoodListAdapter
+         */
     public void showOwnMoods()
     {
         if (displayType != OWN_MOODS)
