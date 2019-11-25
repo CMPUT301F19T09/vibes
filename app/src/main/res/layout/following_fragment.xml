@@ -4,7 +4,8 @@
     android:id="@+id/followingFragment"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="fill_parent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,12 +29,12 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/requested_list">
-        </LinearLayout>
+        </ListView>
 
         <LinearLayout
             android:layout_marginTop="8dp"
@@ -53,11 +54,11 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/following_list">
-        </LinearLayout>
+        </ListView>
     </LinearLayout>
 </ScrollView>
