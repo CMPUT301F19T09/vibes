@@ -12,3 +12,5 @@ apikey.properties
 app/google-services.json
 app/.idea/workspace.xml
 app/local.properties
+/functions/package.json
+/functions/package-lock.json

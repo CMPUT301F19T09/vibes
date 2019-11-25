@@ -20,6 +20,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -566,6 +567,36 @@ public class User extends Observable implements Serializable {
                 }
             });
         }
+    }
+
+    public void changeProfilePicture(Uri uri) {
+        storageReference = storage.getReference(picturePath);
+        storageReference.putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+        collectionReference = db.collection("users");
+        collectionReference.document(uid).update("profile_picture", picturePath)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
 
     /**
