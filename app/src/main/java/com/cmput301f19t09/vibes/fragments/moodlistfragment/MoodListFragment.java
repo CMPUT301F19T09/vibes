@@ -26,8 +26,7 @@ import com.cmput301f19t09.vibes.models.UserManager;
     This class is a Fragment that displays either a users own list of MoodEvents, or the list
     of their followers' most recent MoodEvents
  */
-public class MoodListFragment extends Fragment implements MoodFilterListener
-{
+public class MoodListFragment extends Fragment implements MoodFilterListener {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
     public static final int OWN_MOODS_LOCKED = 2;
@@ -195,24 +194,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      * @param emotion
      */
     public void setFilter(String emotion){
-        /*this.selectedFilterEmotion = emotion;
-        Log.d("d", "selectedFilterEmotion = " + emotion);
-
-        MoodListAdapter newAdapter;
-        switch (displayType)
-        {
-            case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
-                newAdapter = new FollowedMoodListAdapter(getContext(), emotion);
-                break;
-            case OWN_MOODS:         // Show own moods
-            case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
-            default:
-                newAdapter = new OwnMoodListAdapter(getContext(), emotion);
-                break;
-        }
-        setAdapter(newAdapter);
-        super.onStart();*/
-
         Log.d("TEST/Filter", "Setting filter to " + emotion);
         this.filter = emotion;
         adapter.setFilter(emotion);
