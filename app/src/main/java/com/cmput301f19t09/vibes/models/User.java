@@ -92,10 +92,6 @@ public class User extends Observable implements Serializable {
             connectionStarted = true;
 
             db = FirebaseFirestore.getInstance();
-            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(false)
-                    .build();
-            db.setFirestoreSettings(settings);
 
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
