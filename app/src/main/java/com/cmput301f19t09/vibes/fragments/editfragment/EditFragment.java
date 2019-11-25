@@ -281,7 +281,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         stateGridView = view.findViewById(R.id.state_grid_view);
         stateGridView.setAdapter(new ImageAdapter(getActivity()));
         stateGridView.setOnItemClickListener(this);
-        stateGridView.getLayoutParams().height = 640;
         stateTextView = view.findViewById(R.id.state_text_view);
 
         dateTextView = view.findViewById(R.id.date_text_view);
@@ -294,8 +293,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         captureButton.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-              //Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
               //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                   if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
@@ -632,6 +629,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                             });
                 }
                 break;
+            //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
             case CAMERA_PERMISSIONS_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] ==
                         PackageManager.PERMISSION_GRANTED){
@@ -719,13 +717,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         break;
                 }
                 break;
-//            case REQUEST_IMAGE_CAPTURE:
-//                if (resultCode == RESULT_OK && data != null) {
-//                    Bundle extras = data.getExtras();
-//                    imageBitmap = (Bitmap) extras.get("data");
-//                    photoImage.setImageBitmap(imageBitmap);
-//                }
-//                break;
             case REQUEST_IMAGE_GALLERY: case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
                     Glide.with(this).load(photoUri).into(photoImage);
@@ -787,6 +778,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
+    //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
     private void openCamera() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
