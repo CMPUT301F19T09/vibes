@@ -29,15 +29,12 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 
     // Maintain a list of the UIDs of users that this user observes
     private List<String> observed_users;
-    private String selectedEmotion;
+    private boolean filterChanged;
 
-    public FollowedMoodListAdapter(Context context, @Nullable String emotion)
+    public FollowedMoodListAdapter(Context context)
     {
         super(context);
-        this.selectedEmotion = emotion;
-        if(emotion != null){
-            Log.d("FollowedMoodListAdapter", "Started with emotion: " + emotion);
-        }
+        filterChanged = false;
     }
 
     /*
@@ -64,10 +61,13 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
 
         List<String> followed_users = user.getFollowingList();
 
+        boolean listChanged = false;
+
         for (String followed_user : followed_users)
         {
             if (!observed_users.contains(followed_user))
             {
+                listChanged = true;
                 /*
                 If the user is not followed (by UID), add that user to the observed_users list and
                 create an Observer that updates the entry for that user whenever that User is changed
@@ -92,6 +92,14 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
                 });
             }
         }
+
+        if (filterChanged && !listChanged)
+        {
+            for (String followed_user : followed_users)
+            {
+                refreshEvent(UserManager.getUser(followed_user));
+            }
+        }
     }
 
     /*
@@ -101,9 +109,22 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
     public void refreshEvent(User user) {
         Log.d("TEST", "Refreshing event for " + user.getUserName());
 
-        if (user.getMostRecentMoodEvent() == null)
+        MoodEvent event = user.getMostRecentMoodEvent();
+        boolean hideEvent = false;
+
+        if (event == null)
         {
+            Log.d("TEST/Following", "User does not have recent event");
             return;
+        }
+
+        if (filter != null && event.getState().getEmotion().equals(filter))
+        {
+            Log.d("TEST/Following", "User has a mood that matches the filter");
+        } else if (filter != null)
+        {
+            Log.d("TEST/Following", "User does not have a mood that matches the filter");
+            hideEvent = true;
         }
 
         Comparator<Object> reverse_chronolgical = new Comparator<Object>() {
@@ -113,47 +134,26 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             }
         };
 
-        if(this.selectedEmotion != null){
-            if(!user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
-                return;
-            }
-        }
-
         /*
         Iterate through the list and check if an event associated with user exists, if it does,
         replace that event with the most recent MoodEvent
          */
         boolean replaced = false;
-        for (MoodEvent event : data)
+        for (MoodEvent displayedEvent : data)
         {
-            Log.d("FollowedMoodListener", "event:"+event.getState().getEmotion() + " , checking with: " + this.selectedEmotion);
-//            if(this.selectedEmotion != null){
-//                if(!(event.getState().getEmotion().equals(this.selectedEmotion))){
-//
-//                }
-//            }
-//            data.remove(event);
+            Log.d("FollowedMoodListener", "event:"+event.getState().getEmotion() + " , checking with: " + filter);
 
-            if (event.getUser().getUid().equals(user.getUid()))
+            if (displayedEvent.getUser().getUid().equals(user.getUid()))
             {
                 clear();
 
-                data.remove(event);
-                if(this.selectedEmotion != null){
-                    if(user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
-                        // Selected emotion
-                        data.add(user.getMostRecentMoodEvent());
-                        Log.d("FollowedMoodListener", "Event is added");
-                    }else{
-                        // Don't add
-                    }
-                }else{
-                    // There is no filtering emotion
-                    data.add(user.getMostRecentMoodEvent());
+                data.remove(displayedEvent);
+                if (hideEvent == false)
+                {
+                    data.add(event);
                 }
-
-                //Collections.sort(data);
                 data.sort(reverse_chronolgical);
+
                 addAll(data);
                 replaced = true;
                 Log.d("TEST", "Replaced the event");
@@ -164,25 +164,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
         /*
         If there wasn't an event to replace, add a new entry to the list
          */
-        if (! replaced)
+        if (!replaced && !hideEvent)
         {
             clear();
-            if(this.selectedEmotion != null){
-                if(user.getMostRecentMoodEvent().getState().getEmotion().equals(this.selectedEmotion)){
-                    // Selected emotion
-                    data.add(user.getMostRecentMoodEvent());
-                    Log.d("FollowedMoodListener", "Event is added");
-                }else{
-                    // Don't add
-                }
-            }else{
-                // There is no filtering emotion
-                data.add(user.getMostRecentMoodEvent());
-            }
-//            data.add(user.getMostRecentMoodEvent());
+            data.add(event);
             data.sort(reverse_chronolgical);
-            //Collections.sort(data);
-
             addAll(data);
 
             Log.d("TEST", "Event didn't exist, added new event");
@@ -223,5 +209,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
             UserManager.removeUserObservers(user);
         }
         super.removeObservers();
+    }
+
+    @Override
+    public void setFilter(String filter) {
+        this.filterChanged = true;
+        super.setFilter(filter);
     }
 }

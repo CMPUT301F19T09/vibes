@@ -126,7 +126,7 @@ public class MoodListFilterFragment extends Fragment
                 {
                     for (MoodFilterListener listener : listeners)
                     {
-                        listener.showOwnMoods(null);
+                        listener.showOwnMoods();
                     }
                 }
             });
@@ -138,7 +138,7 @@ public class MoodListFilterFragment extends Fragment
                 {
                     for (MoodFilterListener listener : listeners)
                     {
-                        listener.showFollowedMoods(null);
+                        listener.showFollowedMoods();
                     }
                 }
             });
@@ -160,10 +160,13 @@ public class MoodListFilterFragment extends Fragment
      */
     public void filter(String emotion){
         // Reach MapFragment
-        FragmentManager manager = ((MainActivity)getActivity()).getSupportFragmentManager();
-        MoodListFragment instance = (MoodListFragment)manager.findFragmentByTag(MoodListFragment.class.getSimpleName());
-        Log.d("MoodListFilterFragment", "");
-        instance.setSelectedFilterEmotion(emotion);
+        //FragmentManager manager = ((MainActivity)getActivity()).getSupportFragmentManager();
+        //MoodListFragment instance = (MoodListFragment)manager.findFragmentByTag(MoodListFragment.class.getSimpleName());
+        //Log.d("MoodListFilterFragment", "");
+        for (MoodFilterListener listener : listeners)
+        {
+            listener.setFilter(emotion);
+        }
 
     }
 

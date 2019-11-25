@@ -32,6 +32,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 {
     protected List<MoodEvent> data;
     protected User user;
+    protected String filter;
     private Context context;
 
     /*
@@ -153,5 +154,11 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     public void removeObservers()
     {
         UserManager.removeUserObserver(user.getUid(), this);
+    }
+
+    public void setFilter(String filter)
+    {
+        this.filter = filter;
+        refreshData();
     }
 }

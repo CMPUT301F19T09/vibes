@@ -19,11 +19,9 @@ Subclass of MoodListAdapter, this loads a user's own mood events
  */
 public class OwnMoodListAdapter extends MoodListAdapter
 {
-    private String selectedEmotion;
-    public OwnMoodListAdapter(Context context, @Nullable String emotion)
+    public OwnMoodListAdapter(Context context)
     {
         super(context);
-        this.selectedEmotion = emotion;
     }
 
     /*
@@ -44,9 +42,9 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
         for (MoodEvent event : events)
         {
-            Log.d("OwnMoodListAdapter", "event:"+event.getState().getEmotion() + " , checking with: " + this.selectedEmotion);
-            if(this.selectedEmotion != null){
-                if(event.getState().getEmotion().equals(this.selectedEmotion)){
+            Log.d("OwnMoodListAdapter", "event:"+event.getState().getEmotion() + " , checking with: " + filter);
+            if(filter != null){
+                if(event.getState().getEmotion().equals(filter)){
                     // Selected emotion
                     data.add(event);
                     Log.d("OwnMoodListAdapter", "Event is added");

@@ -35,7 +35,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     MoodListAdapter adapter;
     private int displayType;
     private String selectedFilterEmotion;
-    private int filter;
+    private String filter;
     private User user;
     private MoodListFilterFragment filterFragment;
 
@@ -69,15 +69,16 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         switch (displayType)
         {
             case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
-                newAdapter = new FollowedMoodListAdapter(getContext(), null);
+                newAdapter = new FollowedMoodListAdapter(getContext());
                 break;
             case OWN_MOODS:         // Show own moods
             case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
             default:
-                newAdapter = new OwnMoodListAdapter(getContext(), null);
+                newAdapter = new OwnMoodListAdapter(getContext());
                 break;
         }
 
+        newAdapter.setFilter(filter);
         setAdapter(newAdapter);
 
         super.onStart();
@@ -152,12 +153,12 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     /*
     Set the adapter to an OwnMoodListAdapter
      */
-    public void showOwnMoods(@Nullable String emotion)
+    public void showOwnMoods()
     {
         if (displayType != OWN_MOODS)
         {
             Log.d("MoodListFragment", "Setting adapter to OwnMoodAdapter");
-            setAdapter(new OwnMoodListAdapter(getContext(), emotion));
+            setAdapter(new OwnMoodListAdapter(getContext()));
         }
 
         displayType = OWN_MOODS;
@@ -166,12 +167,12 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     /*
     Set the adapter to an OwnMoodListAdapter
      */
-    public void showFollowedMoods(@Nullable String emotion)
+    public void showFollowedMoods()
     {
         if (displayType != FOLLOWED_MOODS)
         {
             Log.d("MoodListFragment", "Setting adapter to FollowedMoodAdapter");
-            setAdapter(new FollowedMoodListAdapter(getContext(), emotion));
+            setAdapter(new FollowedMoodListAdapter(getContext()));
         }
 
         displayType = FOLLOWED_MOODS;
@@ -193,8 +194,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      * to the emotion state string.
      * @param emotion
      */
-    public void setSelectedFilterEmotion(String emotion){
-        this.selectedFilterEmotion = emotion;
+    public void setFilter(String emotion){
+        /*this.selectedFilterEmotion = emotion;
         Log.d("d", "selectedFilterEmotion = " + emotion);
 
         MoodListAdapter newAdapter;
@@ -210,22 +211,10 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
                 break;
         }
         setAdapter(newAdapter);
-        super.onStart();
-    }
+        super.onStart();*/
 
-
-    public void addFilter(int filter)
-    {
-        this.filter |= filter;
-    }
-
-    public void removeFilter(int filter)
-    {
-        this.filter ^= filter;
-    }
-
-    public void clearFilter()
-    {
-        this.filter &= 0;
+        Log.d("TEST/Filter", "Setting filter to " + emotion);
+        this.filter = emotion;
+        adapter.setFilter(emotion);
     }
 }
