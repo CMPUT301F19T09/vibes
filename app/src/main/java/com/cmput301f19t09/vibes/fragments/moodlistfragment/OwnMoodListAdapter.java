@@ -29,11 +29,12 @@ public class OwnMoodListAdapter extends MoodListAdapter
     public void refreshData()
     {
         clear();
-        data.clear();
+        data = new ArrayList<MoodEvent>();
 
         List<MoodEvent> events = user.getMoodEvents();
         if (events == null)
         {
+            Log.d("TEST/OwnMoodListAdapter", "null MoodEvent list");
             return;
         }
 
@@ -60,7 +61,6 @@ public class OwnMoodListAdapter extends MoodListAdapter
     @Override
     public void initializeData()
     {
-        super.initializeData();
         refreshData();
     }
 

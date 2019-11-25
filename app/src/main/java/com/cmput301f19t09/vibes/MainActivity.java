@@ -2,7 +2,6 @@ package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
-import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -10,14 +9,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
@@ -135,7 +132,15 @@ public class MainActivity extends FragmentActivity {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                ProfileFragment profileFragment = ProfileFragment.newInstance(user, true, new User("testuser2"));
+//                replaceFragment(ProfileFragment.class);
                 setMainFragment(ProfileFragment.newInstance());
+
+//                getSupportFragmentManager().findFragmentById()
+//                User user = new User("testuser");
+                //setMainFragment(ProfileFragment.newInstance(user, true));
+
+//                setMainFragment(ProfileFragment.newInstance(user, new User("testuser2")));
             }
         });
 
@@ -180,10 +185,8 @@ public class MainActivity extends FragmentActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        String fragmentName = fragment.getClass().getSimpleName();
-
-        transaction.replace(fragment_root, fragment, fragmentName);
-        transaction.addToBackStack(fragmentName);
+        transaction.replace(fragment_root, fragment);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 

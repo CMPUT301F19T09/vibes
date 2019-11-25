@@ -21,17 +21,6 @@ import com.cmput301f19t09.vibes.fragments.mooddetailsfragment.MoodDetailsDialogF
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /*
     This class is a Fragment that displays either a users own list of MoodEvents, or the list
@@ -43,20 +32,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     public static final int FOLLOWED_MOODS = 1;
     public static final int OWN_MOODS_LOCKED = 2;
 
-    private static int gid = 0;
-    private int id;
-
     MoodListAdapter adapter;
     private int displayType;
     private int filter;
     private User user;
     private MoodListFilterFragment filterFragment;
-
-    public MoodListFragment()
-    {
-        this.id = gid++;
-
-    }
 
     /*
     Create a new instance of MoodListFragment, passing the displayType (int) as an argument to the instance
@@ -163,6 +143,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     {
         if (displayType != OWN_MOODS)
         {
+            Log.d("MoodListFragment", "Setting adapter to OwnMoodAdapter");
             setAdapter(new OwnMoodListAdapter(getContext()));
         }
 
@@ -176,6 +157,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     {
         if (displayType != FOLLOWED_MOODS)
         {
+            Log.d("MoodListFragment", "Setting adapter to FollowedMoodAdapter");
             setAdapter(new FollowedMoodListAdapter(getContext()));
         }
 
@@ -192,16 +174,10 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
-    @Override
-    public void onResume() {
-        adapter.initializeData();
-        super.onResume();
-    }
-
     /*
-        Set the filter for mood types
-        TODO: Create docs, but this stuff isn't implemented yet
-         */
+    Set the filter for mood types
+    TODO: Create docs, but this stuff isn't implemented yet
+     */
     public void addFilter(int filter)
     {
         this.filter |= filter;
