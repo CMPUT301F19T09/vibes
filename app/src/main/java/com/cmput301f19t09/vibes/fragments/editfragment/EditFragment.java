@@ -2,18 +2,26 @@ package com.cmput301f19t09.vibes.fragments.editfragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,20 +34,29 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.BuildConfig;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -59,7 +76,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static java.util.jar.Pack200.Packer.ERROR;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -90,6 +109,18 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView stateTextView;
     private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+
+    // photos
+    private Uri photoUri;
+    private File photoFile;
+    private Bitmap imageBitmap;
+    private ImageView photoImage;
+    private Button captureButton;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private Button galleryButton;
+    private static final int REQUEST_IMAGE_GALLERY = 3;
+    private Button clearButton;
+    private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 4;
 
     private EditText editSituationView;
     private EditText editReasonView;
@@ -257,6 +288,53 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         timeTextView = view.findViewById(R.id.time_text_view);
         editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
+
+        photoImage = view.findViewById(R.id.photo_image);
+        captureButton = view.findViewById(R.id.capture_button);
+        captureButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                  if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
+                          PackageManager.PERMISSION_DENIED ||
+                          ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                                  PackageManager.PERMISSION_DENIED) {
+                      String[] permission = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                      requestPermissions(permission, CAMERA_PERMISSIONS_REQUEST_CODE);
+                  } else {
+                      openCamera();
+                  }
+              } else {
+                  openCamera();
+              }
+          }
+
+              //if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                  //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+              //}
+        });
+        galleryButton = view.findViewById(R.id.gallery_button);
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                galleryIntent.setType("image/*");
+
+                if (galleryIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(galleryIntent, REQUEST_IMAGE_GALLERY);
+                }
+            }
+        });
+        clearButton = view.findViewById(R.id.clear_photo_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageBitmap = null;
+                photoImage.setImageResource(R.drawable.empty_picture_image);
+            }
+        });
 
         locationSwitch = view.findViewById(R.id.location_switch);
 
@@ -546,43 +624,56 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                startLocationUpdates();
-            } else {
-                // Permission denied.
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length <= 0) {
+                    // If user interaction was interrupted, the permission request is cancelled and you
+                    // receive empty arrays.
+                    Log.i(TAG, "User interaction was cancelled.");
+                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
+                    startLocationUpdates();
+                } else {
+                    // Permission denied.
 
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
+                    // Notify the user via a SnackBar that they have rejected a core permission for the
+                    // app, which makes the Activity useless. In a real app, core permissions would
+                    // typically be best requested during a welcome-screen flow.
 
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
-                showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
+                    // Additionally, it is important to remember that a permission might have been
+                    // rejected without asking the user for permission (device policy or "Never ask
+                    // again" prompts). Therefore, a user interface affordance is typically implemented
+                    // when permissions are denied. Otherwise, your app could appear unresponsive to
+                    // touches or interactions which have required permissions.
+                    showSnackbar(R.string.permission_denied_explanation,
+                            R.string.settings, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Build intent that displays the App settings screen.
+                                    Intent intent = new Intent();
+                                    intent.setAction(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package",
+                                            BuildConfig.APPLICATION_ID, null);
+                                    intent.setData(uri);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+                            });
+                }
+                break;
+            //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+            case CAMERA_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED){
+                    //permission from popup was granted
+                    openCamera();
+                }
+                else {
+                    Log.d("Permission denied:", "The permission to the camera was denied.");
+                }
         }
+
     }
 
     /**
@@ -653,7 +744,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
-                    case Activity.RESULT_OK:
+                    case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
@@ -661,6 +752,11 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         locationSwitch.setEnabled(false); // make switch unclickable
                         break;
+                }
+                break;
+            case REQUEST_IMAGE_GALLERY: case REQUEST_IMAGE_CAPTURE:
+                if (resultCode == RESULT_OK && data != null) {
+                    Glide.with(this).load(photoUri).into(photoImage);
                 }
                 break;
         }
@@ -719,5 +815,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
-
+    //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+    private void openCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the camera");
+        photoUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    }
 }

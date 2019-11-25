@@ -134,6 +134,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             });
         }
 
+        notifyDataSetChanged();
         return view;
     }
 
