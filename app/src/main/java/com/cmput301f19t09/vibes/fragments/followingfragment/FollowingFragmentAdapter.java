@@ -17,6 +17,7 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,6 +27,7 @@ import java.util.Observer;
  */
 public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     private ArrayList<String> userList;
+    private ArrayList<User> userObjList;
     private Context context;
     private int viewMode;
 
@@ -40,6 +42,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         super(context, 0);
         this.context = context;
         this.userList = new ArrayList<>();
+        this.userObjList = new ArrayList<>();
 
         if (mode.equals("following")) {
             viewMode = R.layout.following_list;
@@ -79,6 +82,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         }
 
         final User user = UserManager.getUser(userUID);
+        userObjList.add(user);
 
         if (user.isLoaded()) {
             Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
