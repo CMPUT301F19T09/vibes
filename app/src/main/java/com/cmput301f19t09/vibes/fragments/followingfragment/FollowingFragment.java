@@ -101,6 +101,7 @@ public class FollowingFragment extends Fragment {
                         }
                     });
                 }
+                Log.d("size", Integer.toString(followingAdapter.getCount()));
                 // Gets the list of username's of the users that the user requests to follow
                 List<String> requestedUsernames = user.getRequestedList();
                 // For every username, a user object is initialized and the data of that user is read
