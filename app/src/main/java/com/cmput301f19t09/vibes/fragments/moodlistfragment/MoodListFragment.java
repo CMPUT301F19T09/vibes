@@ -34,7 +34,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
 
     MoodListAdapter adapter;
     private int displayType;
-    private int filter;
+    private String selectedFilterEmotion;
+    private String filter;
     private User user;
     private MoodListFilterFragment filterFragment;
 
@@ -77,6 +78,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
                 break;
         }
 
+        newAdapter.setFilter(filter);
         setAdapter(newAdapter);
 
         super.onStart();
@@ -89,8 +91,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /*
-                    Intializes the View and adapter
-                     */
+    Intializes the View and adapter
+    */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -186,22 +188,33 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
-    /*
-    Set the filter for mood types
-    TODO: Create docs, but this stuff isn't implemented yet
+    /**
+     * Setter for selectedFilterEmotion,
+     * it sets the current filter
+     * to the emotion state string.
+     * @param emotion
      */
-    public void addFilter(int filter)
-    {
-        this.filter |= filter;
-    }
+    public void setFilter(String emotion){
+        /*this.selectedFilterEmotion = emotion;
+        Log.d("d", "selectedFilterEmotion = " + emotion);
 
-    public void removeFilter(int filter)
-    {
-        this.filter ^= filter;
-    }
+        MoodListAdapter newAdapter;
+        switch (displayType)
+        {
+            case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
+                newAdapter = new FollowedMoodListAdapter(getContext(), emotion);
+                break;
+            case OWN_MOODS:         // Show own moods
+            case OWN_MOODS_LOCKED:  // Show own moods and disable viewing other's
+            default:
+                newAdapter = new OwnMoodListAdapter(getContext(), emotion);
+                break;
+        }
+        setAdapter(newAdapter);
+        super.onStart();*/
 
-    public void clearFilter()
-    {
-        this.filter &= 0;
+        Log.d("TEST/Filter", "Setting filter to " + emotion);
+        this.filter = emotion;
+        adapter.setFilter(emotion);
     }
 }

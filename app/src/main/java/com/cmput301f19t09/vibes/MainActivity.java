@@ -48,6 +48,7 @@ public class MainActivity extends FragmentActivity {
     private final String logTag = "TEST/MainActivity";
     
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
+    private String listFilter = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

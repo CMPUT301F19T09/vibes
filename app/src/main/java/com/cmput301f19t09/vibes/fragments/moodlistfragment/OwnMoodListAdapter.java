@@ -3,6 +3,8 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 
@@ -40,7 +42,20 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
         for (MoodEvent event : events)
         {
-            data.add(event);
+            Log.d("OwnMoodListAdapter", "event:"+event.getState().getEmotion() + " , checking with: " + filter);
+            if(filter != null){
+                if(event.getState().getEmotion().equals(filter)){
+                    // Selected emotion
+                    data.add(event);
+                    Log.d("OwnMoodListAdapter", "Event is added");
+                }else{
+                    // Don't add
+                }
+            }else{
+                // There is no filtering emotion
+                data.add(event);
+
+            }
         }
 
         //Collections.sort(data);
