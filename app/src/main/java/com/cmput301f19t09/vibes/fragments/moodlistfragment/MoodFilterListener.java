@@ -1,5 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 /*
@@ -11,7 +13,6 @@ public interface MoodFilterListener extends Serializable
     void showOwnMoods();
     void showFollowedMoods();
 
-    void addFilter(int filter);
-    void removeFilter(int filter);
-    void clearFilter();
+    void setFilter(String emotion);
+
 }

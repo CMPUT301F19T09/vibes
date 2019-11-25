@@ -2,9 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:id="@+id/profile_fragment"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/profile_fragment">
+    android:background="#FFFFFF"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/profile_picture"
@@ -12,8 +14,8 @@
         android:layout_height="128dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:scaleType="centerCrop"
         android:background="@drawable/circle"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -24,12 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:textSize="24dp"
         android:fontFamily="@font/roboto_thin"
+        android:textSize="24dp"
         app:layout_constraintStart_toEndOf="@+id/profile_picture"
         app:layout_constraintTop_toBottomOf="@+id/fullname_textview"
-        tools:text="testuser"
-        tools:fontFamily="@font/roboto_thin" />
+        tools:fontFamily="@font/roboto_thin"
+        tools:text="testuser" />
 
     <TextView
         android:id="@+id/fullname_textview"
@@ -74,21 +76,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/follow_button" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/profile_mask"-->
-<!--        android:layout_width="128dp"-->
-<!--        android:layout_height="128dp"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:srcCompat="@drawable/round_mask" />-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/profile_mask"-->
+    <!--        android:layout_width="128dp"-->
+    <!--        android:layout_height="128dp"-->
+    <!--        android:layout_marginStart="16dp"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:srcCompat="@drawable/round_mask" />-->
 
     <LinearLayout
         android:id="@+id/user_mood_list"
-        android:orientation="vertical"
-        android:layout_height="0dp"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/moodListBackground"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

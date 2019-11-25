@@ -10,7 +10,6 @@ import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
 
-import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 
 import java.util.Map;
@@ -66,16 +65,14 @@ public class MapFilter extends Fragment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == youButton.getId())
                 {
-                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE);
+                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE, null);
                     everyoneButton.setChecked(false);
                 }
-                else
-                {
-                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE);
+                else {
+                    ((MapFragment) getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE, null);
                     youButton.setChecked(false);
                 }
-            }
-        });
+        }});
 
         // Inflate the layout for this fragment
         return v;

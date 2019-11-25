@@ -62,10 +62,6 @@ public class User extends Observable implements Serializable {
 
     private static boolean connectionStarted;
 
-    // This is the number of elements in the mood map on firebase.
-    // I used it to check if a map is complete to show it on the map.
-    final private int MAP_MOOD_SIZE = 7;
-
     /**
      * Callback listener when data from the database is retrieved
      */
@@ -275,7 +271,7 @@ public class User extends Observable implements Serializable {
      *
      * @param otherUserUID
      */
-    public void addFollowing(String otherUserUID) {
+    private void addFollowing(String otherUserUID) {
         if (!followingList.contains(otherUserUID)) {
             followingList.add(otherUserUID);
 
@@ -392,7 +388,7 @@ public class User extends Observable implements Serializable {
      * Parse the mapped mood events to MoodEvent objects
      * @return List of MoodEvent objects
      */
-    public List<MoodEvent> parseToMoodEvent() {
+    private List<MoodEvent> parseToMoodEvent() {
         List<MoodEvent> events = new ArrayList<MoodEvent>();
         if (moods != null) {
             for (Map moodEvent : moods) {
@@ -400,11 +396,13 @@ public class User extends Observable implements Serializable {
                 String reason = (String) moodEvent.get("reason");
                 Number social = (Number) moodEvent.get("social");
                 Long timestamp = (Long) moodEvent.get("timestamp");
-                String username = (String) moodEvent.get("username");
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
                 Location location;
 
                 // Checks if there are 7 fields
+                // This is the number of elements in the mood map on firebase.
+                // I used it to check if a map is complete to show it on the map.
+                int MAP_MOOD_SIZE = 7;
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
                     continue;
                 }
@@ -432,6 +430,7 @@ public class User extends Observable implements Serializable {
                     location = null;
                 }
 
+                assert social != null;
                 MoodEvent event = new MoodEvent(time.toLocalDate(),
                         time.toLocalTime(),
                         reason,
@@ -481,7 +480,7 @@ public class User extends Observable implements Serializable {
             throw new RuntimeException("MoodEvent not defined");
         } else {
             // Parses the MoodEvent to a map usable in the database
-            Map<String, Object> mood = new HashMap<String, Object>();
+            Map<String, Object> mood = new HashMap<>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
             if (moodEvent.getLocation() != null) {
@@ -516,9 +515,7 @@ public class User extends Observable implements Serializable {
      * @param index The location in the array in the database
      */
     public void editMood(MoodEvent moodEvent, Integer index) {
-        if (index > moods.size() - 1) {
-            return;
-        } else {
+        if (index <= moods.size() - 1) {
             // Parses the MoodEvent to a map usable in the database
             Map<String, Object> mood = new HashMap<String, Object>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
@@ -535,7 +532,7 @@ public class User extends Observable implements Serializable {
             mood.put("timestamp", moodEvent.getEpochUTC());
             mood.put("username", moodEvent.getUser().getUserName());
 
-            moods.set(index.intValue(), mood);
+            moods.set(index, mood);
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -555,9 +552,7 @@ public class User extends Observable implements Serializable {
      * @param index Array index to remove MoodEvent
      */
     public void deleteMood(Integer index) {
-        if (index > moods.size() - 1) {
-            return;
-        } else {
+        if (index <= moods.size() - 1) {
             moods.remove(index.intValue());
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods)

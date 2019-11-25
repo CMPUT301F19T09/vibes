@@ -32,6 +32,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
 {
     protected List<MoodEvent> data;
     protected User user;
+    protected String filter;
     private Context context;
 
     /*
@@ -54,7 +55,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
-        Log.d("MoodListAdapter", "Creating a View for a MoodItem");
+//        Log.d("MoodListAdapter", "Creating a View for a MoodItem");
         View item = convertView;
 
         /*
@@ -98,7 +99,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
-            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
+//            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
             emotionImage.setColorFilter(event.getState().getColour());
 
             Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
@@ -125,9 +126,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             {
                 timeString += ( timeSincePost.toDays() / 365 ) + " y";
             }
-
             moodTime.setText(timeString);
-
         }
         else
         {
@@ -155,5 +154,11 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
     public void removeObservers()
     {
         UserManager.removeUserObserver(user.getUid(), this);
+    }
+
+    public void setFilter(String filter)
+    {
+        this.filter = filter;
+        refreshData();
     }
 }

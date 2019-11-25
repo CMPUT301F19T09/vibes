@@ -12,19 +12,18 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,18 +32,16 @@ import androidx.fragment.app.Fragment;
 public class SearchFragment extends Fragment {
     private SearchListAdapter adapter;
     private List<String> userList;
-    private FirebaseFirestore db;
     private CollectionReference collectionReference;
 
     public static SearchFragment newInstance() {
-        SearchFragment searchFragment = new SearchFragment();
-        return searchFragment;
+        return new SearchFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         collectionReference = db.collection("users");
         userList = new ArrayList<>();
     }
@@ -73,7 +70,8 @@ public class SearchFragment extends Fragment {
         searchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                String uid = (String) adapterView.getItemAtPosition(i);
+                ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment(uid);
             }
         });
 
@@ -100,6 +98,7 @@ public class SearchFragment extends Fragment {
 
                             userList.clear();
                             adapter.clear();
+                            assert documentSnapshots != null;
                             for (QueryDocumentSnapshot document : documentSnapshots) {
                                 userList.add(document.getId());
                             }

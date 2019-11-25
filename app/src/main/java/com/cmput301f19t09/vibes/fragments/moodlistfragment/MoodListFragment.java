@@ -26,15 +26,15 @@ import com.cmput301f19t09.vibes.models.UserManager;
     This class is a Fragment that displays either a users own list of MoodEvents, or the list
     of their followers' most recent MoodEvents
  */
-public class MoodListFragment extends Fragment implements MoodFilterListener
-{
+public class MoodListFragment extends Fragment implements MoodFilterListener {
     public static final int OWN_MOODS = 0;
     public static final int FOLLOWED_MOODS = 1;
     public static final int OWN_MOODS_LOCKED = 2;
 
     MoodListAdapter adapter;
     private int displayType;
-    private int filter;
+    private String selectedFilterEmotion;
+    private String filter;
     private User user;
     private MoodListFilterFragment filterFragment;
 
@@ -77,6 +77,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
                 break;
         }
 
+        newAdapter.setFilter(filter);
         setAdapter(newAdapter);
 
         super.onStart();
@@ -89,8 +90,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /*
-                    Intializes the View and adapter
-                     */
+    Intializes the View and adapter
+    */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -189,22 +190,15 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
-    /*
-    Set the filter for mood types
-    TODO: Create docs, but this stuff isn't implemented yet
+    /**
+     * Setter for selectedFilterEmotion,
+     * it sets the current filter
+     * to the emotion state string.
+     * @param emotion
      */
-    public void addFilter(int filter)
-    {
-        this.filter |= filter;
-    }
-
-    public void removeFilter(int filter)
-    {
-        this.filter ^= filter;
-    }
-
-    public void clearFilter()
-    {
-        this.filter &= 0;
+    public void setFilter(String emotion){
+        Log.d("TEST/Filter", "Setting filter to " + emotion);
+        this.filter = emotion;
+        adapter.setFilter(emotion);
     }
 }

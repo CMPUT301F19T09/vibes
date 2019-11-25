@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -8,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
@@ -16,6 +17,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/top_of_fragment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <GridView
             android:id="@+id/state_grid_view"
@@ -30,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/top_of_fragment"/>
 
         <TextView
             android:id="@+id/state_text_view"
@@ -87,19 +96,71 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/photo_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/reason_container">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/photo_image"
+                android:id="@+id/photo_buttons"
+                android:weightSum="3">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/capture_button"
+                    android:text="Camera"
+                    android:layout_weight="1">
+                </Button>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gallery_button"
+                    android:text="Gallery"
+                    android:layout_weight="1">
+                </Button>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/clear_photo_button"
+                    android:text="Clear"
+                    android:layout_weight="1">
+                </Button>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/photo_image"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/empty_picture_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/photo_buttons" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/location_text_view"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
             android:ems="10"
             android:fontFamily="@font/roboto_regular"
             android:hint="@string/use_location"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/reason_container" />
+            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
 
         <Switch
             android:id="@+id/location_switch"
@@ -110,7 +171,7 @@
             android:fontFamily="@font/roboto_regular"
             app:layout_constraintBottom_toTopOf="@+id/date_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/reason_container" />
+            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
 
         <TextView
             android:id="@+id/date_text_view"
