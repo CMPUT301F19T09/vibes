@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -54,6 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
     Filter filter;
+    String emotionSelected;
     private List<String> observedUsers;
 
     /**
@@ -97,6 +99,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
                 }
             }
         }
+    }
+
+    public void setEmotionSelected(String emotion){
+        this.emotionSelected = emotion;
     }
 
     /**
@@ -147,10 +153,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap.setOnMarkerClickListener(mClusterManager);
         googlemap.setOnInfoWindowClickListener(mClusterManager);
 
-        switchFilter(Filter.SHOW_MINE);
+        switchFilter(Filter.SHOW_MINE, null);
     }
 
-    public void switchFilter(Filter filter) {
+    public void switchFilter(Filter filter, @Nullable String emotion) {
         if (googlemap == null) {
             Log.e("SWITCH FILTER", "NO GOOGLEMAP DEFINED");
             return;
@@ -162,7 +168,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         if (filter == Filter.SHOW_MINE) {
             Log.d("TEST/Map", "Showing own events");
             removeObservers();
-            showUserEvents();
+            showUserEvents(emotion);
         } else if (filter == Filter.SHOW_EVERYONE) {
             Log.d("TEST/Map", "Showing everyone's events");
             for (String id : user.getFollowingList())
@@ -199,10 +205,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
-    private void showUserEvents()
+    private void showUserEvents(@Nullable String emotion)
     {
         for (MoodEvent event : UserManager.getCurrentUser().getMoodEvents()) {
-            showEvent(event);
+            if(emotion != null){
+                if(event.getState().getEmotion() == emotion){
+                    showEvent(event);
+                }
+            }else{
+                showEvent(event);
+            }
         }
     }
 
@@ -238,7 +250,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         clusterCleanUp();
         if (filter == Filter.SHOW_MINE)
         {
-            showUserEvents();
+            showUserEvents(null);
         }
         else
         {
