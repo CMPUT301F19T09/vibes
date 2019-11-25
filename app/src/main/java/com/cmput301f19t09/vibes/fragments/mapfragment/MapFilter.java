@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
+
+import java.util.Map;
 
 public class MapFilter extends Fragment {
     public static final int SHOW_MINE = 0;
@@ -56,35 +59,20 @@ public class MapFilter extends Fragment {
         RadioButton youButton = v.findViewById(R.id.radioYou);
         RadioButton everyoneButton = v.findViewById(R.id.radioFollowed);
 
-        switch(selectedRadioBox){
-            case SHOW_EVERYONE:
-                everyoneButton.setChecked(true);
-                break;
-            case SHOW_MINE:
-                youButton.setChecked(true);
-                break;
-        }
+        RadioGroup group = v.findViewById(R.id.radioGroup);
 
-        youButton.setOnClickListener(new View.OnClickListener() {
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if (selectedRadioBox == SHOW_EVERYONE) {
-                    // Setting it to be mine if it is everyone
-                    //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_MINE);
-                    selectedRadioBox = SHOW_MINE;
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == youButton.getId())
+                {
                     ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE);
+                    everyoneButton.setChecked(false);
                 }
-            }
-        });
-
-        everyoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(selectedRadioBox == SHOW_MINE){
-                    // Setting it to be everyone if it is only mine.
-                    //((MainActivity) getActivity()).switchMapFilter(MapFragment.Filter.SHOW_EVERYONE);
-                    selectedRadioBox = SHOW_EVERYONE;
+                else
+                {
                     ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE);
+                    youButton.setChecked(false);
                 }
             }
         });

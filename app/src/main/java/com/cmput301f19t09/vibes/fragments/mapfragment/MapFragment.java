@@ -44,6 +44,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     private ClusterManager<MoodEvent> mClusterManager;
     boolean firstPointPut = false;
     Context context;
+    private MapFilter mapFilter;
 
     /**
      * This is used to filter out the moods being showed;
@@ -115,7 +116,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         View view = inflater.inflate(R.layout.map_fragment, container,false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
-        getChildFragmentManager().beginTransaction().add(R.id.filter_root, MapFilter.getInstance(Filter.SHOW_MINE), "mapFilter").commit();
+        if (mapFilter == null)
+        {
+            mapFilter = MapFilter.getInstance(Filter.SHOW_MINE);
+            getChildFragmentManager().beginTransaction().add(R.id.filter_root, mapFilter, "mapFilter").commit();
+        }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
         return view;
     }

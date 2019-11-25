@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +55,7 @@ public class MoodListFilterFragment extends Fragment
         view = inflater.inflate(R.layout.mood_list_filter, container, false);
 
         View adapterSelectorLayout = view.findViewById(R.id.adapter_selector);
+        RadioGroup radioGroup = adapterSelectorLayout.findViewById(R.id.radioGroup);
         RadioButton ownMoodsButton = adapterSelectorLayout.findViewById(R.id.radioYou);
         RadioButton followedMoodsButton = adapterSelectorLayout.findViewById(R.id.radioFollowed);
 
@@ -68,6 +70,30 @@ public class MoodListFilterFragment extends Fragment
                 // Open filter dialog
             }
         });
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == ownMoodsButton.getId())
+                {
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showOwnMoods();
+                    }
+                    followedMoodsButton.setChecked(false);
+                }
+                else
+                {
+                    for (MoodFilterListener listener : listeners)
+                    {
+                        listener.showFollowedMoods();
+                    }
+                    ownMoodsButton.setChecked(false);
+                }
+            }
+        });
+
+        /*
         ownMoodsButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -91,6 +117,8 @@ public class MoodListFilterFragment extends Fragment
                 }
             }
         });
+
+         */
         return view;
     }
 
