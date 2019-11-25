@@ -754,7 +754,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         break;
                 }
                 break;
-            case REQUEST_IMAGE_GALLERY: case REQUEST_IMAGE_CAPTURE:
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK && data != null) {
+                    photoUri = data.getData();
+                    Glide.with(this).load(photoUri).into(photoImage);
+                }
+                break;
+            case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
                     Glide.with(this).load(photoUri).into(photoImage);
                 }
