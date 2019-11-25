@@ -64,8 +64,17 @@ public class SignUpActivityTest {
         Login.setUp("?signup@example.com", "000000");
         Thread.sleep(1000); // delay to load anything in the background
 
-        // use firebase function to delete the newly created user so that we can rerun the test
-        DeleteUser.deleteUser(UserManager.getCurrentUserUID());
+        /**
+         * Use firebase function to delete the newly created user so that we can rerun the test.
+         * The function doesnt always succeed so call the function a few times. The function
+         * performs an asynchronous call so we cant garuntee it succeeds. Also, due to the
+         * asynch., the collection and image may take some time to remove.
+         */
+
+        for (int i = 0; i < 5; i++ ) {
+            DeleteUser.deleteUser(UserManager.getCurrentUserUID());
+            Thread.sleep(1000); // delay to give some time between function calls
+        }
     }
 
 }
