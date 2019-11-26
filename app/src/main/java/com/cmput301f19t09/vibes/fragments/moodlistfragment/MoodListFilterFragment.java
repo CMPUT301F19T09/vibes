@@ -26,9 +26,9 @@ import com.cmput301f19t09.vibes.models.EmotionalState;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-This fragment holds the radio buttons for selecting MoodList's adapter and will also have a button
-that opens the filter dialog
+/**
+ * This fragment holds the radio buttons for selecting MoodList's adapter and will also have a button
+ * that opens the filter dialog
  */
 public class MoodListFilterFragment extends Fragment
 {
@@ -36,16 +36,17 @@ public class MoodListFilterFragment extends Fragment
     private boolean locked; //This determines whether the radio buttons are shown (i.e. disallow a user from viewing
     // other user's moods when on their own profile
 
-    /*
-    return a new instance
+    /**
+     * Return a new instance
+     * @return
      */
     public static MoodListFilterFragment newInstance()
     {
         return new MoodListFilterFragment();
     }
 
-    /*
-    initialize data
+    /**
+     * initialize data
      */
     public MoodListFilterFragment()
     {
@@ -105,17 +106,6 @@ public class MoodListFilterFragment extends Fragment
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-//                        AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
-//                        builderInner.setMessage(strName);
-//                        builderInner.setTitle("Your filter is");
-//                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog,int which) {
-//                                dialog.dismiss();
-//                            }
-//                        });
-//                        builderInner.show();
-
                         strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
                         filter(strName);
                     }
@@ -172,13 +162,17 @@ public class MoodListFilterFragment extends Fragment
 
     }
 
+    /**
+     * Disables the radio buttons in the list filter
+     */
     public void disableRadioButtons()
     {
         locked = true;
     }
 
-    /*
-    Add a listener to be notified whenever the filter state is changed
+    /**
+     * Add a listener to be notified whenever the filter state is changed
+     * @param listener
      */
     public void addOnFilterListener(MoodFilterListener listener)
     {
