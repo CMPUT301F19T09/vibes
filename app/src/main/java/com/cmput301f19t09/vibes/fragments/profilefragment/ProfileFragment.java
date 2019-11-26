@@ -330,7 +330,6 @@ public class ProfileFragment extends Fragment implements Observer {
                 uri = data.getData();
                 Glide.with(this).load(uri).into(profilePictureImageView);
                 user.changeProfilePicture(uri);
-                System.out.println(user.getProfileURL());
             }
         }
     }
