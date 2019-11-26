@@ -223,7 +223,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     @Override
     public String getTitle() {
-        return this.getState().getEmotion();
+        return this.user.getUserName();
     }
 
     /**
@@ -234,6 +234,6 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     @Override
     public String getSnippet() {
-        return this.getDescription();
+        return this.getState().getEmotion();
     }
 }
