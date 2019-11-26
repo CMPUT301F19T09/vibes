@@ -40,6 +40,7 @@ public class MapFilter extends Fragment {
      * The filter parameter is used as an On-Start value.
      * There is no function for updating the MapFilter.
      * @param filter
+     * This is a MapFragment.Filter object. It tells the MapFilter to start with Following/You filter.
      * @return
      */
     public static MapFilter getInstance(MapFragment.Filter filter){
