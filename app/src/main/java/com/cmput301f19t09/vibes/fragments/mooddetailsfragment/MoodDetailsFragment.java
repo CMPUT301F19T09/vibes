@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
  */
 public class MoodDetailsFragment extends Fragment
 {
-    /*
+    /**
         Create a new instance of the Fragment for the specified event
      */
     public static MoodDetailsFragment newInstance(MoodEvent event)
