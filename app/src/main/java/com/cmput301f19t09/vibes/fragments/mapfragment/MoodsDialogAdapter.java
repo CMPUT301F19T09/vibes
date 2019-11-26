@@ -13,9 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
-import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 
@@ -23,16 +21,33 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * This class is used as an adapter for the list dialog
+ * in the clusters in the map screen. When there are overlapping
+ * MoodEvents, this adapter is used to render them in a new dialog.
+ */
 public class MoodsDialogAdapter extends ArrayAdapter<MoodEvent> {
     private ArrayList<MoodEvent> eventList;
     private Context context;
 
+    /**
+     * Create a MoodsDialogAdapter
+     * @param context
+     * @param events
+     */
     public MoodsDialogAdapter(Context context, ArrayList<MoodEvent> events){
         super(context, 0, events);
         this.eventList = events;
         this.context = context;
     }
 
+    /**
+     * This function is used to render the rows.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View item = convertView;
 
@@ -59,6 +74,8 @@ public class MoodsDialogAdapter extends ArrayAdapter<MoodEvent> {
 
         userImage.setClipToOutline(true);
 
+        // Setting the layout fields with the corresponding
+        // variables in the class.
         emotionImage = item.findViewById(R.id.emotion_image);
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
@@ -66,6 +83,7 @@ public class MoodsDialogAdapter extends ArrayAdapter<MoodEvent> {
 
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
+        // Setting the fields with their corresponding values
         if (event != null)
         {
 
@@ -110,33 +128,5 @@ public class MoodsDialogAdapter extends ArrayAdapter<MoodEvent> {
         }
 
         return item;
-//        // Sets the fullNameText to the user's firstName + lastName
-//        TextView fullNameText = view.findViewById(R.id.fullName);
-//        String fullName = user.getFirstName() + " " + user.getLastName();
-//        fullNameText.setText(fullName);
-//
-//        // Sets the usernameText to the user's username
-//        TextView usernameText = view.findViewById(R.id.username);
-//        String username = user.getUserName();
-//        usernameText.setText(username);
-//
-//        // Sets the user's profile picture
-//        ImageView userImage = view.findViewById(R.id.profileImage);
-//        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-//        userImage.setClipToOutline(true);
-
-        // Sets an OnClickListener for userImage
-//        userImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // A ProfileFragment that corresponds to the clicked on user
-//                // is created and is made the current fragment
-//                ProfileFragment profileFragment;
-//                profileFragment = ProfileFragment.newInstance(user.getUid());
-//                ((MainActivity) activity).setMainFragment(profileFragment);
-//            }
-//        });
-
-//        return view;
     }
 }
