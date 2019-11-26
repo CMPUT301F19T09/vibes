@@ -80,7 +80,7 @@ public class MoodListFilterFragment extends Fragment
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 builderSingle.setTitle("Select a mood filter:");
 
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
 
                 List<String> keys = EmotionalState.getListOfKeys();
                 for (int i = 0; i < keys.size(); i++)
@@ -89,10 +89,10 @@ public class MoodListFilterFragment extends Fragment
                     replacement = replacement.substring(0, 1) + replacement.substring(1, replacement.length()).toLowerCase();
                     keys.set(i, replacement);
                 }
-
-                arrayAdapter.addAll(keys);
                 final String noFilter = "No Filter";
                 arrayAdapter.add(noFilter);
+                arrayAdapter.addAll(keys);
+
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -105,16 +105,16 @@ public class MoodListFilterFragment extends Fragment
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-                        AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
-                        builderInner.setMessage(strName);
-                        builderInner.setTitle("Your filter is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
+//                        AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
+//                        builderInner.setMessage(strName);
+//                        builderInner.setTitle("Your filter is");
+//                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog,int which) {
+//                                dialog.dismiss();
+//                            }
+//                        });
+//                        builderInner.show();
 
                         strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
                         filter(strName);
