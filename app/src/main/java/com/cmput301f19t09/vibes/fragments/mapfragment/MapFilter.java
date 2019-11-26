@@ -35,6 +35,13 @@ public class MapFilter extends Fragment {
         }
     }
 
+    /**
+     * This is a static function that returns a MapFilter.
+     * The filter parameter is used as an On-Start value.
+     * There is no function for updating the MapFilter.
+     * @param filter
+     * @return
+     */
     public static MapFilter getInstance(MapFragment.Filter filter){
         int mode;
 
