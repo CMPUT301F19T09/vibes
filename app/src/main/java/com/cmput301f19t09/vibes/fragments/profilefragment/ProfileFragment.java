@@ -107,40 +107,41 @@ public class ProfileFragment extends Fragment implements Observer {
         // Show's your own profile if other user wasn't passed in, set's the info, and gets the child
         // fragment MoodListFragment of the mood list of the current user
         if (otherUser == null) {
+            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.user_mood_list, moodListFragment, MoodListFragment.class.getSimpleName()).commit();
             updateButton("OWN");
         } else {
             // Checks if the user is following the other user and show their latest mood event by
             // calling the child fragment MoodDetailsFragment
-            if (UserManager.getCurrentUserUID().equals(otherUserUID)) {
-                updateButton("OWN");
-            } else {
 
-                UserManager.addUserObserver(otherUser.getUid(), this);
-                if (user.getFollowingList().contains(otherUser.getUid())) {
-                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                    transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
-                    transaction.commit();
-                    updateButton("FOLLOWING");
-                } else {
-                    if (otherUser.isLoaded()) {
+            UserManager.addUserObserver(otherUser.getUid(), this);
+
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
+            transaction.commitNow();
+
+            if (user.getFollowingList().contains(otherUser.getUid())) {
+                updateButton("FOLLOWING");
+            } else {
+                if (otherUser.isLoaded()) {
+                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                        updateButton("NONE");
+                    } else {
+                        updateButton("REQUESTED");
+                    }
+                }
+
+                otherUser.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable observable, Object o) {
                         if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
                             updateButton("NONE");
                         } else {
                             updateButton("REQUESTED");
                         }
                     }
-
-                    otherUser.addObserver(new Observer() {
-                        @Override
-                        public void update(Observable observable, Object o) {
-                            if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                                updateButton("NONE");
-                            } else {
-                                updateButton("REQUESTED");
-                            }
-                        }
-                    });
-                }
+                });
             }
         }
         return view;
@@ -161,9 +162,6 @@ public class ProfileFragment extends Fragment implements Observer {
         switch (mode) {
             case "OWN":
                 followButton.setVisibility(View.INVISIBLE);
-                setInfo(user);
-                MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
-                fragmentTransaction.add(R.id.user_mood_list, moodListFragment, MoodListFragment.class.getSimpleName()).commit();
                 profilePictureImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -171,9 +169,11 @@ public class ProfileFragment extends Fragment implements Observer {
                     }
                 });
 
+                setInfo(user);
                 break;
 
             case "REQUESTED":
+                hideChild();
                 followButton.setText(R.string.requested);
                 followButton.setTextColor(Color.parseColor("#FF6A88"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_outline);
@@ -187,14 +187,26 @@ public class ProfileFragment extends Fragment implements Observer {
                 });
 
                 if (otherUser.isLoaded()) {
-                    setInfo(otherUser);
+                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && user.getFollowingList().contains(otherUserUID)) {
+                        updateButton("FOLLOWING");
+                    } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                        updateButton("NONE");
+                    }
                 }
 
                 UserManager.addUserObserver(otherUserUID, this);
                 otherUser.addObserver(new Observer() {
                     @Override
                     public void update(Observable observable, Object o) {
-                        setInfo(otherUser);
+                        if (user.getFollowingList().contains(otherUser.getUid())) {
+                            updateButton("FOLLOWING");
+                        } else {
+                            if (otherUser.isLoaded()) {
+                                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                                    updateButton("NONE");
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -202,6 +214,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 break;
 
             case "FOLLOWING":
+                showChild();
                 followButton.setText(R.string.unfollow);
                 followButton.setTextColor(Color.parseColor("#A2A2A2"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
@@ -211,29 +224,34 @@ public class ProfileFragment extends Fragment implements Observer {
                         Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
                         user.removeFollowing(otherUser.getUid());
                         updateButton("NONE");
-                        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        if (getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()) != null) {
-                            transaction.remove(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
-                            transaction.commit();
-                        }
                     }
                 });
 
                 if (otherUser.isLoaded()) {
-                    setInfo(otherUser);
-                    fragmentTransaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
-                    fragmentTransaction.commit();
+                    if (otherUser.isLoaded()) {
+                        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                            updateButton("NONE");
+                        } else {
+                            updateButton("REQUESTED");
+                        }
+                    }
                 }
 
                 UserManager.addUserObserver(otherUserUID, this);
                 otherUser.addObserver(new Observer() {
                     @Override
-                    public void update(Observable o, Object arg) {
-                        User u = (User) o;
-                        ProfileFragment.this.setInfo(u);
-                        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(u.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
-                        transaction.commit();
+                    public void update(Observable observable, Object o) {
+                        if (user.getFollowingList().contains(otherUser.getUid())) {
+                            updateButton("FOLLOWING");
+                        } else {
+                            if (otherUser.isLoaded()) {
+                                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                                    updateButton("NONE");
+                                } else {
+                                    updateButton("REQUESTED");
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -241,6 +259,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 break;
 
             case "NONE":
+                hideChild();
                 followButton.setText(R.string.follow);
                 followButton.setTextColor(Color.parseColor("#FFFFFF"));
                 followButton.setBackgroundResource(R.drawable.rounded_button);
@@ -250,23 +269,28 @@ public class ProfileFragment extends Fragment implements Observer {
                         Toast.makeText(getContext(), "FOLLOW", Toast.LENGTH_LONG).show();
                         otherUser.addRequest(user.getUid());
                         updateButton("REQUESTED");
-                        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                        if (getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()) != null) {
-                            transaction.remove(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
-                            transaction.commit();
-                        }
                     }
                 });
 
                 if (otherUser.isLoaded()) {
-                    setInfo(otherUser);
+                    if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                        updateButton("REQUESTED");
+                    }
                 }
 
                 UserManager.addUserObserver(otherUserUID, this);
                 otherUser.addObserver(new Observer() {
                     @Override
                     public void update(Observable observable, Object o) {
-                        setInfo(otherUser);
+                        if (user.getFollowingList().contains(otherUser.getUid())) {
+                            updateButton("FOLLOWING");
+                        } else {
+                            if (otherUser.isLoaded()) {
+                                if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
+                                    updateButton("REQUESTED");
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -332,5 +356,17 @@ public class ProfileFragment extends Fragment implements Observer {
                 user.changeProfilePicture(uri);
             }
         }
+    }
+
+    public void hideChild() {
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        fragmentTransaction.hide(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+        fragmentTransaction.commit();
+    }
+
+    public void showChild() {
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        fragmentTransaction.show(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+        fragmentTransaction.commit();
     }
 }

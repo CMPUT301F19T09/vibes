@@ -135,6 +135,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         }
 
         Collections.sort(this.userObjList, User.sortByName);
+        notifyDataSetChanged();
         return view;
     }
 

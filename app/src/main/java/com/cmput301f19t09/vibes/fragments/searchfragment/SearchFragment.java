@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -71,7 +72,11 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String uid = (String) adapterView.getItemAtPosition(i);
-                ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment(uid);
+                if (uid == UserManager.getCurrentUserUID()) {
+                    ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment();
+                } else {
+                    ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment(uid);
+                }
             }
         });
 
