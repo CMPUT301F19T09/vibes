@@ -16,11 +16,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
+/**
+ * This class helps rendering the emoticon image on
+ * the map fragment. It controls the cluster views
+ * as well as the views of the single items.
+ */
 public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
 
     private Context context;
     private GoogleMap gmap;
 
+    /**
+     * Constructor for CustomClusterRenderer
+     * @param context
+     * @param map
+     * @param clusterManager
+     */
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
@@ -28,6 +39,13 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
         this.setMinClusterSize(1);
     }
 
+    /**
+     * Before the cluster item is rendered, it updates
+     * the marker to show the emoticon with its specific
+     * defined in EmotionalState.
+     * @param event
+     * @param markerOptions
+     */
     @Override
     protected void onBeforeClusterItemRendered(MoodEvent event, MarkerOptions markerOptions) {
         Integer emoticon = (Integer) EmotionalState.getMap().get(event.getState().getEmotion()).first;

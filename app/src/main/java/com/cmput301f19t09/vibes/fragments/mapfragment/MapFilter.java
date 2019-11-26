@@ -12,8 +12,12 @@ import androidx.fragment.app.Fragment;
 
 import com.cmput301f19t09.vibes.R;
 
-import java.util.Map;
-
+/**
+ * This is the MapFilter fragment that is used
+ * to choose between the last mood of the people
+ * that the primary user is following or the moods
+ * of the primary user.
+ */
 public class MapFilter extends Fragment {
     public static final int SHOW_MINE = 0;
     public static final int SHOW_EVERYONE = 1;
@@ -52,12 +56,10 @@ public class MapFilter extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View v = inflater.inflate(R.layout.map_filter, container, false);
 
         RadioButton youButton = v.findViewById(R.id.radioYou);
         RadioButton everyoneButton = v.findViewById(R.id.radioFollowed);
-
         RadioGroup group = v.findViewById(R.id.radioGroup);
 
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
