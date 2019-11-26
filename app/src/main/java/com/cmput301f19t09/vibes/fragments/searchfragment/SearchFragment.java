@@ -6,7 +6,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -15,8 +14,6 @@ import android.widget.Toast;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.UserManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -58,25 +55,17 @@ public class SearchFragment extends Fragment {
         ImageButton searchButton = view.findViewById(R.id.search_button);
         searchButton.setImageResource(R.drawable.ic_search_grey_36dp);
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), "SEARCHING", Toast.LENGTH_LONG).show();
-            }
-        });
+        searchButton.setOnClickListener(view1 -> Toast.makeText(getContext(), "SEARCHING", Toast.LENGTH_LONG).show());
 
         adapter = new SearchListAdapter(getContext());
         searchList.setAdapter(adapter);
 
-        searchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String uid = (String) adapterView.getItemAtPosition(i);
-                if (uid == UserManager.getCurrentUserUID()) {
-                    ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment();
-                } else {
-                    ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment(uid);
-                }
+        searchList.setOnItemClickListener((adapterView, view12, i, l) -> {
+            String uid = (String) adapterView.getItemAtPosition(i);
+            if (uid.equals(UserManager.getCurrentUserUID())) {
+                ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment();
+            } else {
+                ((MainActivity) Objects.requireNonNull(getActivity())).setProfileFragment(uid);
             }
         });
 
@@ -92,25 +81,22 @@ public class SearchFragment extends Fragment {
                     collectionReference.orderBy("username")
                             .startAt(searchField.getText().toString())
                             .endAt(searchField.getText().toString() + "\uf8ff")
-                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            QuerySnapshot documentSnapshots = task.getResult();
+                            .get().addOnCompleteListener(task -> {
+                                QuerySnapshot documentSnapshots = task.getResult();
 
-                            if (searchField.getText().length() == 0) {
-                                return;
-                            }
+                                if (searchField.getText().length() == 0) {
+                                    return;
+                                }
 
-                            userList.clear();
-                            adapter.clear();
-                            assert documentSnapshots != null;
-                            for (QueryDocumentSnapshot document : documentSnapshots) {
-                                userList.add(document.getId());
-                            }
+                                userList.clear();
+                                adapter.clear();
+                                assert documentSnapshots != null;
+                                for (QueryDocumentSnapshot document : documentSnapshots) {
+                                    userList.add(document.getId());
+                                }
 
-                            adapter.refreshData(userList);
-                        }
-                    });
+                                adapter.refreshData(userList);
+                            });
                 }
             }
 

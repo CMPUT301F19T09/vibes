@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
@@ -20,6 +19,7 @@ import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -121,29 +121,31 @@ public class ProfileFragment extends Fragment implements Observer {
             transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
             transaction.commitNow();
 
-            if (user.getFollowingList().contains(otherUser.getUid())) {
-                updateButton("FOLLOWING");
-            } else {
-                if (otherUser.isLoaded()) {
-                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                        updateButton("NONE");
-                    } else {
-                        updateButton("REQUESTED");
-                    }
+            if (otherUser.isLoaded()) {
+                if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)) {
+                    updateButton("REQUESTED");
+                } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)){
+                    updateButton("NONE");
+                } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && user.getFollowingList().contains(otherUserUID)) {
+                    updateButton("FOLLOWING");
                 }
-
-                otherUser.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable observable, Object o) {
-                        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                            updateButton("NONE");
-                        } else {
-                            updateButton("REQUESTED");
-                        }
-                    }
-                });
             }
+
+            otherUser.addObserver((observable, o) -> {
+                FragmentTransaction transaction1 = getChildFragmentManager().beginTransaction();
+                transaction1.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
+                transaction1.commitNow();
+
+                if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)) {
+                    updateButton("REQUESTED");
+                } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)){
+                    updateButton("NONE");
+                } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && user.getFollowingList().contains(otherUserUID)) {
+                    updateButton("FOLLOWING");
+                }
+            });
         }
+
         return view;
     }
 
@@ -158,16 +160,10 @@ public class ProfileFragment extends Fragment implements Observer {
     }
 
     private void updateButton(String mode) {
-        final FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         switch (mode) {
             case "OWN":
                 followButton.setVisibility(View.INVISIBLE);
-                profilePictureImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        openFileExplorer();
-                    }
-                });
+                profilePictureImageView.setOnClickListener(view -> openFileExplorer());
 
                 setInfo(user);
                 break;
@@ -177,37 +173,9 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setText(R.string.requested);
                 followButton.setTextColor(Color.parseColor("#FF6A88"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_outline);
-                followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getContext(), "CANCEL", Toast.LENGTH_LONG).show();
-                        otherUser.removeRequest(user.getUid());
-                        updateButton("NONE");
-                    }
-                });
-
-                if (otherUser.isLoaded()) {
-                    if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && user.getFollowingList().contains(otherUserUID)) {
-                        updateButton("FOLLOWING");
-                    } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                        updateButton("NONE");
-                    }
-                }
-
-                UserManager.addUserObserver(otherUserUID, this);
-                otherUser.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable observable, Object o) {
-                        if (user.getFollowingList().contains(otherUser.getUid())) {
-                            updateButton("FOLLOWING");
-                        } else {
-                            if (otherUser.isLoaded()) {
-                                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                                    updateButton("NONE");
-                                }
-                            }
-                        }
-                    }
+                followButton.setOnClickListener(view -> {
+                    otherUser.removeRequest(user.getUid());
+                    updateButton("NONE");
                 });
 
                 setInfo(otherUser);
@@ -218,41 +186,9 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setText(R.string.unfollow);
                 followButton.setTextColor(Color.parseColor("#A2A2A2"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
-                followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getContext(), "UNFOLLOW", Toast.LENGTH_LONG).show();
-                        user.removeFollowing(otherUser.getUid());
-                        updateButton("NONE");
-                    }
-                });
-
-                if (otherUser.isLoaded()) {
-                    if (otherUser.isLoaded()) {
-                        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                            updateButton("NONE");
-                        } else {
-                            updateButton("REQUESTED");
-                        }
-                    }
-                }
-
-                UserManager.addUserObserver(otherUserUID, this);
-                otherUser.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable observable, Object o) {
-                        if (user.getFollowingList().contains(otherUser.getUid())) {
-                            updateButton("FOLLOWING");
-                        } else {
-                            if (otherUser.isLoaded()) {
-                                if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                                    updateButton("NONE");
-                                } else {
-                                    updateButton("REQUESTED");
-                                }
-                            }
-                        }
-                    }
+                followButton.setOnClickListener(view -> {
+                    user.removeFollowing(otherUser.getUid());
+                    updateButton("NONE");
                 });
 
                 setInfo(otherUser);
@@ -263,35 +199,9 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setText(R.string.follow);
                 followButton.setTextColor(Color.parseColor("#FFFFFF"));
                 followButton.setBackgroundResource(R.drawable.rounded_button);
-                followButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getContext(), "FOLLOW", Toast.LENGTH_LONG).show();
-                        otherUser.addRequest(user.getUid());
-                        updateButton("REQUESTED");
-                    }
-                });
-
-                if (otherUser.isLoaded()) {
-                    if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                        updateButton("REQUESTED");
-                    }
-                }
-
-                UserManager.addUserObserver(otherUserUID, this);
-                otherUser.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable observable, Object o) {
-                        if (user.getFollowingList().contains(otherUser.getUid())) {
-                            updateButton("FOLLOWING");
-                        } else {
-                            if (otherUser.isLoaded()) {
-                                if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID())) {
-                                    updateButton("REQUESTED");
-                                }
-                            }
-                        }
-                    }
+                followButton.setOnClickListener(view -> {
+                    otherUser.addRequest(user.getUid());
+                    updateButton("REQUESTED");
                 });
 
                 setInfo(otherUser);
@@ -311,15 +221,23 @@ public class ProfileFragment extends Fragment implements Observer {
             profilePictureImageView.setClipToOutline(true);
         }
 
-        user.addObserver(new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                fullNameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-                userNameTextView.setText(user.getUserName());
-                Glide.with(ProfileFragment.this).load(user.getProfileURL()).into(profilePictureImageView);
-                profilePictureImageView.setClipToOutline(true);
-            }
+        user.addObserver((observable, o) -> {
+            fullNameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            userNameTextView.setText(user.getUserName());
+            Glide.with(ProfileFragment.this).load(user.getProfileURL()).into(profilePictureImageView);
+            profilePictureImageView.setClipToOutline(true);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (otherUser != null) {
+            UserManager.addUserObserver(otherUserUID, this);
+        } else {
+            UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
+        }
     }
 
     /**
@@ -358,15 +276,15 @@ public class ProfileFragment extends Fragment implements Observer {
         }
     }
 
-    public void hideChild() {
+    private void hideChild() {
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.hide(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+        fragmentTransaction.hide(Objects.requireNonNull(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName())));
         fragmentTransaction.commit();
     }
 
-    public void showChild() {
+    private void showChild() {
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.show(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()));
+        fragmentTransaction.show(Objects.requireNonNull(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName())));
         fragmentTransaction.commit();
     }
 }
