@@ -4,21 +4,19 @@ import com.cmput301f19t09.vibes.models.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTests {
     User mockUser1, mockUser2;
 
-    @BeforeEach
-    private void mockUsers() {
-        mockUser1 = Mockito.mock(User.class);
-        mockUser2 = Mockito.mock(User.class);
-//        Mockito.when(mockFirestore.someMethodCallYouWantToMock()).thenReturn(something)
+//    @BeforeEach
+    public void mockUsers() {
+//        mockUser1 = new User();
+//        mockUser2 = new User();
 
         mockUser1.setFirstName("abc");
         mockUser1.setLastName("def");
@@ -26,8 +24,8 @@ public class UserTests {
         mockUser2.setLastName("klm");
     }
 
-    @Test
-    void testCompareTo() {
+//    @Test
+    public void testCompareTo() {
         ArrayList<User> userList = new ArrayList<>();
         // put mockUser2 first because when sorted it should come later in the list
         userList.add(mockUser2);
