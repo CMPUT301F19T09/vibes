@@ -120,14 +120,17 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
 
         // Create a filter fragment and add it to the view
         // this allows switching between own moods and others' moods
-        if (filterFragment == null)
-        {
+        if (filterFragment == null) {
             filterFragment = MoodListFilterFragment.newInstance();
 
             FragmentManager manager = getChildFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.add(R.id.filter_root, filterFragment);
             transaction.commit();
+
+            if (displayType == OWN_MOODS_LOCKED) {
+                filterFragment.disableRadioButtons();
+            }
 
             filterFragment.addOnFilterListener(this);
         }

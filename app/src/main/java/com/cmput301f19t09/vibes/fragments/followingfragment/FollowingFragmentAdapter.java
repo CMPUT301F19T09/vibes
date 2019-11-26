@@ -134,11 +134,13 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             });
         }
 
+        Collections.sort(this.userObjList, User.sortByName);
         notifyDataSetChanged();
         return view;
     }
 
     void refreshData(ArrayList<String> uidList) {
+        userObjList.clear();
         userList.clear();
         clear();
         notifyDataSetChanged();
@@ -147,7 +149,15 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             return;
         }
 
+        for (String uid : uidList) {
+
+        }
+
         userList.addAll(uidList);
         addAll(uidList);
+    }
+
+    public ArrayList<User> getUserObjList() {
+        return userObjList;
     }
 }

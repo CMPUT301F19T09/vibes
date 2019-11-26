@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
+import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
@@ -26,6 +27,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     // description optional
     private EmotionalState state; // not optional
     private double socialSituation; // optional
+    private Uri photo;
     private Location location; // optional
     private User user; // the user that the mood is associated with
 
@@ -49,11 +51,12 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   user
      *      The user that the created the MoodEvent.
      */
-    public MoodEvent(LocalDate date, LocalTime time, String description,
-                     EmotionalState state, int socialSituation, Location location, User user) {
+    public MoodEvent(LocalDate date, LocalTime time, String description, EmotionalState state,
+                     int socialSituation, Uri photo, Location location, User user) {
         super(date, time, description);
         this.state = state;
         this.socialSituation = socialSituation;
+        this.photo = photo;
         this.location = location;
         this.user = user;
     }
@@ -107,6 +110,14 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     public void setSocialSituation(double socialSituation) {
         this.socialSituation = socialSituation;
+    }
+
+    public Uri getPhoto() {
+        return this.photo;
+    }
+
+    public void setPhoto(Uri photo) {
+        this.photo = photo;
     }
 
     /**
