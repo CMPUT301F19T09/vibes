@@ -174,7 +174,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 break;
 
             case "REQUESTED":
-                followButton.setText("R E Q U E S T E D");
+                followButton.setText(R.string.requested);
                 followButton.setTextColor(Color.parseColor("#FF6A88"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_outline);
                 followButton.setOnClickListener(new View.OnClickListener() {
@@ -202,7 +202,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 break;
 
             case "FOLLOWING":
-                followButton.setText("U N F O L L O W");
+                followButton.setText(R.string.unfollow);
                 followButton.setTextColor(Color.parseColor("#A2A2A2"));
                 followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
                 followButton.setOnClickListener(new View.OnClickListener() {
@@ -241,7 +241,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 break;
 
             case "NONE":
-                followButton.setText("F O L L O W");
+                followButton.setText(R.string.follow);
                 followButton.setTextColor(Color.parseColor("#FFFFFF"));
                 followButton.setBackgroundResource(R.drawable.rounded_button);
                 followButton.setOnClickListener(new View.OnClickListener() {
