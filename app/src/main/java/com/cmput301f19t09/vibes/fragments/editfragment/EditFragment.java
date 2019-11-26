@@ -3,11 +3,9 @@ package com.cmput301f19t09.vibes.fragments.editfragment;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -16,10 +14,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -35,7 +31,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,20 +38,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.BuildConfig;
 import com.cmput301f19t09.vibes.MainActivity;
-import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -78,7 +66,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
-import static java.util.jar.Pack200.Packer.ERROR;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -110,10 +97,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
 
-    // photos
+    // photo for reason
     private Uri photoUri;
-    private File photoFile;
-    private Bitmap imageBitmap;
     private ImageView photoImage;
     private Button captureButton;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
@@ -331,7 +316,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageBitmap = null;
+                photoUri = null;
                 photoImage.setImageResource(R.drawable.empty_picture_image);
             }
         });
@@ -366,7 +351,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
             // set moodEvent to be an empty new MoodEvent object for the current user
-            moodEvent = new MoodEvent(null, null, null, null, -1, null, user);
+            moodEvent = new MoodEvent(null, null, null, null, -1, null, null, user);
 
             // set the current date
             LocalDate date = LocalDate.now();
@@ -463,6 +448,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     moodEvent.setDescription("");
                 } else {
                     moodEvent.setDescription(editReasonView.getText().toString());
+                }
+
+                if (photoUri != null) {
+                    moodEvent.setPhoto(photoUri);
+                } else {
+                    moodEvent.setPhoto(null);
                 }
 
                 if (!editing) {

@@ -2,6 +2,7 @@ package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.R;
 import com.google.firebase.firestore.CollectionReference;
@@ -338,6 +339,11 @@ public class User extends Observable implements Serializable {
                 String reason = (String) moodEvent.get("reason");
                 Number social = (Number) moodEvent.get("social");
                 Long timestamp = (Long) moodEvent.get("timestamp");
+                String photoPath = (String) moodEvent.get("photo");
+                if  (photoPath != null){
+                    Log.d("parseToMoodEvent", photoPath);
+                }
+                Uri photo = null;
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
                 Location location;
 
@@ -378,6 +384,7 @@ public class User extends Observable implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
+                        photo,
                         location,
                         this);
                 events.add(event);
@@ -431,7 +438,13 @@ public class User extends Observable implements Serializable {
             } else {
                 mood.put("location", null);
             }
-            mood.put("photo", null); // Photo not implemented yet
+            if (moodEvent.getPhoto() != null) {
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".png";
+                mood.put("photo", photoPath);
+                changeMoodPhoto(moodEvent.getPhoto());
+            } else {
+                mood.put("photo", null);
+            }
             mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
@@ -462,7 +475,13 @@ public class User extends Observable implements Serializable {
             } else {
                 mood.put("location", null);
             }
-            mood.put("photo", null); // Photo not implemented yet
+            if (moodEvent.getPhoto() != null) {
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".png";
+                mood.put("photo", photoPath);
+                changeMoodPhoto(moodEvent.getPhoto());
+            } else {
+                mood.put("photo", null);
+            }
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
             mood.put("timestamp", moodEvent.getEpochUTC());
@@ -508,6 +527,23 @@ public class User extends Observable implements Serializable {
                 }).addOnFailureListener(e -> {
 
                 });
+    }
+
+    public void changeMoodPhoto(Uri uri) {
+        String photoPath = "reason_photos/"+uri.hashCode()+".png";
+        storageReference = storage.getReference(photoPath);
+        storageReference.putFile(uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
 
     /**
