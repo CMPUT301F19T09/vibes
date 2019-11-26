@@ -9,6 +9,7 @@
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:checkedButton="@id/radioYou"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingBottom="5dp">
@@ -27,7 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginTop="5dp"
-            android:checked="true"
             android:fontFamily="@font/roboto_thin"
             android:text="You" />
     </RadioGroup>

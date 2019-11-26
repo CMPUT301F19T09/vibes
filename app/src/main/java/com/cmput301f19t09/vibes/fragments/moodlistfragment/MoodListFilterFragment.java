@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,7 +61,7 @@ public class MoodListFilterFragment extends Fragment
         view = inflater.inflate(R.layout.mood_list_filter, container, false);
 
         View adapterSelectorLayout = view.findViewById(R.id.adapter_selector);
-
+        RadioGroup radioGroup = adapterSelectorLayout.findViewById(R.id.radioGroup);
         RadioButton ownMoodsButton = adapterSelectorLayout.findViewById(R.id.radioYou);
         RadioButton followedMoodsButton = adapterSelectorLayout.findViewById(R.id.radioFollowed);
 
@@ -104,23 +105,18 @@ public class MoodListFilterFragment extends Fragment
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-                        strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
-                        /*
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your filter is");
                         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog,int which) {
-                                if (strName.equals("No Filter")) strName = null;
-                                filter(strName);
                                 dialog.dismiss();
                             }
                         });
                         builderInner.show();
 
-                         */
-
+                        strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
                         filter(strName);
                     }
                 });
@@ -128,36 +124,32 @@ public class MoodListFilterFragment extends Fragment
             }
         });
 
-        /*
-        If it isn't locked, add listeners to the radio buttons
-         */
-        if (!locked)
-        {
-            ownMoodsButton.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == ownMoodsButton.getId())
                 {
                     for (MoodFilterListener listener : listeners)
                     {
                         listener.showOwnMoods();
                     }
+                    followedMoodsButton.setChecked(false);
                 }
-            });
-
-            followedMoodsButton.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
+                else
                 {
                     for (MoodFilterListener listener : listeners)
                     {
                         listener.showFollowedMoods();
                     }
+                    ownMoodsButton.setChecked(false);
                 }
-            });
-        }
-        else
+            }
+        });
+
+        /*
+        If it isn't locked, add listeners to the radio buttons
+         */
+        if (locked)
         {
             view.findViewById(R.id.radioGroup).setVisibility(View.INVISIBLE);
         }
