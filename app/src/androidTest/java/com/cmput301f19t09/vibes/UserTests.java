@@ -138,13 +138,18 @@ public class UserTests {
      * Login to ?userhelper test account.
      */
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         try {
             Login.setUp("?userhelper@example.com", "000000");
         }
         catch (InterruptedException e) {
             Log.d("Test Exception", e.toString());
         }
+
+        // check that MainActivity is displayed for navigation and that MoodListFragment is displayed
+        Thread.sleep(100);
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
     }
 
     /**
@@ -153,11 +158,6 @@ public class UserTests {
      */
     @Test
     public void testAddRemoveMoodEvent() throws InterruptedException {
-        // check that MainActivity is displayed for navigation and that MoodListFragment is displayed
-        Thread.sleep(100);
-        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
-        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
-
         Thread.sleep(100);
         int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + start);
@@ -279,5 +279,82 @@ public class UserTests {
         onView(withId(R.id.confirm_button)).perform(click());
         Thread.sleep(100);
         deleteMoods(3);
+    }
+
+    /**
+     * Tests creating a mood and editing the newly created mood. Verifies that the when
+     * we are editing the mood, that the EditText and TextView's are set correctly with
+     * the details that we set when creating the mood event. Edits the mood event details and
+     * again attempts to re-edit and check if the details are set correctly. Tests User.editMood
+     * and EditFragment.
+     */
+    @Test
+    public void testEditMood() throws InterruptedException {
+        // navigate to EditFragment
+        onView(withId(R.id.main_add_button)).perform(click());
+        // we grant device location permissions by default so dont need to interact with that interface
+        Thread.sleep(100);
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
+
+        // create a new MoodEvent
+        // select ANGER
+        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(8).perform(click());
+        onView(withId(R.id.edit_situation_view)).perform(typeText("0"));
+        closeSoftKeyboard();
+        onView(withId(R.id.edit_reason_view)).perform(typeText("three word desc"));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_submit_view)).perform(click());
+
+        // click on the newly created mood in the list
+        Thread.sleep(100);
+        onData(anything()).inAdapterView(withId(R.id.ml_listview)).atPosition(0).perform(click());
+
+        Thread.sleep(100);
+        onView(withId(R.id.mood_details_root)).check(matches(isDisplayed()));
+        // click the edit button
+        onView(withId(R.id.edit_button)).perform(click());
+
+        Thread.sleep(100);
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
+
+        // verify that the fields are populated correctly
+        onView(withId(R.id.state_text_view)).check(matches(withText("three word desc")));
+        onView(withId(R.id.edit_situation_view)).check(matches(withText("0")));
+        onView(withId(R.id.edit_reason_view)).check(matches(withText("ANGER")));
+
+        // select new mood; HAPPINESS
+        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
+        onView(withId(R.id.edit_situation_view)).perform(typeText("1"));
+        closeSoftKeyboard();
+        onView(withId(R.id.edit_reason_view)).perform(typeText("a new desc"));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_submit_view)).perform(click());
+
+        // check that MainActivity is displayed for navigation and that MoodListFragment is displayed
+        Thread.sleep(100);
+        onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
+        onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
+
+        // click on the newly edited mood
+        Thread.sleep(100);
+        onData(anything()).inAdapterView(withId(R.id.ml_listview)).atPosition(0).perform(click());
+
+        Thread.sleep(100);
+        onView(withId(R.id.mood_details_root)).check(matches(isDisplayed()));
+        // click the edit button
+        onView(withId(R.id.edit_button)).perform(click());
+
+        Thread.sleep(100);
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
+
+        // verify that the fields are populated correctly again
+        onView(withId(R.id.state_text_view)).check(matches(withText("a new desc")));
+        onView(withId(R.id.edit_situation_view)).check(matches(withText("1")));
+        onView(withId(R.id.edit_reason_view)).check(matches(withText("HAPPINESS")));
+        closeSoftKeyboard();
+        onView(withId(R.id.button_cancel_view)).perform(click());
+
+        Thread.sleep(100);
+        deleteMoods(1);
     }
 }
