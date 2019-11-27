@@ -110,8 +110,10 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         String timeString = "~";
 
-        Glide.with(this).load(event.getPhoto()).into(reasonImage);
-        reasonImage.getLayoutParams().height = 800;
+        if (event.getPhoto() != null) {
+            Glide.with(this).load(event.getPhoto()).into(reasonImage);
+            reasonImage.getLayoutParams().height = 800;
+        }
 
         /*
         Set the field that displays time (e.g. ~5s)
