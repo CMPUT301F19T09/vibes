@@ -340,14 +340,6 @@ public class User extends Observable implements Serializable {
                 Long timestamp = (Long) moodEvent.get("timestamp");
                 String photoPath = (String) moodEvent.get("photo");
 
-                final Uri[] photo = {null};
-                if (photoPath != null) {
-                    storageReference = storage.getReference(photoPath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> photo[0] = uri).addOnFailureListener(e -> {
-
-                    });
-                }
-
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
                 Location location;
 
@@ -388,9 +380,15 @@ public class User extends Observable implements Serializable {
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
-                        photo[0],
+                        null,
                         location,
                         this);
+                if (photoPath != null) {
+                    storageReference = storage.getReference(photoPath);
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(uri -> event.setPhoto(uri))
+                            .addOnFailureListener(e -> event.setPhoto(null));
+                }
                 events.add(event);
             }
         }
@@ -443,7 +441,7 @@ public class User extends Observable implements Serializable {
                 mood.put("location", null);
             }
             if (moodEvent.getPhoto() != null) {
-                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".png";
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
                 changeMoodPhoto(moodEvent.getPhoto());
             } else {
@@ -480,7 +478,7 @@ public class User extends Observable implements Serializable {
                 mood.put("location", null);
             }
             if (moodEvent.getPhoto() != null) {
-                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".png";
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
                 changeMoodPhoto(moodEvent.getPhoto());
             } else {
@@ -534,7 +532,7 @@ public class User extends Observable implements Serializable {
     }
 
     private void changeMoodPhoto(Uri uri) {
-        String photoPath = "reason_photos/"+uri.hashCode()+".png";
+        String photoPath = "reason_photos/"+uri.hashCode()+".jpeg";
         storageReference = storage.getReference(photoPath);
         storageReference.putFile(uri)
                 .addOnSuccessListener(taskSnapshot -> {
