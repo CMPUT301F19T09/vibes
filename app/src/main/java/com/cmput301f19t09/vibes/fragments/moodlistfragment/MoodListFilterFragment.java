@@ -89,7 +89,7 @@ public class MoodListFilterFragment extends Fragment
             if(mood != "No Filter") {
                 EmotionalState emotion = new EmotionalState(mood.toUpperCase());
                 moodImage.setImageResource(emotion.getImageFile());
-                moodImage.setColorFilter(emotion.getColour());
+//                moodImage.setColorFilter(emotion.getColour());
 
             }else{
 //                moodImage.setImageResource(R.drawable.no);
