@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
  */
 public class MoodDetailsFragment extends Fragment
 {
-    /*
+    /**
         Create a new instance of the Fragment for the specified event
      */
     public static MoodDetailsFragment newInstance(MoodEvent event)
@@ -105,6 +105,10 @@ public class MoodDetailsFragment extends Fragment
         Duration timeSincePost = Duration.between(timeOfPost, LocalDateTime.now());
 
         String timeString = "~";
+
+        Glide.with(this).load(event.getPhoto()).into(reasonImage);
+        reasonImage.getLayoutParams().height = 800;
+
 
         if (timeSincePost.getSeconds() < 60)
         {
