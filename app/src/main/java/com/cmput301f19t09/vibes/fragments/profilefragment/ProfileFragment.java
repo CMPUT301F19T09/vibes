@@ -117,7 +117,10 @@ public class ProfileFragment extends Fragment implements Observer {
             // calling the child fragment MoodDetailsFragment
 
             if (otherUser.isLoaded()) {
-                createChild();
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
+                transaction.commitNow();
+
                 checkMode();
             }
 
