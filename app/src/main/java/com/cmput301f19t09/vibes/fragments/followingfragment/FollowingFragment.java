@@ -110,6 +110,8 @@ public class FollowingFragment extends Fragment {
             requestedAdapter.refreshData(requestedList);
         });
 
+        // Allowing two listviews to scroll as one
+        // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
         ViewTreeObserver listVTO = followingLinearLayout.getViewTreeObserver();
         listVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -131,6 +133,10 @@ public class FollowingFragment extends Fragment {
         return view;
     }
 
+    /**
+     *
+     * @param listView
+     */
     private void resizeListView(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         int count = listAdapter.getCount();
@@ -146,5 +152,6 @@ public class FollowingFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
         listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }
