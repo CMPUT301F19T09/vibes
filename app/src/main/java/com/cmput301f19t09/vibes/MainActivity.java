@@ -20,6 +20,8 @@ import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
@@ -157,6 +159,13 @@ public class MainActivity extends FragmentActivity {
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
+            }
+        });
+
+        user.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                Glide.with(MainActivity.this).load(user.getProfileURL()).into(profileButton);
             }
         });
 
