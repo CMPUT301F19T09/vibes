@@ -22,7 +22,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
-/*
+/**
     This class is a Fragment that displays either a users own list of MoodEvents, or the list
     of their followers' most recent MoodEvents
  */
@@ -38,7 +38,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
     private User user;
     private MoodListFilterFragment filterFragment;
 
-    /*
+    /**
     Create a new instance of MoodListFragment, passing the displayType (int) as an argument to the instance
     @param displayType
         the display type of the new Fragment
@@ -58,15 +58,13 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
     public void onStart() {
         displayType = getArguments().getInt("type");
 
-        if (displayType == OWN_MOODS_LOCKED)
-        {
+        if (displayType == OWN_MOODS_LOCKED) {
             filterFragment.disableRadioButtons();
         }
 
         MoodListAdapter newAdapter;
 
-        switch (displayType)
-        {
+        switch (displayType) {
             case FOLLOWED_MOODS:    // Show the most recent mood events of users you follow
                 newAdapter = new FollowedMoodListAdapter(getContext());
                 break;
@@ -89,13 +87,12 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         super.onResume();
     }
 
-    /*
+    /**
     Intializes the View and adapter
     */
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         Log.d("TEST/MoodListFragment", "onCreateView");
         View view = inflater.inflate(R.layout.mood_list, container, false);
 
@@ -134,7 +131,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         return view;
     }
 
-    /*
+    /**
     Set the MoodListAdapter to adapter
     @param adapter
         The MoodListAdapter to use
@@ -151,7 +148,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         adapter.refreshData();
     }
 
-    /*
+    /**
     Set the adapter to an OwnMoodListAdapter
      */
     public void showOwnMoods()
@@ -165,7 +162,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         displayType = OWN_MOODS;
     }
 
-    /*
+    /**
     Set the adapter to an OwnMoodListAdapter
      */
     public void showFollowedMoods()
@@ -179,7 +176,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         displayType = FOLLOWED_MOODS;
     }
 
-    /*
+    /**
     On pause, destroy the adapter. This causes it to remove any observers it has on user objects
      */
     @Override
