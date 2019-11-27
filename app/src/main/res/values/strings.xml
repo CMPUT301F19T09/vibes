@@ -6,7 +6,7 @@
     <string name="state">Emotional state</string>
     <string name="enter_context">Social Situation (+ decimal)</string>
     <string name="use_location">Use location</string>
-    <string name="enter_reason">Reason (20 characters or 3 words)</string>
+    <string name="enter_reason">Max 20 characters / 3 words</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
     <string name="permission_rationale">Location permission is needed for core functionality</string>

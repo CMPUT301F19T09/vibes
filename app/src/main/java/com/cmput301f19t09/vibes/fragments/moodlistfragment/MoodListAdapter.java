@@ -100,6 +100,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
             emotionImage.setImageResource(event.getState().getImageFile());
             emotionImage.setClipToOutline(true);
 //            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
+            Log.d("TEST/getview", "color is: " + String.format("%x", event.getState().getColour()));
             emotionImage.setColorFilter(event.getState().getColour());
 
             Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());

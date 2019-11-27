@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
@@ -30,6 +33,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,6 +49,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -62,9 +67,13 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
 import static android.app.Activity.RESULT_OK;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
@@ -94,17 +103,17 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     // state setting
     private GridView stateGridView;
     private TextView stateTextView;
-    private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
+    private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
 
     // photo for reason
     private Uri photoUri;
     private ImageView photoImage;
-    private Button captureButton;
+    private ImageButton captureButton;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-    private Button galleryButton;
+    private ImageButton galleryButton;
     private static final int REQUEST_IMAGE_GALLERY = 3;
-    private Button clearButton;
+    private ImageButton clearButton;
     private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 4;
 
     private EditText editSituationView;
@@ -264,17 +273,94 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         buttonCancelView.setEnabled(true);
 
 
-        stateGridView = view.findViewById(R.id.state_grid_view);
-        stateGridView.setAdapter(new ImageAdapter(getActivity()));
-        stateGridView.setOnItemClickListener(this);
-        stateTextView = view.findViewById(R.id.state_text_view);
+        //stateGridView = view.findViewById(R.id.state_grid_view);
+        //stateGridView.setAdapter(new ImageAdapter(getActivity()));
+        //stateGridView.setOnItemClickListener(this);
+        //stateTextView = view.findViewById(R.id.state_text_view);
+        
+        ChipGroup stateChipGroup = view.findViewById(R.id.emotion_chip_group);
+        ImageView emotionImageView = view.findViewById(R.id.emotion_image);
+
+        emotionImageView.setImageResource(R.drawable.ic_cancel_black_36dp);
+        emotionImageView.setColorFilter(0xFFFF0000);
+
+        int bgColor = ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null);
+
+        for (String key : emotionalStateKeys)
+        {
+            Chip emotionChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+            stateChipGroup.addView(emotionChip);
+
+            emotionChip.setCheckable(true);
+            emotionChip.setClickable(true);
+
+            EmotionalState state = new EmotionalState(key);
+
+            emotionChip.setText(key.charAt(0) + key.substring(1).toLowerCase());
+            emotionChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                    {
+                        emotionalState = state;
+
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(state.getColour()));
+                        emotionImageView.setImageResource(state.getImageFile());
+                        emotionImageView.setColorFilter(state.getColour());
+                        Log.d("TEST/Chips", state.getEmotion() + " is checked");
+                    } else
+                    {
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(bgColor));
+                        Log.d("TEST/Chips", state.getEmotion() + " is unchecked");
+                    }
+                }
+            });
+        }
+
+        stateChipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ChipGroup chipGroup, int i) {
+                if (i == -1)
+                {
+                    emotionalState = null;
+                    emotionImageView.setImageResource(R.drawable.ic_cancel_black_36dp);
+                    emotionImageView.setColorFilter(Color.RED);
+                    buttonSubmitView.setEnabled(false);
+                }
+            }
+        });
+
+        stateChipGroup.setClickable(true);
+        stateChipGroup.setEnabled(true);
+
+        ChipGroup socialChipGroup = view.findViewById(R.id.social_chip_group);
+
+        List<String> socialStrings = new ArrayList<>();
+        socialStrings.add("Alone");
+        socialStrings.add("With Someone Else");
+        socialStrings.add("With a Few People");
+        socialStrings.add("In a Group");
+        socialStrings.add("In a Crowd");
+
+        for (String s : socialStrings)
+        {
+            Chip socialChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+
+            socialChip.setClickable(true);
+            socialChip.setCheckable(true);
+
+            socialChip.setText(s);
+
+            socialChipGroup.addView(socialChip);
+        }
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
-        editSituationView = view.findViewById(R.id.edit_situation_view);
+        //editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         photoImage = view.findViewById(R.id.photo_image);
+        photoImage.setVisibility(GONE);
         captureButton = view.findViewById(R.id.capture_button);
         captureButton.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -313,11 +399,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             }
         });
         clearButton = view.findViewById(R.id.clear_photo_button);
+        clearButton.setVisibility(GONE);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 photoUri = null;
-                photoImage.setImageResource(R.drawable.empty_picture_image);
+                //photoImage.setImageResource(R.drawable.empty_picture_image);
+                photoImage.setVisibility(GONE);
+                clearButton.setVisibility(GONE);
             }
         });
 
@@ -330,7 +419,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             timeTextView.setText(moodEvent.getTimeString());
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
                 String situationString = Double.toString(moodEvent.getSocialSituation());
-                editSituationView.setText(situationString);
+                //editSituationView.setText(situationString);
+                //socialChipGroup.setSingleSelection();
             }
             editReasonView.setText(moodEvent.getDescription());
             emotionalState = moodEvent.getState();
@@ -496,13 +586,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (adapterView.getId() == R.id.state_grid_view) {
-            emotionalState = new EmotionalState(stateKeys.get(i));
+        /*if (adapterView.getId() == R.id.state_grid_view) {
+            emotionalState = new EmotionalState(emotionalStateKeys.get(i));
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
             // a mood has been selected so all required fields have been set; allow submitting MoodEvent
             buttonSubmitView.setEnabled(true);
-        }
+        }*/
     }
 
     public void onButtonPressed(Uri uri) {
@@ -748,11 +838,15 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK && data != null) {
                     photoUri = data.getData();
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
                     Glide.with(this).load(photoUri).into(photoImage);
                 }
                 break;
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
                     Glide.with(this).load(photoUri).into(photoImage);
                 }
                 break;
