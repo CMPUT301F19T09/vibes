@@ -17,9 +17,6 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * FollowingFragmentAdapter is an ArrayAdapter that is used for both ListView's
@@ -27,7 +24,6 @@ import java.util.Observer;
  */
 public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     private ArrayList<String> userList;
-    private ArrayList<User> userObjList;
     private Context context;
     private int viewMode;
 
@@ -42,7 +38,6 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         super(context, 0);
         this.context = context;
         this.userList = new ArrayList<>();
-        this.userObjList = new ArrayList<>();
 
         if (mode.equals("following")) {
             viewMode = R.layout.following_list;
@@ -82,7 +77,6 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         }
 
         final User user = UserManager.getUser(userUID);
-        userObjList.add(user);
 
         if (user.isLoaded()) {
             Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
@@ -92,55 +86,39 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             usernameText.setText(user.getUserName());
         }
 
-        UserManager.addUserObserver(userUID, new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-                userImage.setClipToOutline(true);
+        UserManager.addUserObserver(userUID, (o, arg) -> {
+            Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+            userImage.setClipToOutline(true);
 
-                fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-                usernameText.setText(user.getUserName());
-            }
+            fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            usernameText.setText(user.getUserName());
         });
 
-        userImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getContext()).setProfileFragment(user.getUid());
-            }
-        });
+        userImage.setOnClickListener(v -> ((MainActivity) getContext()).setProfileFragment(user.getUid()));
 
         if (viewMode == R.layout.requested_list) {
             Button confirmButton = view.findViewById(R.id.btn_confirm);
-            confirmButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    User currentUser = UserManager.getCurrentUser();
-                    if (currentUser != null) {
-                        currentUser.acceptRequest(user.getUid());
-                    }
+            confirmButton.setOnClickListener(v -> {
+                User currentUser = UserManager.getCurrentUser();
+                if (currentUser != null) {
+                    currentUser.acceptRequest(user.getUid());
                 }
             });
 
             Button deleteButton = view.findViewById(R.id.btn_delete);
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    User currentUser = UserManager.getCurrentUser();
-                    if (currentUser != null) {
-                        currentUser.removeRequest(user.getUid());
-                    }
+            deleteButton.setOnClickListener(v -> {
+                User currentUser = UserManager.getCurrentUser();
+                if (currentUser != null) {
+                    currentUser.removeRequest(user.getUid());
                 }
             });
         }
 
-        Collections.sort(this.userObjList, User.sortByName);
         notifyDataSetChanged();
         return view;
     }
 
     void refreshData(ArrayList<String> uidList) {
-        userObjList.clear();
         userList.clear();
         clear();
         notifyDataSetChanged();
@@ -149,15 +127,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             return;
         }
 
-        for (String uid : uidList) {
-
-        }
-
         userList.addAll(uidList);
         addAll(uidList);
-    }
-
-    public ArrayList<User> getUserObjList() {
-        return userObjList;
     }
 }

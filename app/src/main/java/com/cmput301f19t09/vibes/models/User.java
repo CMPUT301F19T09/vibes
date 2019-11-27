@@ -1,13 +1,8 @@
 package com.cmput301f19t09.vibes.models;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
-import android.provider.MediaStore;
 
-import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -20,10 +15,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.net.ContentHandler;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
