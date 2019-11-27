@@ -96,7 +96,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         // Set emotion picture and colour
         emotionImage.setImageResource(event.getState().getImageFile());
-        emotionImage.setColorFilter(event.getState().getColour());
+//        emotionImage.setColorFilter(event.getState().getColour());
         emotionImage.setClipToOutline(true);
 
         deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
