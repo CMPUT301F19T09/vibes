@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,10 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -54,6 +59,49 @@ public class MoodListFilterFragment extends Fragment
         locked = false;
     }
 
+    private class CustomFilterAdapter extends ArrayAdapter<String>{
+
+        private Context mContext;
+        private List<String> moodList;
+
+        public CustomFilterAdapter(@NonNull Context context, List<String> list) {
+            super(context, 0, list);
+            mContext = context;
+            moodList = list;
+        }
+
+
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View listItem = convertView;
+
+            if(listItem == null){
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                listItem = inflater.inflate(R.layout.filter_row_mood_item, null);
+            }
+
+            String mood = moodList.get(position);
+            ImageView moodImage = listItem.findViewById(R.id.moodIcon);
+            TextView moodName = listItem.findViewById(R.id.moodName);
+
+            if(mood != "No Filter") {
+                EmotionalState emotion = new EmotionalState(mood.toUpperCase());
+                moodImage.setImageResource(emotion.getImageFile());
+                moodImage.setColorFilter(emotion.getColour());
+
+            }else{
+//                moodImage.setImageResource(R.drawable.no);
+                moodImage.setVisibility(View.INVISIBLE);
+            }
+
+            moodName.setText(mood);
+
+            return listItem;
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -81,7 +129,9 @@ public class MoodListFilterFragment extends Fragment
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 builderSingle.setTitle("Select a mood filter:");
 
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+
+                // TODO: THIS IS WHERE I EDIT
+//                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
 
                 List<String> keys = EmotionalState.getListOfKeys();
                 for (int i = 0; i < keys.size(); i++)
@@ -91,9 +141,11 @@ public class MoodListFilterFragment extends Fragment
                     keys.set(i, replacement);
                 }
                 final String noFilter = "No Filter";
-                arrayAdapter.add(noFilter);
-                arrayAdapter.addAll(keys);
+                List<String> moods = new ArrayList<String>();
+                moods.add(noFilter);
+                moods.addAll(keys);
 
+                CustomFilterAdapter arrayAdapter = new CustomFilterAdapter(getActivity(),moods);
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
