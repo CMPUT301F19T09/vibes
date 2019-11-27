@@ -107,6 +107,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView stateTextView;
     private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+    private boolean validReason = false;
 
     // photo for reason
     private Uri photoUri;
@@ -275,11 +276,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         buttonCancelView.setEnabled(true);
 
 
-        //stateGridView = view.findViewById(R.id.state_grid_view);
-        //stateGridView.setAdapter(new ImageAdapter(getActivity()));
-        //stateGridView.setOnItemClickListener(this);
-        //stateTextView = view.findViewById(R.id.state_text_view);
-        
+        TextView titleTextView = view.findViewById(R.id.title_textview);
         ChipGroup stateChipGroup = view.findViewById(R.id.emotion_chip_group);
         ImageView emotionImageView = view.findViewById(R.id.emotion_image);
 
@@ -329,6 +326,10 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     emotionImageView.setImageResource(R.drawable.ic_cancel_black_36dp);
                     emotionImageView.setColorFilter(Color.RED);
                     buttonSubmitView.setEnabled(false);
+                }
+                else if (validReason)
+                {
+                    buttonSubmitView.setEnabled(true);
                 }
             }
         });
@@ -421,6 +422,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         if (editing) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
 
+            titleTextView.setText(R.string.edit_mood_title);
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
             int socialSituation = moodEvent.getSocialSituation();
@@ -463,6 +465,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
             // set moodEvent to be an empty new MoodEvent object for the current user
+            titleTextView.setText(R.string.new_mood_title);
             moodEvent = new MoodEvent(null, null, null, null, -1, null, null, user);
 
             // set the current date
@@ -505,10 +508,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
 
                 // reason must be 3 words or less and must have all required fields set
-                if (splitStr.length <= 3 && emotionalState != null) {
+                if (splitStr.length <= 3) {
+                    validReason = true;
+                    if (emotionalState != null){
                     buttonSubmitView.setEnabled(true);
+                    }
                 }
                 else { // disable the button
+                    validReason = false;
                     buttonSubmitView.setEnabled(false);
                 }
             }

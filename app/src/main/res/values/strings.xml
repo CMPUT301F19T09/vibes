@@ -15,4 +15,6 @@
     <string name="follow">F O L L O W</string>
     <string name="requested">R E Q U E S T E D</string>
     <string name="unfollow">U N F O L L O W</string>
+    <string name="edit_mood_title">Edit Mood:</string>
+    <string name="new_mood_title">New Mood:</string>
 </resources>

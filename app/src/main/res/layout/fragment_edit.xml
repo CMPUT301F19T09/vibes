@@ -21,15 +21,16 @@
             android:text="Emotion:"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/title_textview" />
 
         <ImageView
             android:id="@+id/emotion_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/emotion_chip_group"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_emotion_title"
+            app:layout_constraintTop_toTopOf="@+id/emotion_chip_group"
             app:srcCompat="@drawable/emotion_image_anticipation" />
 
         <com.google.android.material.chip.ChipGroup
@@ -53,7 +54,7 @@
             android:text="Reason:"
             android:textSize="18sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/edit_reason_view"
-            app:layout_constraintStart_toStartOf="@+id/emotion_chip_group" />
+            app:layout_constraintStart_toStartOf="@+id/tv_emotion_title" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_reason_view"
@@ -68,14 +69,14 @@
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_reason_title"
-            app:layout_constraintTop_toBottomOf="@+id/emotion_chip_group" />
+            app:layout_constraintTop_toBottomOf="@id/emotion_chip_group" />
 
         <LinearLayout
             android:id="@+id/photo_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintStart_toEndOf="@+id/tv_photo_title"
@@ -138,7 +139,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_regular"
-            android:hint="@string/date"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/tv_location_title"
             app:layout_constraintTop_toBottomOf="@+id/location_switch" />
@@ -149,7 +149,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/roboto_regular"
-            android:hint="@string/time"
             android:textSize="18sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_at"
             app:layout_constraintStart_toEndOf="@+id/tv_at" />
@@ -185,7 +184,7 @@
             android:id="@+id/tv_social_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:fontFamily="@font/roboto_regular"
             android:text="Social Situation (optional):"
             android:textSize="18sp"
@@ -229,14 +228,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:src="@drawable/empty_picture_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_buttons" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_photo_title" />
+
+        <TextView
+            android:id="@+id/title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="New Mood:"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
