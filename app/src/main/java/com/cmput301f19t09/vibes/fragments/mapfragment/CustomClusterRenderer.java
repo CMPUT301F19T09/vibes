@@ -62,7 +62,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
      */
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+//        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         vectorDrawable.setBounds(0, 0, 100, 100);
 
         Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
