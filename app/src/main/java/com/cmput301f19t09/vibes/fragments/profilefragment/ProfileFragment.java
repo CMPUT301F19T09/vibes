@@ -253,7 +253,6 @@ public class ProfileFragment extends Fragment implements Observer {
     }
 
     private void openFileExplorer() {
-        System.out.println(user.getProfileURL());
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
@@ -270,7 +269,6 @@ public class ProfileFragment extends Fragment implements Observer {
 
             if (data != null) {
                 uri = data.getData();
-                Glide.with(this).load(uri).into(profilePictureImageView);
                 user.changeProfilePicture(uri);
             }
         }

@@ -128,10 +128,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
             transaction.add(R.id.filter_root, filterFragment);
             transaction.commit();
 
-            if (displayType == OWN_MOODS_LOCKED) {
-                filterFragment.disableRadioButtons();
-            }
-
             filterFragment.addOnFilterListener(this);
         }
 

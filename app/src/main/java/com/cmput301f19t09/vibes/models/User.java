@@ -516,21 +516,22 @@ public class User extends Observable implements Serializable {
     }
 
     public void changeProfilePicture(Uri uri) {
-        storageReference = storage.getReference(picturePath);
-        storageReference.putFile(uri)
-                .addOnSuccessListener(taskSnapshot -> {
+        if (uri != null) {
+            picturePath = "image/" + uri.hashCode() + ".jpeg";
+            storageReference = storage.getReference(picturePath);
+            storageReference.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        collectionReference = db.collection("users");
+                        collectionReference.document(uid).update("profile_picture", picturePath)
+                                .addOnSuccessListener(aVoid -> {
+                                    notifyObservers();
+                                }).addOnFailureListener(e -> {
 
-                }).addOnFailureListener(e -> {
+                        });
+                    }).addOnFailureListener(e -> {
 
-                });
-
-        collectionReference = db.collection("users");
-        collectionReference.document(uid).update("profile_picture", picturePath)
-                .addOnSuccessListener(aVoid -> {
-
-                }).addOnFailureListener(e -> {
-
-                });
+            });
+        }
     }
 
     private void changeMoodPhoto(Uri uri) {
