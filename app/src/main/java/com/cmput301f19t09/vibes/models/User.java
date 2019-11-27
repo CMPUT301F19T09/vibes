@@ -126,6 +126,10 @@ public class User extends Observable implements Serializable {
                             setChanged();
                             notifyObservers();
                         }).addOnFailureListener(e1 -> {
+                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                                    + R.drawable.default_profile_picture);
+                            setChanged();
+                            notifyObservers();
                         });
             }
         });
@@ -170,6 +174,10 @@ public class User extends Observable implements Serializable {
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
                         }).addOnFailureListener(e -> {
+                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                                    + R.drawable.default_profile_picture);
+                            firebaseCallback.onCallback(User.this);
+                            loadedData = true;
                         });
             }
         }).addOnFailureListener(e -> {
@@ -533,14 +541,16 @@ public class User extends Observable implements Serializable {
     }
 
     private void changeMoodPhoto(Uri uri) {
-        String photoPath = "reason_photos/"+uri.hashCode()+".jpeg";
-        storageReference = storage.getReference(photoPath);
-        storageReference.putFile(uri)
-                .addOnSuccessListener(taskSnapshot -> {
+        if (uri != null) {
+            String photoPath = "reason_photos/" + uri.hashCode() + ".jpeg";
+            storageReference = storage.getReference(photoPath);
+            storageReference.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        notifyObservers();
+                    }).addOnFailureListener(e -> {
 
-                }).addOnFailureListener(e -> {
-
-                });
+            });
+        }
     }
 
     /**

@@ -156,7 +156,8 @@ public class SignUpActivity extends AppCompatActivity {
      * @param lastName
      */
     public void createUserFirebaseStore(String email, String username, String firstName, String lastName) {
-        final String picturePath = "image/" + username + ".png";
+        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
+        final String picturePath = "image/" + imageUri.hashCode() + ".jpeg";
 
         Map<String, Object> userData = new HashMap<>();
         userData.put("email", email);
@@ -181,7 +182,6 @@ public class SignUpActivity extends AppCompatActivity {
                         startLoginActivity();
                         isLoading = false;
 
-                        Uri imageUri = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
                         mStorageReference = mStorage.getReference(picturePath);
                         mStorageReference
                                 .putFile(imageUri)
