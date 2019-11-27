@@ -26,7 +26,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     // time not optional
     // description optional
     private EmotionalState state; // not optional
-    private double socialSituation; // optional
+    private int socialSituation; // optional
     private Uri photo;
     private transient Location location; // optional
     private User user; // the user that the mood is associated with
@@ -94,7 +94,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      *      The socialSituation associated with a MoodEvent; return value of -1 indicates that
      *      SocialSituation has not been specified.
      */
-    public double getSocialSituation() {
+    public int getSocialSituation() {
         return socialSituation;
     }
 
@@ -108,7 +108,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   socialSituation
      *      The socialSituation associated with a MoodEvent.
      */
-    public void setSocialSituation(double socialSituation) {
+    public void setSocialSituation(int socialSituation) {
         this.socialSituation = socialSituation;
     }
 

@@ -71,6 +71,8 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
+import io.opencensus.resource.Resource;
+
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -315,6 +317,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     }
                 }
             });
+            emotionChip.setTag(key);
         }
 
         stateChipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
@@ -335,23 +338,26 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         ChipGroup socialChipGroup = view.findViewById(R.id.social_chip_group);
 
+        /*
         List<String> socialStrings = new ArrayList<>();
         socialStrings.add("Alone");
         socialStrings.add("With Someone Else");
         socialStrings.add("With a Few People");
         socialStrings.add("In a Group");
         socialStrings.add("In a Crowd");
+         */
 
-        for (String s : socialStrings)
+        for (String situation : getResources().getStringArray(R.array.situations))
         {
             Chip socialChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
 
             socialChip.setClickable(true);
             socialChip.setCheckable(true);
 
-            socialChip.setText(s);
+            socialChip.setText(situation);
 
             socialChipGroup.addView(socialChip);
+            socialChip.setTag(situation);
         }
 
         dateTextView = view.findViewById(R.id.date_text_view);
@@ -417,14 +423,18 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
+            int socialSituation = moodEvent.getSocialSituation();
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
-                String situationString = Double.toString(moodEvent.getSocialSituation());
-                //editSituationView.setText(situationString);
-                //socialChipGroup.setSingleSelection();
+                String[] situations = getResources().getStringArray(R.array.situations);
+                // Make sure the situation index is wrapped (since many moods were uploaded before this was constrained)
+                socialSituation %= situations.length;
+                ((Chip)socialChipGroup.findViewWithTag(situations[socialSituation])).setChecked(true);
             }
+
             editReasonView.setText(moodEvent.getDescription());
             emotionalState = moodEvent.getState();
-            stateTextView.setText(moodEvent.getState().getEmotion());
+
+            ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
 
             photoUri = moodEvent.getPhoto();
             System.out.println("Jah");
@@ -441,6 +451,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 // set the slider to ON
                 useLocation = true;
                 locationSwitch.setChecked(true);
+            } else {
+                locationSwitch.setChecked(false);
             }
             // turn of slider interaction as locations should not be editable
             locationSwitch.setEnabled(false);
@@ -515,8 +527,34 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 moodEvent.setState(emotionalState);
 
                 // set optional fields
-                if (!editSituationView.getText().toString().isEmpty()) {
-                    moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
+                //if (!editSituationView.getText().toString().isEmpty()) {
+                    //moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
+                    //moodEvent
+                //}
+
+                Chip selectedSocial = (Chip)view.findViewById(socialChipGroup.getCheckedChipId());
+                if (selectedSocial != null)
+                {
+                    String socialText = selectedSocial.getText().toString();
+                    String[] situations = getResources().getStringArray(R.array.situations);
+
+                    boolean found_situation = false;
+
+                    for (int i = 0; i < situations.length; i++)
+                    {
+                        if (situations[i].equals(socialText))
+                        {
+                            found_situation = true;
+                            moodEvent.setSocialSituation(i);
+                            break;
+                        }
+                    }
+
+                    if (!found_situation)
+                    {
+                        Log.d("TEST/SocialChips", "no situation selected");
+                        moodEvent.setSocialSituation(-1);
+                    }
                 }
 
                 // set location
@@ -830,7 +868,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
