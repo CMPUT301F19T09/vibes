@@ -541,14 +541,16 @@ public class User extends Observable implements Serializable {
     }
 
     private void changeMoodPhoto(Uri uri) {
-        String photoPath = "reason_photos/"+uri.hashCode()+".jpeg";
-        storageReference = storage.getReference(photoPath);
-        storageReference.putFile(uri)
-                .addOnSuccessListener(taskSnapshot -> {
+        if (uri != null) {
+            String photoPath = "reason_photos/" + uri.hashCode() + ".jpeg";
+            storageReference = storage.getReference(photoPath);
+            storageReference.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        notifyObservers();
+                    }).addOnFailureListener(e -> {
 
-                }).addOnFailureListener(e -> {
-
-                });
+            });
+        }
     }
 
     /**
