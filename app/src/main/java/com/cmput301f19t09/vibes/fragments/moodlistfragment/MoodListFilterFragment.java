@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,10 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -26,9 +31,9 @@ import com.cmput301f19t09.vibes.models.EmotionalState;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-This fragment holds the radio buttons for selecting MoodList's adapter and will also have a button
-that opens the filter dialog
+/**
+ * This fragment holds the radio buttons for selecting MoodList's adapter and will also have a button
+ * that opens the filter dialog
  */
 public class MoodListFilterFragment extends Fragment
 {
@@ -36,21 +41,65 @@ public class MoodListFilterFragment extends Fragment
     private boolean locked; //This determines whether the radio buttons are shown (i.e. disallow a user from viewing
     // other user's moods when on their own profile
 
-    /*
-    return a new instance
+    /**
+     * Return a new instance
+     * @return
      */
     public static MoodListFilterFragment newInstance()
     {
         return new MoodListFilterFragment();
     }
 
-    /*
-    initialize data
+    /**
+     * initialize data
      */
     public MoodListFilterFragment()
     {
         listeners = new ArrayList<MoodFilterListener>();
         locked = false;
+    }
+
+    private class CustomFilterAdapter extends ArrayAdapter<String>{
+
+        private Context mContext;
+        private List<String> moodList;
+
+        public CustomFilterAdapter(@NonNull Context context, List<String> list) {
+            super(context, 0, list);
+            mContext = context;
+            moodList = list;
+        }
+
+
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View listItem = convertView;
+
+            if(listItem == null){
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                listItem = inflater.inflate(R.layout.filter_row_mood_item, null);
+            }
+
+            String mood = moodList.get(position);
+            ImageView moodImage = listItem.findViewById(R.id.moodIcon);
+            TextView moodName = listItem.findViewById(R.id.moodName);
+
+            if(mood != "No Filter") {
+                EmotionalState emotion = new EmotionalState(mood.toUpperCase());
+                moodImage.setImageResource(emotion.getImageFile());
+                moodImage.setColorFilter(emotion.getColour());
+
+            }else{
+//                moodImage.setImageResource(R.drawable.no);
+                moodImage.setVisibility(View.INVISIBLE);
+            }
+
+            moodName.setText(mood);
+
+            return listItem;
+        }
     }
 
     @Nullable
@@ -80,7 +129,9 @@ public class MoodListFilterFragment extends Fragment
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 builderSingle.setTitle("Select a mood filter:");
 
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+
+                // TODO: THIS IS WHERE I EDIT
+//                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
 
                 List<String> keys = EmotionalState.getListOfKeys();
                 for (int i = 0; i < keys.size(); i++)
@@ -89,10 +140,12 @@ public class MoodListFilterFragment extends Fragment
                     replacement = replacement.substring(0, 1) + replacement.substring(1, replacement.length()).toLowerCase();
                     keys.set(i, replacement);
                 }
-
-                arrayAdapter.addAll(keys);
                 final String noFilter = "No Filter";
-                arrayAdapter.add(noFilter);
+                List<String> moods = new ArrayList<String>();
+                moods.add(noFilter);
+                moods.addAll(keys);
+
+                CustomFilterAdapter arrayAdapter = new CustomFilterAdapter(getActivity(),moods);
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -105,17 +158,6 @@ public class MoodListFilterFragment extends Fragment
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
-                        AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
-                        builderInner.setMessage(strName);
-                        builderInner.setTitle("Your filter is");
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
-
                         strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
                         filter(strName);
                     }
@@ -172,6 +214,9 @@ public class MoodListFilterFragment extends Fragment
 
     }
 
+    /**
+     * Disables the radio buttons in the list filter
+     */
     public void disableRadioButtons()
     {
         if (getView() != null) {
@@ -181,8 +226,9 @@ public class MoodListFilterFragment extends Fragment
         locked = true;
     }
 
-    /*
-    Add a listener to be notified whenever the filter state is changed
+    /**
+     * Add a listener to be notified whenever the filter state is changed
+     * @param listener
      */
     public void addOnFilterListener(MoodFilterListener listener)
     {
