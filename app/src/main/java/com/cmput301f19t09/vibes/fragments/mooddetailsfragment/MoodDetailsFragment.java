@@ -106,6 +106,10 @@ public class MoodDetailsFragment extends Fragment
 
         String timeString = "~";
 
+        Glide.with(this).load(event.getPhoto()).into(reasonImage);
+        reasonImage.getLayoutParams().height = 800;
+
+
         if (timeSincePost.getSeconds() < 60)
         {
             timeString += timeSincePost.getSeconds() + " s";
