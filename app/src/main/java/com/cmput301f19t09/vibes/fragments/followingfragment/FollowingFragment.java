@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +17,6 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 
 /**
@@ -35,6 +36,11 @@ public class FollowingFragment extends Fragment {
      */
     public static FollowingFragment newInstance() {
         return new FollowingFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     /**
@@ -90,23 +96,55 @@ public class FollowingFragment extends Fragment {
             requestedAdapter.refreshData(requestedList);
         }
 
-        UserManager.addUserObserver(user.getUid(), new Observer() {
+        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
+            followingList.clear();
+            followingAdapter.clear();
+
+            requestedList.clear();
+            requestedAdapter.clear();
+
+            followingList.addAll(user.getFollowingList());
+            requestedList.addAll(user.getRequestedList());
+
+            followingAdapter.refreshData(followingList);
+            requestedAdapter.refreshData(requestedList);
+        });
+
+        ViewTreeObserver listVTO = followingLinearLayout.getViewTreeObserver();
+        listVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void update(Observable o, Object arg) {
-                followingList.clear();
-                followingAdapter.clear();
+            public void onGlobalLayout() {
+                followingLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                resizeListView(followingLinearLayout);
+            }
+        });
 
-                requestedList.clear();
-                requestedAdapter.clear();
-
-                followingList.addAll(user.getFollowingList());
-                requestedList.addAll(user.getRequestedList());
-
-                followingAdapter.refreshData(followingList);
-                requestedAdapter.refreshData(requestedList);
+        ViewTreeObserver listVTO2 = requestedLinearLayout.getViewTreeObserver();
+        listVTO2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                requestedLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                resizeListView(requestedLinearLayout);
             }
         });
 
         return view;
+    }
+
+    private void resizeListView(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        int count = listAdapter.getCount();
+        int itemHeight;
+
+        View oneChild = listView.getChildAt(0);
+        if (oneChild == null) {
+            return;
+        }
+
+        itemHeight = oneChild.getHeight();
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
+        params.height = itemHeight * count;
+        listView.setLayoutParams(params);
     }
 }
