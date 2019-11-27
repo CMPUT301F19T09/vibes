@@ -426,6 +426,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             emotionalState = moodEvent.getState();
             stateTextView.setText(moodEvent.getState().getEmotion());
 
+            photoUri = moodEvent.getPhoto();
+            System.out.println("Jah");
+            if (photoUri != null){
+                System.out.println("Hello");
+                Glide.with(this).load(photoUri).into(photoImage);
+            } else {
+                System.out.println("Bye");
+                photoImage.setImageResource(R.drawable.empty_picture_image);
+            }
+
             // set the use location slider based on whether the mood event has a location or not
             if (moodEvent.getLocation() != null) {
                 // set the slider to ON
