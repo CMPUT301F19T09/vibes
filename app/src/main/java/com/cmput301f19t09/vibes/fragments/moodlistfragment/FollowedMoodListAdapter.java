@@ -1,43 +1,33 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
-import android.content.Context;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
-/*
-Subclass of MoodListAdapter, this loads the each of the most recent MoodEvents of the User that the
-current user follows
+import android.content.Context;
+
+/**
+ * This subclass of MoodListAdapter is responsible for managing the dataset of MoodEvents containing
+ * the (single) most recent MoodEvent of each of the Users that the primary (signed in) User follows
  */
 public class FollowedMoodListAdapter extends MoodListAdapter {
-    interface FollowedUserListener extends Observer
-    {
-        @Override
-        void update(Observable o, Object arg);
-    }
 
-    // Maintain a list of the UIDs of users that this user observes
+    // A list of the UIDs associated with Users that this instance has created an adapter for
     private List<String> observed_users;
-    private boolean filterChanged;
+    private User mainUser;
 
     public FollowedMoodListAdapter(Context context)
     {
         super(context);
-        filterChanged = false;
+        this.mainUser = UserManager.getCurrentUser();
     }
 
-    /*
-    initialize the observed users list and call refresh data
+    /**
+     * Add observers to all of mainUser's followed Users. This should be called when the parent Fragment resumes
+     * so that Observers can be re-added
      */
     @Override
     public void resume()
@@ -46,26 +36,36 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
         refreshData();
     }
 
+    /**
+     * Remove all observers on followed users. This should be called when the parent fragment pauses so that
+     * the instance is not being updated in the background
+     */
     public void pause()
     {
         clearObservers();
     }
 
+    /**
+     * For each User that the current User is following, add an Observer to refresh their most recent
+     * MoodEvent. Also adds an Observer to User to observe when the following list changes
+     */
     private void addObservers()
     {
-        observed_users = user.getFollowingList();
+        observed_users = mainUser.getFollowingList();
 
         for (String user_id : observed_users)
         {
             User followed_user = UserManager.getUser(user_id);
 
+            // When the observer is notified, it will update this user's event
             followed_user.addObserver((Observable observable, Object arg) ->
             {
                 setUserEvent((User)observable);
             });
         }
 
-        user.addObserver((Observable observable, Object arg) ->
+        // The mainUser's observer clears and reinitialises the Observers in case its following list has changed
+        mainUser.addObserver((Observable observable, Object arg) ->
         {
             clearObservers();
             addObservers();
@@ -74,6 +74,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
         });
     }
 
+    /**
+     * For all observed Users and the main User, remove their Observers
+     */
     private void clearObservers()
     {
         for (String user_id : observed_users)
@@ -81,11 +84,11 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
             UserManager.removeUserObservers(user_id);
         }
 
-        user.deleteObservers();
+        mainUser.deleteObservers();
     }
 
     /**
-     * Update the shown MoodEvent for each User that the primary User follows
+     * Go through all observed_users and add their most recent MoodEvent to the List
      */
     @Override
     public void refreshData()
@@ -112,7 +115,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
      */
     public void setUserEvent(User user) {
 
-        // Make sure the user is loaded
+        // Make sure the mainUser is loaded
         if (user == null || !user.isLoaded())
         {
             return;
@@ -132,7 +135,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
 
         int index;
 
-        // Search the list of shown events for one matching the current user. If such an event is found, it
+        // Search the list of shown events for one matching the current mainUser. If such an event is found, it
         // will be replaced
         for (index = 0; index < data.size(); index++)
         {

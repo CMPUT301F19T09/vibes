@@ -22,8 +22,8 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 /**
-    This class is a Fragment that displays either a users own list of MoodEvents, or the list
-    of their followers' most recent MoodEvents
+ * This Fragment is responsible for displaying a list of MoodEvents. Depending on its mode it will show
+ * the User's MoodEvents, or the most recent MoodEvents of the Users that they follow.
  */
 public class MoodListFragment extends Fragment implements MoodFilterListener
 {
@@ -32,6 +32,9 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     public static final int FOLLOWED_MOODS = 1;
     public static final int OWN_MOODS_LOCKED = 2;
 
+    /**
+     * The adapter for the ListView. This determines which MoodEvents are shown
+     */
     MoodListAdapter adapter;
 
     private int mode;
@@ -96,7 +99,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /**
-     * Whenever the Fragment starts, make sure the correct adapter is enabled
+     * When the View is created ensures that the correct adapter is enabled
      */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
@@ -183,7 +186,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /**
-     * When the Fragment is paused, 'Pause' the adapter
+     * When the Fragment is paused, 'Pause' the adapter.
      */
     @Override
     public void onPause()
@@ -193,10 +196,8 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     }
 
     /**
-     * Setter for selectedFilterEmotion,
-     * it sets the current filter
-     * to the emotion state string.
-     * @param emotion
+     * Set the filter to the EmotionalState key emotion. Filter works so that the events shown = {MoodEvents where EmotionalState key == filter}
+     * @param emotion The key to filter for
      */
     public void setFilter(String emotion)
     {
