@@ -195,6 +195,13 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         super.onPause();
     }
 
+    @Override
+    public void onResume()
+    {
+        adapter.resume();
+        super.onResume();
+    }
+
     /**
      * Set the filter to the EmotionalState key emotion. Filter works so that the events shown = {MoodEvents where EmotionalState key == filter}
      * @param emotion The key to filter for
