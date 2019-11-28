@@ -359,9 +359,4 @@ public class UserTests {
         Thread.sleep(100);
         deleteMoods(1);
     }
-
-    @Test
-    public void test() {
-
-    }
 }
