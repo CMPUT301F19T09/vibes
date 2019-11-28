@@ -234,11 +234,13 @@ public class User extends Observable implements Serializable {
         documentReference = collectionReference.document(uid);
         documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
                 .addOnSuccessListener(aVoid -> {
-                    notifyObservers();
+                    Log.d("TEST/UserAddRequest", "success");
                     requestedList.add(otherUserUID);
+                    notifyObservers();
                 }).addOnFailureListener(e -> {
 
-                });
+            Log.d("TEST/UserAddRequest", "failure");
+        });
     }
 
     /**
@@ -253,9 +255,10 @@ public class User extends Observable implements Serializable {
                     .addOnSuccessListener(aVoid -> {
                         followingList.add(otherUserUID);
                         notifyObservers();
+                        Log.d("TEST/UserAddFollowing", "success");
                     }).addOnFailureListener(e -> {
-
-                    });
+                        Log.d("TEST/UserAddFollowing", "failure :(");
+            });
         }
     }
 
@@ -266,10 +269,12 @@ public class User extends Observable implements Serializable {
             documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
                         followingList.remove(otherUserUID);
+                        Log.d("TEST/UserRemoveFollowing", "success");
                         notifyObservers();
                     }).addOnFailureListener(e -> {
+                        Log.d("TEST/UserRemoveFollowing", "failure :(");
 
-                    });
+            });
         }
     }
 
@@ -296,10 +301,11 @@ public class User extends Observable implements Serializable {
             documentReference = collectionReference.document(uid);
             documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
                         requestedList.remove(otherUserUID);
+                        notifyObservers();
+                        Log.d("TEST/UserRemoveRequest", "success");
                     }).addOnFailureListener(e -> {
-
+                        Log.d("TEST/UserRemoveRequest", "failure");
                     });
         }
     }

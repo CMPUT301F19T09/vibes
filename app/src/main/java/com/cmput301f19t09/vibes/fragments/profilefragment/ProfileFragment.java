@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,16 @@ public class ProfileFragment extends Fragment implements Observer {
         user = UserManager.getCurrentUser();
         if (otherUserUID != null) {
             otherUser = UserManager.getUser(otherUserUID);
-            UserManager.addUserObserver(otherUserUID, this);
+            otherUser.addObserver(this);
+
+            otherUser.addObserver(new Observer()
+            {
+                @Override
+                public void update(Observable o, Object arg) {
+                    ProfileFragment.this.update(o, arg);
+                }
+            });
+            //UserManager.addUserObserver(otherUserUID, this);
 
             if (otherUser.isLoaded()){
                 setInfo(otherUser);
@@ -164,11 +174,13 @@ public class ProfileFragment extends Fragment implements Observer {
      */
     @Override
     public void update(Observable user, Object object) {
-        if (((User)user).isLoaded() && otherUser == null || (otherUser != null && ((User)user).getUid().equals(otherUserUID)))
+        if (((User)user).isLoaded() &&
+                (otherUser == null || (otherUser != null && ((User)user).getUid().equals(otherUserUID))))
         {
             setInfo((User) user);
-            checkMode();
         }
+        Log.d("TEST/ADASD", "checkmode");
+        checkMode();
     }
 
     private void updateButton(Mode mode) {
@@ -187,7 +199,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button_outline);
                 followButton.setOnClickListener(view -> {
                     otherUser.removeRequest(user.getUid());
-                    updateButton(Mode.NONE);
+                    //updateButton(Mode.NONE);
                 });
 
                 //setInfo(otherUser);
@@ -200,7 +212,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
                 followButton.setOnClickListener(view -> {
                     user.removeFollowing(otherUser.getUid());
-                    updateButton(Mode.NONE);
+                    //updateButton(Mode.NONE);
                 });
 
                 //setInfo(otherUser);
@@ -213,7 +225,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button);
                 followButton.setOnClickListener(view -> {
                     otherUser.addRequest(user.getUid());
-                    updateButton(Mode.REQUESTED);
+                    //updateButton(Mode.REQUESTED);
                 });
 
                 //setInfo(otherUser);
@@ -308,10 +320,14 @@ public class ProfileFragment extends Fragment implements Observer {
         if (otherUser == null)
         {
             updateButton(Mode.OWN);
+            return;
         }
-        if (user.getFollowingList().contains(otherUserUID) && !user.getRequestedList().contains(otherUserUID)) {
+
+        Log.d("TEST/Profile", "check mode");
+
+        if (user.getFollowingList().contains(otherUserUID)){
             updateButton(Mode.FOLLOWING);
-        } else if (user.getRequestedList().contains(otherUserUID) && !user.getFollowingList().contains(otherUserUID)) {
+        } else if (user.getRequestedList().contains(otherUserUID)){
             updateButton(Mode.REQUESTED);
         } else {
             updateButton(Mode.NONE);
