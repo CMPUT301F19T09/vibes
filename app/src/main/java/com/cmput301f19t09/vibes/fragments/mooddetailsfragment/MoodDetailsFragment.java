@@ -151,7 +151,7 @@ public class MoodDetailsFragment extends Fragment
         userUsername.setText(event_user.getUserName());
         userFullName.setText(event_user.getFirstName() + " " + event_user.getLastName());
 
-        Glide.with(this).load(event.getPhoto()).into(reasonImage);
+        Glide.with(getContext()).load(event.getPhoto()).into(reasonImage);
 
         //moodTime.setText(MoodTimeAdapter.timeSince(event));
         moodTime.setText(event.getTimeString());

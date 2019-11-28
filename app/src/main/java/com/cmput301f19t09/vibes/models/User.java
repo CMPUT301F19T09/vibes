@@ -412,11 +412,12 @@ public class User extends Observable implements Serializable {
                         null,
                         location,
                         this);
-                if (photoPath != null) {
+                if (photoPath != null && photoPath != "") {
                     storageReference = storage.getReference(photoPath);
                     storageReference.getDownloadUrl()
                             .addOnSuccessListener(uri -> event.setPhoto(uri))
-                            .addOnFailureListener(e -> event.setPhoto(null));
+                            .addOnFailureListener(e -> event.setPhoto(null))
+                            .addOnCompleteListener(uri -> { setChanged(); notifyObservers();});
                 }
                 events.add(event);
             }
