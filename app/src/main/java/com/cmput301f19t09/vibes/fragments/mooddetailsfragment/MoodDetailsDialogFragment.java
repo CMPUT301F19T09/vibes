@@ -136,10 +136,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
         Uri photoUri = event.getPhoto();
         if (photoUri != null){
             Glide.with(this).load(photoUri).into(reasonImage);
-            Log.d("TEST/t", "photoURI isnt null");
             reasonImage.setVisibility(View.VISIBLE);
         } else {
-            Log.d("TEST/t", "photoURI is null");
             reasonImage.setVisibility(View.GONE);
         }
 
@@ -219,17 +217,16 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     public void onDismiss(DialogInterface d) {
                         ProfileFragment profileFragment;
 
-                        if (user == eventUser) {
+                        if (user == eventUser)
+                        {
                             // Open own profile
-                            //profileFragment = ProfileFragment.newInstance();
                             ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment();
-                        } else {
+                        }
+                        else
+                        {
                             // Open other user's profile
-                            //profileFragment = ProfileFragment.newInstance(eventUser.getUid());
                             ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment(eventUser.getUid());
                         }
-                        //((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setMainFragment(profileFragment);
-                        //((MainActivity)getActivity()).setProi
                     }
                 });
 
