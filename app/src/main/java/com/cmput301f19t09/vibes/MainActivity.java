@@ -301,7 +301,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     /*
-        Creates a FragmentTransaction to open a DialogFragmnent in the main view
+        Creates a FragmentTransaction to open a DialogFragment in the main view
         @param fragment
             the fragment to open
      */

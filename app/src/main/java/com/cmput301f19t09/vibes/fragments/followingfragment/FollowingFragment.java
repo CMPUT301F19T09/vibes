@@ -27,6 +27,13 @@ import java.util.ArrayList;
  * current users follows.
  */
 public class FollowingFragment extends Fragment {
+    private User user;
+    private ArrayList<String> followingList;
+    private ArrayList<String> requestedList;
+    private FollowingFragmentAdapter followingAdapter;
+    private FollowingFragmentAdapter requestedAdapter;
+    private ListView followingLinearLayout;
+    private ListView requestedLinearLayout;
 
     /**
      * @return followingFragment : FollowingFragment
@@ -66,19 +73,19 @@ public class FollowingFragment extends Fragment {
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
         // Gets the user object provided
-        final User user = UserManager.getCurrentUser();
+        user = UserManager.getCurrentUser();
 
         // Initializes ArrayList's for the users that are being followed and
         // the users that have requested to follow the current user.
-        final ArrayList<String> followingList = new ArrayList<>();
-        final ArrayList<String> requestedList = new ArrayList<>();
+        followingList = new ArrayList<>();
+        requestedList = new ArrayList<>();
 
-        final FollowingFragmentAdapter followingAdapter = new FollowingFragmentAdapter(getActivity(), "following");
-        ListView followingLinearLayout = view.findViewById(R.id.following_list);
+        followingAdapter = new FollowingFragmentAdapter(getActivity(), "following");
+        followingLinearLayout = view.findViewById(R.id.following_list);
         followingLinearLayout.setAdapter(followingAdapter);
 
-        final FollowingFragmentAdapter requestedAdapter = new FollowingFragmentAdapter(getActivity(), "request");
-        ListView requestedLinearLayout = view.findViewById(R.id.requested_list);
+        requestedAdapter = new FollowingFragmentAdapter(getActivity(), "request");
+        requestedLinearLayout = view.findViewById(R.id.requested_list);
         requestedLinearLayout.setAdapter(requestedAdapter);
 
         assert user != null;
@@ -94,6 +101,9 @@ public class FollowingFragment extends Fragment {
 
             followingAdapter.refreshData(followingList);
             requestedAdapter.refreshData(requestedList);
+
+            resizeListView(followingLinearLayout);
+            resizeListView(requestedLinearLayout);
         }
 
         UserManager.addUserObserver(user.getUid(), (o, arg) -> {
@@ -108,6 +118,25 @@ public class FollowingFragment extends Fragment {
 
             followingAdapter.refreshData(followingList);
             requestedAdapter.refreshData(requestedList);
+
+            resizeListView(followingLinearLayout);
+            resizeListView(requestedLinearLayout);
+        });
+
+        followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                followingLinearLayout.removeOnLayoutChangeListener(this);
+                followingAdapter.notifyDataSetChanged();
+            }
+        });
+
+        requestedLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                followingLinearLayout.removeOnLayoutChangeListener(this);
+                requestedAdapter.notifyDataSetChanged();
+            }
         });
 
         // Allowing two listviews to scroll as one
@@ -121,6 +150,13 @@ public class FollowingFragment extends Fragment {
             }
         });
 
+//        listVTO.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+//            @Override
+//            public void onDraw() {
+//                followingAdapter.notifyDataSetChanged();
+//            }
+//        });
+
         ViewTreeObserver listVTO2 = requestedLinearLayout.getViewTreeObserver();
         listVTO2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -129,6 +165,13 @@ public class FollowingFragment extends Fragment {
                 resizeListView(requestedLinearLayout);
             }
         });
+
+//        listVTO2.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+//            @Override
+//            public void onDraw() {
+//                requestedAdapter.notifyDataSetChanged();
+//            }
+//        });
 
         return view;
     }
@@ -152,6 +195,5 @@ public class FollowingFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
         listView.setLayoutParams(params);
-        listView.requestLayout();
     }
 }
