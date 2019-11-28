@@ -40,13 +40,13 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     initialize the observed users list and call refresh data
      */
     @Override
-    public void onResume()
+    public void resume()
     {
         addObservers();
         refreshData();
     }
 
-    public void onPause()
+    public void pause()
     {
         clearObservers();
     }
@@ -84,15 +84,15 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
         user.deleteObservers();
     }
 
-    /*
-    For each User that the current User is following, make sure that that user has an entry in the
-    data set for their most recent MoodEvent
+    /**
+     * Update the shown MoodEvent for each User that the primary User follows
      */
     @Override
     public void refreshData()
     {
         if (observed_users == null || observed_users.size() == 0)
         {
+            clear();    // Make sure the list is clear
             return;
         }
 
@@ -103,12 +103,16 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
         }
     }
 
-    /*
-    Finds the MoodEvent with User user in the data. If that MoodEvent doesn't exist, add the User's
-    most recent MoodEvent, otherwise update the displayed MoodEvent to be the User's most recent MoodEvnet
+    /**
+     * Updates the MoodEvent shown in the list for this User. If the User already has an entry in the list
+     * it is replaced with their most recent MoodEvent. If their most recent MoodEvent is null, then it
+     * checks the list to remove any event associated with the User. MoodEvents are filtered by the set
+     * filter
+     * @param user The User whose event you are updating
      */
     public void setUserEvent(User user) {
 
+        // Make sure the user is loaded
         if (user == null || !user.isLoaded())
         {
             return;
@@ -117,6 +121,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
         MoodEvent event = user.getMostRecentMoodEvent();
         boolean show_event = false;
 
+        // If the event isn't null and matches the filter (or there is no filter), then it will be shown
         if (event != null &&
                 (filter == null ||
                 filter.equals("") ||
@@ -127,6 +132,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
 
         int index;
 
+        // Search the list of shown events for one matching the current user. If such an event is found, it
+        // will be replaced
         for (index = 0; index < data.size(); index++)
         {
             if (data.get(index).getUser().equals(user))
@@ -139,18 +146,23 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
 
         if (index == -1 && show_event)
         {
+            // No existing event -> add the current event
             data.add(event);
         }
         else if (index >= 0 && show_event)
         {
+            // Existing event -> replace the existing event with the current event
             data.set(index, event);
         }
-        else
+        else if (index >= 0)
         {
+            // Existing event and show_event is false -> remove the existing event
             data.remove(index);
         }
 
+        // Sort the list in reverse-chronological order
         data.sort((MoodEvent a, MoodEvent b) -> { return b.compareTo(a); });
+
         clear();
         addAll(data);
     }

@@ -56,14 +56,14 @@ public class OwnMoodListAdapter extends MoodListAdapter
     Calls refresh data
      */
     @Override
-    public void onResume()
+    public void resume()
     {
         user.addObserver(userObserver);
         refreshData();
     }
 
     @Override
-    public void onPause()
+    public void pause()
     {
         user.deleteObserver(userObserver);
     }

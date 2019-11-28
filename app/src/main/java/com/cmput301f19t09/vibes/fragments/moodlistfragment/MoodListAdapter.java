@@ -140,9 +140,9 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
         return item;
     }
 
-    public void onResume() { }
+    public void resume() { }
 
-    public void onPause() { }
+    public void pause() { }
 
     public abstract void refreshData();
 
