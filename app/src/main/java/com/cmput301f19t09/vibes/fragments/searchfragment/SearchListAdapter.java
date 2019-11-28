@@ -14,7 +14,6 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -26,7 +25,7 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
     protected List<String> data;
     private Context context;
 
-    public SearchListAdapter(Context context) {
+    SearchListAdapter(Context context) {
         super(context, 0);
         this.context = context;
         this.data = new ArrayList<>();
@@ -59,7 +58,7 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
             Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
             userProfile.setClipToOutline(true);
 
-            userFullName.setText(user.getFirstName() + " " + user.getLastName());
+            userFullName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             userUserName.setText(user.getUserName());
 
         }
@@ -70,14 +69,14 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
                 Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
                 userProfile.setClipToOutline(true);
 
-                userFullName.setText(user.getFirstName() + " " + user.getLastName());
+                userFullName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
                 userUserName.setText(user.getUserName());
             }
         });
         return item;
     }
 
-    public void refreshData(List<String> userList) {
+    void refreshData(List<String> userList) {
         data.clear();
         clear();
         notifyDataSetChanged();
@@ -86,35 +85,8 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
             return;
         }
 
-        for (String userUID : userList) {
-            data.add(userUID);
-        }
-
+        data.addAll(userList);
         addAll(data);
-
-//        for (String userUID : userList) {
-//            User user = UserManager.getUser(userUID);
-//
-//                if (user.isLoaded()) {
-//                    data.add(user);
-//                }
-//
-//            user.readData(new User.FirebaseCallback() {
-//                @Override
-//                public void onCallback(User user) {
-//                    data.add(user);
-//                    addAll(data);
-//                    notifyDataSetChanged();
-//                }
-//            });
-//        }
-
-//        data.sort(new Comparator<User>() {
-//            @Override
-//            public int compare(User user1, User user2) {
-//                return user1.getFirstName().compareTo(user2.getFirstName());
-//            }
-//        });
     }
 
     @Override

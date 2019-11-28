@@ -9,23 +9,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 
 import java.util.List;
-import java.util.Random;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.fragments.searchfragment.SearchFragment;
-import com.cmput301f19t09.vibes.fragments.searchfragment.SearchListAdapter;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -46,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     private final String logTag = "TEST/MainActivity";
     
     private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
+    private String listFilter = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +91,16 @@ public class MainActivity extends FragmentActivity {
         fragment_root = R.id.main_fragment_root;
         currentButtonMode = ButtonMode.MAP;
 
-        View addButton, searchButton, profileButton, followingButton, viewButton;
+        View addButton, searchButton, followingButton, viewButton;
+        ImageView profileButton;
         addButton = findViewById(R.id.main_add_button);
         profileButton = findViewById(R.id.main_profile_button);
         followingButton = findViewById(R.id.main_follow_list_button);
         searchButton = findViewById(R.id.main_search_button);
         viewButton = findViewById(R.id.main_view_button);
+
+        Glide.with(this).load(user.getProfileURL()).into(profileButton);
+        profileButton.setClipToOutline(true);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +154,13 @@ public class MainActivity extends FragmentActivity {
                         currentButtonMode = ButtonMode.LIST;
                         break;
                 }
+            }
+        });
+
+        user.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                Glide.with(MainActivity.this).load(user.getProfileURL()).into(profileButton);
             }
         });
 
@@ -290,14 +301,14 @@ public class MainActivity extends FragmentActivity {
     }
 
     /*
-        Creates a FragmentTransaction to open a DialogFragmnent in the main view
+        Creates a FragmentTransaction to open a DialogFragment in the main view
         @param fragment
             the fragment to open
      */
     public void openDialogFragment(DialogFragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-
+        transaction.disallowAddToBackStack();
         fragment.show(transaction, null);
     }
 

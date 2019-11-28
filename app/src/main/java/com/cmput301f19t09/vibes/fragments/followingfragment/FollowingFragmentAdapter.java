@@ -5,41 +5,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.User;
+import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * FollowingFragmentAdapter is an ArrayAdapter that is used for both ListView's
  * in FollowingFragment
  */
-public class FollowingFragmentAdapter extends ArrayAdapter<User> {
-    private ArrayList<User> userList;
+public class FollowingFragmentAdapter extends ArrayAdapter<String> {
+    private ArrayList<String> userList;
     private Context context;
-    private int layout;
-    private FragmentActivity activity;
+    private int viewMode;
 
     /**
      * @param context : Context
-     * @param userList : ArrayList<User>
+     * @param mode : String
      *
      * Constructs a FollowingFragmentAdapter, requires a passed layout (using setLayout())
      * and a passed FragmentActivity (using setActivity()) to be functional
      */
-    public FollowingFragmentAdapter(Context context, ArrayList<User> userList){
-        super(context, 0, userList);
-        this.userList = userList;
+    FollowingFragmentAdapter(Context context, String mode){
+        super(context, 0);
         this.context = context;
+        this.userList = new ArrayList<>();
+
+        if (mode.equals("following")) {
+            viewMode = R.layout.following_list;
+        } else {
+            viewMode = R.layout.requested_list;
+        }
     }
 
     /**
@@ -53,89 +57,77 @@ public class FollowingFragmentAdapter extends ArrayAdapter<User> {
      * corresponding to the user. A user's profile can be opened by clicking on the
      * profile image. The list is sorted before the view is returned.
      */
+    @NonNull
+    @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
 
         if (view == null){
-            view = LayoutInflater.from(context).inflate(this.layout, parent, false);
+            view = LayoutInflater.from(context).inflate(viewMode, parent, false);
         }
 
-        // For user at position in list
-        final User user = userList.get(position);
+        final TextView fullNameText = view.findViewById(R.id.fullName);
+        final TextView usernameText = view.findViewById(R.id.username);
+        final ImageView userImage = view.findViewById(R.id.profileImage);
 
-        if (user == null)
-        {
+        String userUID = userList.get(position);
+
+        if (userUID == null) {
             return view;
         }
 
-        // Sets the fullNameText to the user's firstName + lastName
-        TextView fullNameText = view.findViewById(R.id.fullName);
-        String fullName = user.getFirstName() + " " + user.getLastName();
-        fullNameText.setText(fullName);
+        final User user = UserManager.getUser(userUID);
 
-        // Sets the usernameText to the user's username
-        TextView usernameText = view.findViewById(R.id.username);
-        String username = user.getUserName();
-        usernameText.setText(username);
+        if (user.isLoaded()) {
+            Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+            userImage.setClipToOutline(true);
 
-        // Sets the user's profile picture
-        ImageView userImage = view.findViewById(R.id.profileImage);
-        Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-        userImage.setClipToOutline(true);
+            fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            usernameText.setText(user.getUserName());
+        }
 
-        // Sets an OnClickListener for userImage
-        userImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // A ProfileFragment that corresponds to the clicked on user
-                // is created and is made the current fragment
-                ProfileFragment profileFragment;
-                //profileFragment = ProfileFragment.newInstance(user.getUid());
-                ((MainActivity) activity).setProfileFragment(user.getUid());
-            }
+        UserManager.addUserObserver(userUID, (o, arg) -> {
+            Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+            userImage.setClipToOutline(true);
+
+            fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            usernameText.setText(user.getUserName());
         });
 
-        Collections.sort(this.userList, User.sortByName);
-        notifyDataSetChanged();
+        userImage.setOnClickListener(v -> ((MainActivity) getContext()).setProfileFragment(user.getUid()));
 
+        if (viewMode == R.layout.requested_list) {
+            Button confirmButton = view.findViewById(R.id.btn_confirm);
+            confirmButton.setOnClickListener(v -> {
+                User currentUser = UserManager.getCurrentUser();
+                if (currentUser != null) {
+                    currentUser.acceptRequest(user.getUid());
+                }
+            });
+
+            Button deleteButton = view.findViewById(R.id.btn_delete);
+            deleteButton.setOnClickListener(v -> {
+                User currentUser = UserManager.getCurrentUser();
+                if (currentUser != null) {
+                    currentUser.removeRequest(user.getUid());
+                }
+            });
+        }
+
+        notifyDataSetChanged();
         return view;
     }
 
-    /**
-     * @param layout ; int
-     *
-     *
-     * This function must be called before connecting the ArrayAdapter
-     * to the ListView.
-     *
-     * Desired layout for the item in the listview.
-     */
-    public void setLayout(int layout){
-        this.layout = layout;
-    }
+    void refreshData(ArrayList<String> uidList) {
+        userList.clear();
+        clear();
+        notifyDataSetChanged();
 
-    /**
-     * @param activity ; FragmentActivity
-     *
-     *
-     * This function must be called before connecting the ArrayAdapter
-     * to the ListView.
-     *
-     * Saves the current activity. Necessary for changing the fragment
-     */
-    public void setActivity(FragmentActivity activity){
-        this.activity = activity;
-    }
+        if (uidList == null) {
+            return;
+        }
 
-    /**
-     *
-     * @param position : int
-     * @return
-     *
-     * Disables onItemClick
-     */
-    @Override
-    public boolean isEnabled(int position) {
-        return false;
+        userList.addAll(uidList);
+        addAll(uidList);
     }
 }

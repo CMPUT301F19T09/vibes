@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -44,6 +45,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     private ClusterManager<MoodEvent> mClusterManager;
     boolean firstPointPut = false;
     Context context;
+    private MapFilter mapFilter;
 
     /**
      * This is used to filter out the moods being showed;
@@ -54,6 +56,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     }
 
     Filter filter;
+    String emotionSelected;
     private List<String> observedUsers;
 
     /**
@@ -99,6 +102,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
+    public void setEmotionSelected(String emotion){
+        this.emotionSelected = emotion;
+    }
+
     /**
      * Making a callback function for when the map object is ready.
      * As the map is read,
@@ -115,7 +122,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         View view = inflater.inflate(R.layout.map_fragment, container,false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
-        getChildFragmentManager().beginTransaction().add(R.id.filter_root, MapFilter.getInstance(Filter.SHOW_MINE), "mapFilter").commit();
+        if (mapFilter == null)
+        {
+            mapFilter = MapFilter.getInstance(Filter.SHOW_MINE);
+            getChildFragmentManager().beginTransaction().add(R.id.filter_root, mapFilter, "mapFilter").commit();
+        }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
         return view;
     }
@@ -127,6 +138,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     @Override
     public void onMapReady(GoogleMap mMap) {
         googlemap = mMap;
+
+//        Code For changing the structure of the
+//        Info window. Commented out to be used later.
+//        googlemap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+//
+//                // Getting the position from the marker
+//                TextView tvLatitude= (TextView) findViewById(R.id.tvLatitude);
+//                tvLatitude.setText("Latitude ");
+//                // Returning the view containing InfoWindow contents
+//                return v;
+//                return null;
+//            }
+//        });
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.clear();
@@ -147,10 +179,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         googlemap.setOnMarkerClickListener(mClusterManager);
         googlemap.setOnInfoWindowClickListener(mClusterManager);
 
-        switchFilter(Filter.SHOW_MINE);
+        switchFilter(Filter.SHOW_MINE, null);
     }
 
-    public void switchFilter(Filter filter) {
+    public void switchFilter(Filter filter, @Nullable String emotion) {
         if (googlemap == null) {
             Log.e("SWITCH FILTER", "NO GOOGLEMAP DEFINED");
             return;
@@ -162,7 +194,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         if (filter == Filter.SHOW_MINE) {
             Log.d("TEST/Map", "Showing own events");
             removeObservers();
-            showUserEvents();
+            showUserEvents(emotion);
         } else if (filter == Filter.SHOW_EVERYONE) {
             Log.d("TEST/Map", "Showing everyone's events");
             for (String id : user.getFollowingList())
@@ -199,10 +231,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
-    private void showUserEvents()
+    private void showUserEvents(@Nullable String emotion)
     {
         for (MoodEvent event : UserManager.getCurrentUser().getMoodEvents()) {
-            showEvent(event);
+            if(emotion != null){
+                if(event.getState().getEmotion() == emotion){
+                    showEvent(event);
+                }
+            }else{
+                showEvent(event);
+            }
         }
     }
 
@@ -238,7 +276,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         clusterCleanUp();
         if (filter == Filter.SHOW_MINE)
         {
-            showUserEvents();
+            showUserEvents(null);
         }
         else
         {
@@ -272,13 +310,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public void showDialogForMultipleEvents(Collection<MoodEvent> events){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-        builderSingle.setTitle("Multiple moods in same location:-");
+        builderSingle.setTitle("Multiple moods in same location:");
 
         ArrayList listEvents = new ArrayList(events);
 
         final MoodsDialogAdapter customAdapter = new MoodsDialogAdapter(context, listEvents);
 
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builderSingle.setNegativeButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -292,7 +330,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
                 ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
             }
         });
-        builderSingle.show();
+
+        builderSingle.show().getListView().setBackgroundResource(R.color.moodListBackground);
     }
 
     /**
@@ -332,6 +371,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     @Override
     public boolean onClusterItemClick(MoodEvent event) {
+
         return false;
     }
 
@@ -340,4 +380,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
         Log.d("MAP", "clusterPoint info is clicked.");
     }
+
+
 }

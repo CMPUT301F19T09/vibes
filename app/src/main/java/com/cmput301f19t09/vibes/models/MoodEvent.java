@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
+import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
@@ -25,8 +26,9 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     // time not optional
     // description optional
     private EmotionalState state; // not optional
-    private double socialSituation; // optional
-    private Location location; // optional
+    private int socialSituation; // optional
+    private transient Uri photo; // optional
+    private transient Location location; // optional
     private User user; // the user that the mood is associated with
 
     /**
@@ -49,11 +51,12 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   user
      *      The user that the created the MoodEvent.
      */
-    public MoodEvent(LocalDate date, LocalTime time, String description,
-                     EmotionalState state, int socialSituation, Location location, User user) {
+    public MoodEvent(LocalDate date, LocalTime time, String description, EmotionalState state,
+                     int socialSituation, Uri photo, Location location, User user) {
         super(date, time, description);
         this.state = state;
         this.socialSituation = socialSituation;
+        this.photo = photo;
         this.location = location;
         this.user = user;
     }
@@ -91,7 +94,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      *      The socialSituation associated with a MoodEvent; return value of -1 indicates that
      *      SocialSituation has not been specified.
      */
-    public double getSocialSituation() {
+    public int getSocialSituation() {
         return socialSituation;
     }
 
@@ -105,8 +108,16 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   socialSituation
      *      The socialSituation associated with a MoodEvent.
      */
-    public void setSocialSituation(double socialSituation) {
+    public void setSocialSituation(int socialSituation) {
         this.socialSituation = socialSituation;
+    }
+
+    public Uri getPhoto() {
+        return this.photo;
+    }
+
+    public void setPhoto(Uri photo) {
+        this.photo = photo;
     }
 
     /**
@@ -212,7 +223,11 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     @Override
     public String getTitle() {
-        return this.getState().getEmotion();
+        if (!this.user.getUid().equals(UserManager.getCurrentUserUID())) {
+            return this.user.getUserName();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -223,6 +238,6 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     @Override
     public String getSnippet() {
-        return this.getDescription();
+        return this.getState().getEmotion();
     }
 }

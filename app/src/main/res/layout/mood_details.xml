@@ -1,133 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mood_details_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/mood_list_item_bg"
-    android:backgroundTint="#EEEEEEEE"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:background="@drawable/chip_16dp"
+    android:backgroundTint="@color/moodItemShadow">
 
-    <ImageView
-        android:id="@+id/user_image"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="16dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/circle"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/reason_image"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/full_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/user_image"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="John Johnson" />
-
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_thin"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/full_name"
-        app:layout_constraintTop_toBottomOf="@+id/full_name"
-        tools:text="\@johnnyjj" />
-
-    <TextView
-        android:id="@+id/reason"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_thin"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/user_image"
-        app:layout_constraintStart_toStartOf="@+id/full_name"
-        tools:text="Want to tickle myself!" />
-
-    <ImageView
-        android:id="@+id/emotion_image"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_marginBottom="16dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/circle"
-        app:layout_constraintBottom_toTopOf="@+id/reason_image"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher_round" />
-
-    <TextView
-        android:id="@+id/mood_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/roboto_thin"
-        app:layout_constraintBottom_toTopOf="@+id/confirm_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="~4 m" />
-
-    <ImageView
-        android:id="@+id/reason_image"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mood_details_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toTopOf="@+id/mood_time"
-        tools:layout_editor_absoluteX="50dp"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/chip_16dp"
+        android:backgroundTint="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <Button
-        android:id="@+id/confirm_button"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/rounded_button"
-        android:fontFamily="@font/roboto_regular"
-        android:text="@android:string/ok"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/circle"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/rounded_button_blue"
-        android:fontFamily="@font/roboto_regular"
-        android:text="EDIT"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/confirm_button" />
+        <TextView
+            android:id="@+id/full_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/emotion_image"
+            app:layout_constraintStart_toEndOf="@+id/user_image"
+            app:layout_constraintTop_toTopOf="@+id/user_image"
+            tools:text="John Johnson" />
 
-    <ImageButton
-        android:id="@+id/delete_button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/rounded_button"
-        android:backgroundTint="#FF3D00"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/edit_button"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edit_button"
-        app:srcCompat="@drawable/ic_delete_white_24dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto_thin"
+            android:textSize="14sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/mood_date"
+            app:layout_constraintEnd_toStartOf="@+id/tv_slash"
+            tools:text="\@johnnyjj" />
+
+        <TextView
+            android:id="@+id/reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/user_image"
+            app:layout_constraintStart_toStartOf="@+id/full_name"
+            tools:text="Want to kill myself!" />
+
+        <ImageView
+            android:id="@+id/emotion_image"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginEnd="8dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/circle"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/user_image"
+            app:srcCompat="@mipmap/ic_launcher_round" />
+
+        <TextView
+            android:id="@+id/mood_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto_thin"
+            app:layout_constraintEnd_toEndOf="@+id/reason_image"
+            app:layout_constraintTop_toBottomOf="@+id/emotion_chip"
+            tools:text="11:58" />
+
+        <ImageView
+            android:id="@+id/reason_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="200dp"
+            android:scaleType="centerInside"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_max="200dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_image"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_button"
+            android:fontFamily="@font/roboto_regular"
+            android:text="@android:string/ok"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
+
+        <Button
+            android:id="@+id/edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_button_blue"
+            android:fontFamily="@font/roboto_regular"
+            android:text="EDIT"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/confirm_button" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:tint="#FF1744"
+            app:layout_constraintBottom_toBottomOf="@+id/edit_button"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/edit_button"
+            app:srcCompat="@drawable/ic_delete_white_24dp" />
+
+        <include
+            android:id="@+id/emotion_chip"
+            layout="@layout/info_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/emotion_image"
+            app:layout_constraintTop_toBottomOf="@+id/reason_image" />
+
+        <include
+            android:id="@+id/social_chip"
+            layout="@layout/info_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/emotion_chip"
+            app:layout_constraintEnd_toStartOf="@+id/emotion_chip" />
+
+        <TextView
+            android:id="@+id/tv_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:fontFamily="@font/roboto_thin"
+            android:text="at"
+            app:layout_constraintBaseline_toBaselineOf="@+id/mood_time"
+            app:layout_constraintEnd_toStartOf="@+id/mood_time" />
+
+        <TextView
+            android:id="@+id/mood_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:fontFamily="@font/roboto_thin"
+            app:layout_constraintBaseline_toBaselineOf="@+id/mood_time"
+            app:layout_constraintEnd_toStartOf="@+id/tv_at"
+            tools:text="11-06-2019" />
+
+        <TextView
+            android:id="@+id/tv_slash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/roboto_thin"
+            android:text="//"
+            app:layout_constraintBaseline_toBaselineOf="@+id/mood_date"
+            app:layout_constraintEnd_toStartOf="@+id/mood_date" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

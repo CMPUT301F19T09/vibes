@@ -1,23 +1,22 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -28,27 +27,28 @@ import java.util.List;
  * current users follows.
  */
 public class FollowingFragment extends Fragment {
+    private User user;
+    private ArrayList<String> followingList;
+    private ArrayList<String> requestedList;
+    private FollowingFragmentAdapter followingAdapter;
+    private FollowingFragmentAdapter requestedAdapter;
+    private ListView followingLinearLayout;
+    private ListView requestedLinearLayout;
 
     /**
-     * @param user : User
-     *
      * @return followingFragment : FollowingFragment
      *
      * Given a User object (corresponding to the current user), the constructor returns
      * a FollowingFragment that corresponds to the passed in user.
      */
     public static FollowingFragment newInstance() {
-        FollowingFragment followingFragment = new FollowingFragment();
-        return followingFragment;
+        return new FollowingFragment();
     }
 
-    // Class variables
-    private LinearLayout followingLinearLayout;
-    private FollowingFragmentAdapter followingAdapter;
-    private ArrayList<User> followingList;
-    private LinearLayout requestedLinearLayout;
-    private FollowingFragmentAdapter requestedAdapter;
-    private ArrayList<User> requestedList;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     /**
      * @param inflater : LayoutInflater
@@ -73,69 +73,127 @@ public class FollowingFragment extends Fragment {
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
         // Gets the user object provided
-        User user = UserManager.getCurrentUser();
+        user = UserManager.getCurrentUser();
 
         // Initializes ArrayList's for the users that are being followed and
         // the users that have requested to follow the current user.
-        followingList = new ArrayList<User>();
-        requestedList = new ArrayList<User>();
+        followingList = new ArrayList<>();
+        requestedList = new ArrayList<>();
 
-        // Gets the data of the current user from the database
-        user.readData(new User.FirebaseCallback() {
+        followingAdapter = new FollowingFragmentAdapter(getActivity(), "following");
+        followingLinearLayout = view.findViewById(R.id.following_list);
+        followingLinearLayout.setAdapter(followingAdapter);
+
+        requestedAdapter = new FollowingFragmentAdapter(getActivity(), "request");
+        requestedLinearLayout = view.findViewById(R.id.requested_list);
+        requestedLinearLayout.setAdapter(requestedAdapter);
+
+        assert user != null;
+        if (user.isLoaded()) {
+            followingList.clear();
+            followingAdapter.clear();
+
+            requestedList.clear();
+            requestedAdapter.clear();
+
+            followingList.addAll(user.getFollowingList());
+            requestedList.addAll(user.getRequestedList());
+
+            followingAdapter.refreshData(followingList);
+            requestedAdapter.refreshData(requestedList);
+
+            resizeListView(followingLinearLayout);
+            resizeListView(requestedLinearLayout);
+        }
+
+        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
+            followingList.clear();
+            followingAdapter.clear();
+
+            requestedList.clear();
+            requestedAdapter.clear();
+
+            followingList.addAll(user.getFollowingList());
+            requestedList.addAll(user.getRequestedList());
+
+            followingAdapter.refreshData(followingList);
+            requestedAdapter.refreshData(requestedList);
+
+            resizeListView(followingLinearLayout);
+            resizeListView(requestedLinearLayout);
+        });
+
+        followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
-            public void onCallback(User user) {
-                // Gets the list of username's of the users that are being followed by the
-                // current user
-                List<String> followingUsernames = user.getFollowingList();
-                // For every username, a user object is initialized and the data of that user is read
-                for (String username : followingUsernames) {
-                    User followee = new User(username);
-                    followee.readData(new User.FirebaseCallback() {
-                        @Override
-                        public void onCallback(User user) {
-                            // After the data has been read, the user being followed is added to the
-                            // followingList and we notify a change in the data set
-                            followingList.add(user);
-                            followingAdapter.notifyDataSetChanged();
-                            followingLinearLayout.addView(followingAdapter.getView(followingAdapter.getCount()-1, null ,null));
-                        }
-                    });
-                }
-                // Gets the list of username's of the users that the user requests to follow
-                List<String> requestedUsernames = user.getRequestedList();
-                // For every username, a user object is initialized and the data of that user is read
-                for (String username : requestedUsernames) {
-                    User requester = new User(username);
-                    requester.readData(new User.FirebaseCallback() {
-                        @Override
-                        public void onCallback(User user) {
-                            // After the data has been read, the user being followed is added to the
-                            // requestedList and we notify a change in the data set
-                            requestedList.add(user);
-                            requestedAdapter.notifyDataSetChanged();
-                            requestedLinearLayout.addView(requestedAdapter.getView(requestedAdapter.getCount()-1, null ,null));
-                        }
-                    });
-                }
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                followingLinearLayout.removeOnLayoutChangeListener(this);
+                followingAdapter.notifyDataSetChanged();
             }
         });
 
-        // followingAdapter is created and is given the correct layout (requestedAdapter
-        // is given a different layout). followingListView is provided a view and has
-        // its adapter set to followingAdapter
-        followingAdapter = new FollowingFragmentAdapter(getActivity(), followingList);
-        followingAdapter.setLayout(R.layout.following_list);
-        followingAdapter.setActivity(getActivity());
-        followingLinearLayout = view.findViewById(R.id.following_list);
+        requestedLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                followingLinearLayout.removeOnLayoutChangeListener(this);
+                requestedAdapter.notifyDataSetChanged();
+            }
+        });
 
-        // requestedAdapter is created and is given the correct layout (followingAdapter
-        // is given a different layout). requestedListView is provided a view and has
-        // its adapter set to requestedAdapter
-        requestedAdapter = new FollowingFragmentAdapter(getActivity(), requestedList);
-        requestedAdapter.setLayout(R.layout.requested_list);
-        requestedAdapter.setActivity(getActivity());
-        requestedLinearLayout = view.findViewById(R.id.requested_list);
+        // Allowing two listviews to scroll as one
+        // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
+        ViewTreeObserver listVTO = followingLinearLayout.getViewTreeObserver();
+        listVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                followingLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                resizeListView(followingLinearLayout);
+            }
+        });
+
+//        listVTO.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+//            @Override
+//            public void onDraw() {
+//                followingAdapter.notifyDataSetChanged();
+//            }
+//        });
+
+        ViewTreeObserver listVTO2 = requestedLinearLayout.getViewTreeObserver();
+        listVTO2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                requestedLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                resizeListView(requestedLinearLayout);
+            }
+        });
+
+//        listVTO2.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+//            @Override
+//            public void onDraw() {
+//                requestedAdapter.notifyDataSetChanged();
+//            }
+//        });
 
         return view;
+    }
+
+    /**
+     *
+     * @param listView
+     */
+    private void resizeListView(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        int count = listAdapter.getCount();
+        int itemHeight;
+
+        View oneChild = listView.getChildAt(0);
+        if (oneChild == null) {
+            return;
+        }
+
+        itemHeight = oneChild.getHeight();
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
+        params.height = itemHeight * count;
+        listView.setLayoutParams(params);
     }
 }

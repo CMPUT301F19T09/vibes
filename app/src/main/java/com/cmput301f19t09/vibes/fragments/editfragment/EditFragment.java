@@ -2,18 +2,25 @@ package com.cmput301f19t09.vibes.fragments.editfragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,13 +33,15 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.BuildConfig;
 import com.cmput301f19t09.vibes.MainActivity;
-import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.User;
 
@@ -40,6 +49,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -57,9 +67,18 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
+import io.opencensus.resource.Resource;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter.SHOW_MINE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,8 +107,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     // state setting
     private GridView stateGridView;
     private TextView stateTextView;
-    private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
+    private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+    private boolean validReason = false;
+
+    // photo for reason
+    private Uri photoUri;
+    private ImageView photoImage;
+    private ImageButton captureButton;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private ImageButton galleryButton;
+    private static final int REQUEST_IMAGE_GALLERY = 3;
+    private ImageButton clearButton;
+    private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 4;
 
     private EditText editSituationView;
     private EditText editReasonView;
@@ -248,36 +278,186 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         buttonCancelView.setEnabled(true);
 
 
-        stateGridView = view.findViewById(R.id.state_grid_view);
-        stateGridView.setAdapter(new ImageAdapter(getActivity()));
-        stateGridView.setOnItemClickListener(this);
-        stateTextView = view.findViewById(R.id.state_text_view);
+        TextView titleTextView = view.findViewById(R.id.title_textview);
+        ChipGroup stateChipGroup = view.findViewById(R.id.emotion_chip_group);
+        ImageView emotionImageView = view.findViewById(R.id.emotion_image);
+
+        emotionImageView.setVisibility(GONE);
+
+        int bgColor = ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null);
+
+        for (String key : emotionalStateKeys)
+        {
+            Chip emotionChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+            stateChipGroup.addView(emotionChip);
+
+            emotionChip.setCheckable(true);
+            emotionChip.setClickable(true);
+
+            EmotionalState state = new EmotionalState(key);
+
+            emotionChip.setText(key.charAt(0) + key.substring(1).toLowerCase());
+            emotionChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                    {
+                        emotionalState = state;
+
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(state.getColour()));
+                        emotionImageView.setImageResource(state.getImageFile());
+                        Log.d("TEST/Chips", state.getEmotion() + " is checked");
+                    } else
+                    {
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(bgColor));
+                        Log.d("TEST/Chips", state.getEmotion() + " is unchecked");
+                    }
+                }
+            });
+            emotionChip.setTag(key);
+        }
+
+        stateChipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ChipGroup chipGroup, int i) {
+                if (i == -1)
+                {
+                    emotionalState = null;
+                    emotionImageView.setVisibility(GONE);
+                    buttonSubmitView.setEnabled(false);
+                }
+                else
+                {
+                    emotionImageView.setVisibility(VISIBLE);
+                }
+
+                if (validReason)
+                {
+                    buttonSubmitView.setEnabled(true);
+                }
+            }
+        });
+
+        stateChipGroup.setClickable(true);
+        stateChipGroup.setEnabled(true);
+
+        ChipGroup socialChipGroup = view.findViewById(R.id.social_chip_group);
+
+        /*
+        List<String> socialStrings = new ArrayList<>();
+        socialStrings.add("Alone");
+        socialStrings.add("With Someone Else");
+        socialStrings.add("With a Few People");
+        socialStrings.add("In a Group");
+        socialStrings.add("In a Crowd");
+         */
+
+        for (String situation : getResources().getStringArray(R.array.situations))
+        {
+            Chip socialChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+
+            socialChip.setClickable(true);
+            socialChip.setCheckable(true);
+
+            socialChip.setText(situation);
+
+            socialChipGroup.addView(socialChip);
+            socialChip.setTag(situation);
+        }
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
-        editSituationView = view.findViewById(R.id.edit_situation_view);
+        //editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
+
+        photoImage = view.findViewById(R.id.photo_image);
+        photoImage.setVisibility(GONE);
+        captureButton = view.findViewById(R.id.capture_button);
+        captureButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                  if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
+                          PackageManager.PERMISSION_DENIED ||
+                          ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                                  PackageManager.PERMISSION_DENIED) {
+                      String[] permission = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                      requestPermissions(permission, CAMERA_PERMISSIONS_REQUEST_CODE);
+                  } else {
+                      openCamera();
+                  }
+              } else {
+                  openCamera();
+              }
+          }
+
+              //if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                  //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+              //}
+        });
+        galleryButton = view.findViewById(R.id.gallery_button);
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                galleryIntent.setType("image/*");
+
+                if (galleryIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(galleryIntent, REQUEST_IMAGE_GALLERY);
+                }
+            }
+        });
+        clearButton = view.findViewById(R.id.clear_photo_button);
+        clearButton.setVisibility(GONE);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                photoUri = null;
+
+                photoImage.setVisibility(GONE);
+                clearButton.setVisibility(GONE);
+                setPhotoImage(null, photoImage);
+            }
+        });
 
         locationSwitch = view.findViewById(R.id.location_switch);
 
         if (editing) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
 
+            titleTextView.setText(R.string.edit_mood_title);
+
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
+            int socialSituation = moodEvent.getSocialSituation();
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
-                String situationString = Double.toString(moodEvent.getSocialSituation());
-                editSituationView.setText(situationString);
+                String[] situations = getResources().getStringArray(R.array.situations);
+                // Make sure the situation index is wrapped (since many moods were uploaded before this was constrained)
+                socialSituation %= situations.length;
+                ((Chip)socialChipGroup.findViewWithTag(situations[socialSituation])).setChecked(true);
             }
+
             editReasonView.setText(moodEvent.getDescription());
             emotionalState = moodEvent.getState();
-            stateTextView.setText(moodEvent.getState().getEmotion());
+
+            ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
+
+            photoUri = moodEvent.getPhoto();
+            if (photoUri != null){
+                setPhotoImage(photoUri, photoImage);
+            } else {
+                setPhotoImage(null, photoImage);
+            }
 
             // set the use location slider based on whether the mood event has a location or not
             if (moodEvent.getLocation() != null) {
                 // set the slider to ON
                 useLocation = true;
                 locationSwitch.setChecked(true);
+            } else {
+                locationSwitch.setChecked(false);
             }
             // turn of slider interaction as locations should not be editable
             locationSwitch.setEnabled(false);
@@ -288,7 +468,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
             // set moodEvent to be an empty new MoodEvent object for the current user
-            moodEvent = new MoodEvent(null, null, null, null, -1, null, user);
+            titleTextView.setText(R.string.new_mood_title);
+            moodEvent = new MoodEvent(null, null, null, null, -1, null, null, user);
 
             // set the current date
             LocalDate date = LocalDate.now();
@@ -330,10 +511,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
 
                 // reason must be 3 words or less and must have all required fields set
-                if (splitStr.length <= 3 && emotionalState != null) {
+                if (splitStr.length <= 3) {
+                    validReason = true;
+                    if (emotionalState != null){
                     buttonSubmitView.setEnabled(true);
+                    }
                 }
                 else { // disable the button
+                    validReason = false;
                     buttonSubmitView.setEnabled(false);
                 }
             }
@@ -352,8 +537,34 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 moodEvent.setState(emotionalState);
 
                 // set optional fields
-                if (!editSituationView.getText().toString().isEmpty()) {
-                    moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
+                //if (!editSituationView.getText().toString().isEmpty()) {
+                    //moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
+                    //moodEvent
+                //}
+
+                Chip selectedSocial = (Chip)view.findViewById(socialChipGroup.getCheckedChipId());
+                if (selectedSocial != null)
+                {
+                    String socialText = selectedSocial.getText().toString();
+                    String[] situations = getResources().getStringArray(R.array.situations);
+
+                    boolean found_situation = false;
+
+                    for (int i = 0; i < situations.length; i++)
+                    {
+                        if (situations[i].equals(socialText))
+                        {
+                            found_situation = true;
+                            moodEvent.setSocialSituation(i);
+                            break;
+                        }
+                    }
+
+                    if (!found_situation)
+                    {
+                        Log.d("TEST/SocialChips", "no situation selected");
+                        moodEvent.setSocialSituation(-1);
+                    }
                 }
 
                 // set location
@@ -387,6 +598,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     moodEvent.setDescription(editReasonView.getText().toString());
                 }
 
+                if (photoUri != null) {
+                    moodEvent.setPhoto(photoUri);
+                } else {
+                    moodEvent.setPhoto(null);
+                }
+
                 if (!editing) {
                     // was adding a new mood
                     stopLocationUpdates();
@@ -397,7 +614,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 MainActivity main = (MainActivity) EditFragment.this.getActivity();
                 main.onBackPressed();
-                //main.setListFragment(MoodListFragment.OWN_MOODS);
             }
         });
 
@@ -427,13 +643,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (adapterView.getId() == R.id.state_grid_view) {
-            emotionalState = new EmotionalState(stateKeys.get(i));
+        /*if (adapterView.getId() == R.id.state_grid_view) {
+            emotionalState = new EmotionalState(emotionalStateKeys.get(i));
             // update the state text view
             stateTextView.setText(emotionalState.getEmotion());
             // a mood has been selected so all required fields have been set; allow submitting MoodEvent
             buttonSubmitView.setEnabled(true);
-        }
+        }*/
+        Log.d("TEST/EditBroke", "onItemClick");
     }
 
     public void onButtonPressed(Uri uri) {
@@ -546,43 +763,56 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                startLocationUpdates();
-            } else {
-                // Permission denied.
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length <= 0) {
+                    // If user interaction was interrupted, the permission request is cancelled and you
+                    // receive empty arrays.
+                    Log.i(TAG, "User interaction was cancelled.");
+                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
+                    startLocationUpdates();
+                } else {
+                    // Permission denied.
 
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
+                    // Notify the user via a SnackBar that they have rejected a core permission for the
+                    // app, which makes the Activity useless. In a real app, core permissions would
+                    // typically be best requested during a welcome-screen flow.
 
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
-                showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
+                    // Additionally, it is important to remember that a permission might have been
+                    // rejected without asking the user for permission (device policy or "Never ask
+                    // again" prompts). Therefore, a user interface affordance is typically implemented
+                    // when permissions are denied. Otherwise, your app could appear unresponsive to
+                    // touches or interactions which have required permissions.
+                    showSnackbar(R.string.permission_denied_explanation,
+                            R.string.settings, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Build intent that displays the App settings screen.
+                                    Intent intent = new Intent();
+                                    intent.setAction(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package",
+                                            BuildConfig.APPLICATION_ID, null);
+                                    intent.setData(uri);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+                            });
+                }
+                break;
+            //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+            case CAMERA_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED){
+                    //permission from popup was granted
+                    openCamera();
+                }
+                else {
+                    Log.d("Permission denied:", "The permission to the camera was denied.");
+                }
         }
+
     }
 
     /**
@@ -648,12 +878,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
-                    case Activity.RESULT_OK:
+                    case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
@@ -663,7 +894,24 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         break;
                 }
                 break;
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK && data != null) {
+                    photoUri = data.getData();
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
+                    setPhotoImage(photoUri, photoImage);
+                }
+                break;
+            case REQUEST_IMAGE_CAPTURE:
+                if (resultCode == RESULT_OK && data != null) {
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
+                    setPhotoImage(photoUri, photoImage);
+                }
+                break;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -719,5 +967,27 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
+    //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+    private void openCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the camera");
+        photoUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    }
 
+    /**
+     * @param uri
+     * @param imageView
+     *
+     * Sets the image displayed in imageView to the photo indicated by uri.
+     * If uri is null, the photo is set to the default photo.
+     */
+    private void setPhotoImage(Uri uri, ImageView imageView){
+        if (uri != null){
+            Glide.with(this).load(uri).into(imageView);
+        }
+    }
 }
