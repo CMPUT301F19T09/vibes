@@ -53,23 +53,37 @@
             android:fontFamily="@font/roboto_regular"
             android:text="Reason:"
             android:textSize="18sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/edit_reason_view"
-            app:layout_constraintStart_toStartOf="@+id/tv_emotion_title" />
+            app:layout_constraintBottom_toBottomOf="@+id/reason_container"
+            app:layout_constraintStart_toStartOf="@+id/tv_emotion_title"
+            app:layout_constraintTop_toTopOf="@+id/reason_container" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_reason_view"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reason_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto_thin"
-            android:hint="@string/enter_reason"
-            android:inputType="textCapSentences|textAutoCorrect"
-            android:maxLength="20"
-            android:textSize="18sp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_reason_title"
-            app:layout_constraintTop_toBottomOf="@id/emotion_chip_group" />
+            app:layout_constraintTop_toBottomOf="@id/emotion_chip_group">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_reason_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/roboto_thin"
+                android:hint="@string/enter_reason"
+                android:inputType="textCapSentences|textAutoCorrect"
+                android:maxLength="20"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <LinearLayout
             android:id="@+id/photo_buttons"
@@ -189,14 +203,14 @@
             android:text="Social Situation (Optional):"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/tv_reason_title"
-            app:layout_constraintTop_toBottomOf="@+id/edit_reason_view" />
+            app:layout_constraintTop_toBottomOf="@+id/reason_container" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/social_chip_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="@id/edit_reason_view"
+            app:layout_constraintEnd_toEndOf="@id/reason_container"
             app:layout_constraintStart_toStartOf="@+id/tv_reason_title"
             app:layout_constraintTop_toBottomOf="@+id/tv_social_title"
             app:singleSelection="true" />
