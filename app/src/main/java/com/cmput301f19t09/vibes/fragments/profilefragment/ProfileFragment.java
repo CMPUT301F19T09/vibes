@@ -125,12 +125,12 @@ public class ProfileFragment extends Fragment implements Observer {
             }
 
             user.addObserver((o, arg) -> {
-                createChild();
+//                createChild();
                 checkMode();
             });
 
             otherUser.addObserver((observable, o) -> {
-                createChild();
+//                createChild();
                 checkMode();
             });
         }
