@@ -517,12 +517,6 @@ public class EditFragment extends Fragment {
             public void onClick(View view1) {
                 moodEvent.setState(emotionalState);
 
-                // set optional fields
-                //if (!editSituationView.getText().toString().isEmpty()) {
-                    //moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
-                    //moodEvent
-                //}
-
                 Chip selectedSocial = (Chip)view.findViewById(socialChipGroup.getCheckedChipId());
                 if (selectedSocial != null)
                 {
