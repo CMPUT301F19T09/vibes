@@ -3,6 +3,7 @@ package com.cmput301f19t09.vibes.fragments.mooddetailsfragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,12 +15,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
+import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
@@ -75,7 +78,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
         editable = arguments.getBoolean("editable");
 
         ImageView userImage, emotionImage, reasonImage;
-        TextView userUsername, userFullName, moodTime, moodReason;
+        TextView userUsername, userFullName, moodTime, moodDate, moodReason, emotionChip, socialChip;
         Button editButton, confirmButton;
         ImageButton deleteButton;
 
@@ -85,20 +88,39 @@ public class MoodDetailsDialogFragment extends DialogFragment
         userUsername =  view.findViewById(R.id.username);
         userFullName = view.findViewById(R.id.full_name);
         moodTime = view.findViewById(R.id.mood_time);
+        moodDate = view.findViewById(R.id.mood_date);
         moodReason = view.findViewById(R.id.reason);
         deleteButton = view.findViewById(R.id.delete_button);
         editButton = view.findViewById(R.id.edit_button);
         confirmButton = view.findViewById(R.id.confirm_button);
+        emotionChip = view.findViewById(R.id.emotion_chip);
+        socialChip = view.findViewById(R.id.social_chip);
 
         // Set profile picture and crop to a circle
         Glide.with(getContext()).load(eventUser.getProfileURL()).into(userImage);
         userImage.setClipToOutline(true);
+        EmotionalState state = event.getState();
+
+        emotionImage.setImageResource(state.getImageFile());
+
+        emotionChip.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
+        emotionChip.setText(state.getEmotion());
+
+        int situation = event.getSocialSituation();
+        if (situation != -1)
+        {
+            socialChip.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null)));
+            String[] socialSituations = getResources().getStringArray(R.array.situations);
+            situation %= socialSituations.length;
+            socialChip.setText(socialSituations[situation]);
+        }
+        else
+        {
+            socialChip.setVisibility(View.GONE);
+        }
 
         // Set emotion picture and colour
         emotionImage.setImageResource(event.getState().getImageFile());
-        emotionImage.setColorFilter(event.getState().getColour());
-        emotionImage.setClipToOutline(true);
-
         deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
 
         // Set the username and user's name fields
@@ -106,40 +128,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
         userFullName.setText(eventUser.getFirstName() + " " + eventUser.getLastName());
 
         // Calculate the time since the event was posted
-        Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
-
-        String timeString = "~";
 
         Glide.with(this).load(event.getPhoto()).into(reasonImage);
-        reasonImage.getLayoutParams().height = 800;
 
-        /*
-        Set the field that displays time (e.g. ~5s)
-        TODO: Make this better
-         */
-        if (timeSincePost.getSeconds() < 60)
-        {
-            timeString += timeSincePost.getSeconds() + " s";
-        }
-        else if (timeSincePost.toMinutes() < 60)
-        {
-            timeString += timeSincePost.toMinutes() + " m";
-        }
-        else if (timeSincePost.toHours() < 24)
-        {
-            timeString += timeSincePost.toHours() + " h";
-        }
-        else if (timeSincePost.toDays() < 365)
-        {
-            timeString += timeSincePost.toDays() + " d";
-        }
-        else
-        {
-            timeString += ( timeSincePost.toDays() / 365 ) + " y";
-        }
-
-        moodTime.setText(timeString);
         moodReason.setText(event.getDescription());
+        moodTime.setText(event.getTimeString());
+        moodDate.setText(event.getDateString());
 
         if (editable)
         {
@@ -195,8 +189,6 @@ public class MoodDetailsDialogFragment extends DialogFragment
                             return;
                         }
 
-                        // Open an edit fragment for the mood
-                        //((MainActivity) getActivity()).setMainFragment(EditFragment.newInstance(event, mood_index));
                         ((MainActivity) getActivity()).setEditFragment(event, mood_index);
                     }
                 });

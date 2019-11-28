@@ -89,9 +89,6 @@ public class MoodsDialogAdapter extends ArrayAdapter<MoodEvent> {
 
             moodReason.setText(event.getDescription());
             emotionImage.setImageResource(event.getState().getImageFile());
-            emotionImage.setClipToOutline(true);
-            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
-            emotionImage.setColorFilter(event.getState().getColour());
 
             Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
 

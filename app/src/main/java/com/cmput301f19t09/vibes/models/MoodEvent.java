@@ -27,7 +27,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     // description optional
     private EmotionalState state; // not optional
     private int socialSituation; // optional
-    private Uri photo;
+    private transient Uri photo; // optional
     private transient Location location; // optional
     private User user; // the user that the mood is associated with
 

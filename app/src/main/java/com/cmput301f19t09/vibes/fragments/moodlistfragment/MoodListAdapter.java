@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
+import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -77,7 +79,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         User user = event.getUser();
 
         ImageView userImage, emotionImage, userMask;
-        TextView userUsername, userFullName, moodReason, moodTime;
+        TextView userUsername, userFullName, moodReason, moodTime, emotionTag;
         View emotionColour;
 
         userImage = item.findViewById(R.id.user_image);
@@ -89,21 +91,23 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         userFullName = item.findViewById(R.id.full_name);
         moodReason = item.findViewById(R.id.reason);
         moodTime = item.findViewById(R.id.mood_time);
-        //emotionColour = item.findViewById(R.id.emotion_colour);
+        emotionTag = item.findViewById(R.id.emotion_chip);
 
         userFullName.setText(user.getFirstName() + " " + user.getLastName());
 
         if (event != null)
         {
 
+            EmotionalState state = event.getState();
             moodReason.setText(event.getDescription());
-            emotionImage.setImageResource(event.getState().getImageFile());
-            emotionImage.setClipToOutline(true);
-//            Log.d("TEST", String.format("Setting emotion colour to %x", event.getState().getColour()));
-            Log.d("TEST/getview", "color is: " + String.format("%x", event.getState().getColour()));
-            emotionImage.setColorFilter(event.getState().getColour());
+            emotionImage.setImageResource(state.getImageFile());
 
             Duration timeSincePost = Duration.between(event.getLocalDateTime(), LocalDateTime.now());
+
+            emotionTag.setText(state.getEmotion());
+            //emotionTag.setText(state.getEmotion().charAt(0) + state.getEmotion().substring(1).toLowerCase());
+            //emotionTag.setBackgroundColor(state.getColour());
+            emotionTag.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
 
             String timeString = "~";
 

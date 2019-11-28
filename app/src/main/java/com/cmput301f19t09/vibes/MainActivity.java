@@ -308,7 +308,6 @@ public class MainActivity extends FragmentActivity {
     public void openDialogFragment(DialogFragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-
         fragment.show(transaction, null);
     }
 

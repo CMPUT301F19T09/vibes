@@ -280,8 +280,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         ChipGroup stateChipGroup = view.findViewById(R.id.emotion_chip_group);
         ImageView emotionImageView = view.findViewById(R.id.emotion_image);
 
-        emotionImageView.setImageResource(R.drawable.ic_cancel_black_36dp);
-        emotionImageView.setColorFilter(0xFFFF0000);
+        emotionImageView.setVisibility(GONE);
 
         int bgColor = ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null);
 
@@ -305,7 +304,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
                         emotionChip.setChipBackgroundColor(ColorStateList.valueOf(state.getColour()));
                         emotionImageView.setImageResource(state.getImageFile());
-                        emotionImageView.setColorFilter(state.getColour());
                         Log.d("TEST/Chips", state.getEmotion() + " is checked");
                     } else
                     {
@@ -323,11 +321,15 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 if (i == -1)
                 {
                     emotionalState = null;
-                    emotionImageView.setImageResource(R.drawable.ic_cancel_black_36dp);
-                    emotionImageView.setColorFilter(Color.RED);
+                    emotionImageView.setVisibility(GONE);
                     buttonSubmitView.setEnabled(false);
                 }
-                else if (validReason)
+                else
+                {
+                    emotionImageView.setVisibility(VISIBLE);
+                }
+
+                if (validReason)
                 {
                     buttonSubmitView.setEnabled(true);
                 }
