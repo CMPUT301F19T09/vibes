@@ -139,6 +139,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public void onMapReady(GoogleMap mMap) {
         googlemap = mMap;
 
+//        Code For changing the structure of the
+//        Info window. Commented out to be used later.
+//        googlemap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+//
+//                // Getting the position from the marker
+//                TextView tvLatitude= (TextView) findViewById(R.id.tvLatitude);
+//                tvLatitude.setText("Latitude ");
+//                // Returning the view containing InfoWindow contents
+//                return v;
+//                return null;
+//            }
+//        });
+
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.clear();
 
@@ -349,6 +370,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     @Override
     public boolean onClusterItemClick(MoodEvent event) {
+
         return false;
     }
 
@@ -357,4 +379,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
         Log.d("MAP", "clusterPoint info is clicked.");
     }
+
+
 }
