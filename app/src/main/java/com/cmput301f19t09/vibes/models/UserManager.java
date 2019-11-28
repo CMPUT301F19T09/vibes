@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,6 +91,8 @@ public class UserManager
             registerUser(user_id);
         }
 
+        Log.d("TEST/UserManager", "add observer to " + user_id);
+
         Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
 
@@ -105,6 +108,7 @@ public class UserManager
      */
     public static void removeUserObserver(String user_id, Observer observer)
     {
+        Log.d("TEST/UserManager", "remove observer of " + user_id);
         if ( registeredUsers.containsKey(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -126,7 +130,7 @@ public class UserManager
      */
     public static void removeUserObservers(String user_id)
     {
-
+        Log.d("TEST/UserManager", "remove observers of " + user_id);
         if ( registeredUsers.containsKey(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);

@@ -174,12 +174,14 @@ public class User extends Observable implements Serializable {
                             profileURL = uri;
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            setChanged();
                             notifyObservers();
                         }).addOnFailureListener(e -> {
                             profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
                                     + R.drawable.default_profile_picture);
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            setChanged();
                             notifyObservers();
                         });
             }
@@ -236,6 +238,7 @@ public class User extends Observable implements Serializable {
                 .addOnSuccessListener(aVoid -> {
                     Log.d("TEST/UserAddRequest", "success");
                     requestedList.add(otherUserUID);
+                    setChanged();
                     notifyObservers();
                 }).addOnFailureListener(e -> {
 
@@ -254,6 +257,7 @@ public class User extends Observable implements Serializable {
             documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
                         followingList.add(otherUserUID);
+                        setChanged();
                         notifyObservers();
                         Log.d("TEST/UserAddFollowing", "success");
                     }).addOnFailureListener(e -> {
@@ -270,12 +274,19 @@ public class User extends Observable implements Serializable {
                     .addOnSuccessListener(aVoid -> {
                         followingList.remove(otherUserUID);
                         Log.d("TEST/UserRemoveFollowing", "success");
+                        setChanged();
                         notifyObservers();
                     }).addOnFailureListener(e -> {
                         Log.d("TEST/UserRemoveFollowing", "failure :(");
 
             });
         }
+    }
+
+    @Override
+    public void notifyObservers() {
+        Log.d("TEST/Notify", "notift");
+        super.notifyObservers();
     }
 
     /**
@@ -302,6 +313,7 @@ public class User extends Observable implements Serializable {
             documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
                         requestedList.remove(otherUserUID);
+                        setChanged();
                         notifyObservers();
                         Log.d("TEST/UserRemoveRequest", "success");
                     }).addOnFailureListener(e -> {
@@ -539,6 +551,7 @@ public class User extends Observable implements Serializable {
                         collectionReference = db.collection("users");
                         collectionReference.document(uid).update("profile_picture", picturePath)
                                 .addOnSuccessListener(aVoid -> {
+                                    setChanged();
                                     notifyObservers();
                                 }).addOnFailureListener(e -> {
 
@@ -556,6 +569,7 @@ public class User extends Observable implements Serializable {
             Log.d("URI: ",uri.toString());
             storageReference.putFile(uri)
                     .addOnSuccessListener(taskSnapshot -> {
+                        setChanged();
                         notifyObservers();
                     }).addOnFailureListener(e -> {
 
