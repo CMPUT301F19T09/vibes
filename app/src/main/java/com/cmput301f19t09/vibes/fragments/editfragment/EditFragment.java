@@ -88,9 +88,8 @@ import static com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter.SHOW_MINE
  * Use the {@link EditFragment#newInstance} factory method to
  * create an instance of this fragment.
  * TODO: make the social situation editor a drop down with predefined values
- * TODO: implement pulling location from GPS
  */
-public class EditFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class EditFragment extends Fragment {
 
     // the fragment initialization parameters
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
@@ -621,31 +620,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         if (snackbar != null) {
             snackbar.dismiss();
         }
-    }
-
-    /**
-     * The onItemClick listener for the EmotionalState selector gridview. Callback invoked
-     * when an item in the AdapterView has been clicked.
-     *
-     * @param   adapterView
-     *      An AdapterView that was clicked on in the fragment.
-     * @param   view
-     *      The view within the AdapterView that was clicked.
-     * @param   i
-     *      The position of the view in the adapter.
-     * @param   l
-     *      The row id of the item that was clicked.
-     */
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        /*if (adapterView.getId() == R.id.state_grid_view) {
-            emotionalState = new EmotionalState(emotionalStateKeys.get(i));
-            // update the state text view
-            stateTextView.setText(emotionalState.getEmotion());
-            // a mood has been selected so all required fields have been set; allow submitting MoodEvent
-            buttonSubmitView.setEnabled(true);
-        }*/
-        Log.d("TEST/EditBroke", "onItemClick");
     }
 
     public void onButtonPressed(Uri uri) {
