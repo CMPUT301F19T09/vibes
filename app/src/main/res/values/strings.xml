@@ -5,16 +5,16 @@
     <string name="time">Time (hh:mm)</string>
     <string name="state">Emotional state</string>
     <string name="enter_context">Social Situation (+ decimal)</string>
-    <string name="use_location">Use location</string>
-    <string name="enter_reason">Max 20 characters / 3 words</string>
+    <string name="use_location">Use Location:</string>
+    <string name="enter_reason">Max 20 characters & 3 words</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
-    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_rationale">Location permission is needed for core functionality.</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
     <string name="settings">Settings</string>
     <string name="follow">F O L L O W</string>
     <string name="requested">R E Q U E S T E D</string>
     <string name="unfollow">U N F O L L O W</string>
     <string name="edit_mood_title">Edit Mood:</string>
-    <string name="new_mood_title">New Mood:</string>
+    <string name="new_mood_title">Add Mood:</string>
 </resources>

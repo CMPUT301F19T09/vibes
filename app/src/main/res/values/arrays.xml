@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="situations">
-        <item>By myself</item>
-        <item>With someone else</item>
-        <item>With a few people</item>
-        <item>In a crowd</item>
+        <item>By Myself</item>
+        <item>With Someone Else</item>
+        <item>With A Few People</item>
+        <item>In A Crowd</item>
     </string-array>
 </resources>

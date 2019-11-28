@@ -105,11 +105,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView timeTextView;
 
     // state setting
-    private GridView stateGridView;
-    private TextView stateTextView;
     private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
-    private boolean validReason = false;
+    private boolean validReason = true;
 
     // photo for reason
     private Uri photoUri;
@@ -120,8 +118,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private static final int REQUEST_IMAGE_GALLERY = 3;
     private ImageButton clearButton;
     private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 4;
-
-    private EditText editSituationView;
     private EditText editReasonView;
 
     // location services
@@ -343,15 +339,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         ChipGroup socialChipGroup = view.findViewById(R.id.social_chip_group);
 
-        /*
-        List<String> socialStrings = new ArrayList<>();
-        socialStrings.add("Alone");
-        socialStrings.add("With Someone Else");
-        socialStrings.add("With a Few People");
-        socialStrings.add("In a Group");
-        socialStrings.add("In a Crowd");
-         */
-
         for (String situation : getResources().getStringArray(R.array.situations))
         {
             Chip socialChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
@@ -367,7 +354,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
-        //editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         photoImage = view.findViewById(R.id.photo_image);
@@ -391,10 +377,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                   openCamera();
               }
           }
-
-              //if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                  //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-              //}
         });
         galleryButton = view.findViewById(R.id.gallery_button);
         galleryButton.setOnClickListener(new View.OnClickListener() {
