@@ -223,7 +223,11 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      */
     @Override
     public String getTitle() {
-        return this.user.getUserName();
+        if (!this.user.getUid().equals(UserManager.getCurrentUserUID())) {
+            return this.user.getUserName();
+        } else {
+            return null;
+        }
     }
 
     /**
