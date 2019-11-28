@@ -126,6 +126,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private boolean useLocation = false;
     private FusedLocationProviderClient fusedLocationClient;
 
+    private Snackbar snackbar;
+
     /**
      * Code used in requesting runtime permissions.
      */
@@ -608,6 +610,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        /* Remove the snackbar which was being displayed on the fragment so that
+         * if the user goes back and the fragment is still being displayed there will
+         * be a not attached to fragment issue.
+        */
+        if (snackbar != null) {
+            snackbar.dismiss();
+        }
+    }
+
     /**
      * The onItemClick listener for the EmotionalState selector gridview. Callback invoked
      * when an item in the AdapterView has been clicked.
@@ -658,11 +673,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     private void showSnackbar(final int mainTextStringId, final int actionStringId,
                               View.OnClickListener listener) {
-        Snackbar.make(
+        if (snackbar != null) {
+            snackbar.dismiss();
+        }
+
+        snackbar = Snackbar.make(
                 getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
+                .setAction(getString(actionStringId), listener);
+        snackbar.show();
     }
 
     /**

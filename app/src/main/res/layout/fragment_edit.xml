@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:fontFamily="@font/roboto_regular"
-            android:text="Social Situation (optional):"
+            android:text="Social Situation (Optional):"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/tv_reason_title"
             app:layout_constraintTop_toBottomOf="@+id/edit_reason_view" />
@@ -217,7 +217,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_regular"
-            android:text="Picture (optional):"
+            android:text="Picture (Optional):"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/photo_buttons"
             app:layout_constraintStart_toStartOf="@+id/tv_social_title"
