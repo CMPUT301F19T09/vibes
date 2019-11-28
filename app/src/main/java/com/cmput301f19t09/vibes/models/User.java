@@ -174,11 +174,13 @@ public class User extends Observable implements Serializable {
                             profileURL = uri;
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            notifyObservers();
                         }).addOnFailureListener(e -> {
                             profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
                                     + R.drawable.default_profile_picture);
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            notifyObservers();
                         });
             }
         }).addOnFailureListener(e -> {
@@ -228,12 +230,12 @@ public class User extends Observable implements Serializable {
     }
 
     public void addRequest(String otherUserUID) {
-        requestedList.add(otherUserUID);
 
         documentReference = collectionReference.document(uid);
         documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
                 .addOnSuccessListener(aVoid -> {
-
+                    notifyObservers();
+                    requestedList.add(otherUserUID);
                 }).addOnFailureListener(e -> {
 
                 });
@@ -245,12 +247,12 @@ public class User extends Observable implements Serializable {
      */
     private void addFollowing(String otherUserUID) {
         if (!followingList.contains(otherUserUID)) {
-            followingList.add(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
+                        followingList.add(otherUserUID);
+                        notifyObservers();
                     }).addOnFailureListener(e -> {
 
                     });
@@ -259,12 +261,12 @@ public class User extends Observable implements Serializable {
 
     public void removeFollowing(String otherUserUID) {
         if (followingList.contains(otherUserUID)) {
-            followingList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
+                        followingList.remove(otherUserUID);
+                        notifyObservers();
                     }).addOnFailureListener(e -> {
 
                     });
@@ -279,7 +281,7 @@ public class User extends Observable implements Serializable {
         removeRequest(otherUserUID);
 
         User otherUser = UserManager.getUser(otherUserUID);
-        if (!otherUser.getFollowingList().contains(otherUserUID)) {
+        if (!otherUser.getFollowingList().contains(UserManager.getCurrentUserUID())) {
             otherUser.addFollowing(UserManager.getCurrentUserUID());
         }
     }
@@ -290,12 +292,12 @@ public class User extends Observable implements Serializable {
      */
     public void removeRequest(String otherUserUID) {
         if (requestedList.contains(otherUserUID)) {
-            requestedList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
 
+                        requestedList.remove(otherUserUID);
                     }).addOnFailureListener(e -> {
 
                     });
