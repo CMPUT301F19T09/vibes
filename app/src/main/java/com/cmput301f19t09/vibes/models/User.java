@@ -174,11 +174,15 @@ public class User extends Observable implements Serializable {
                             profileURL = uri;
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            setChanged();
+                            notifyObservers();
                         }).addOnFailureListener(e -> {
                             profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
                                     + R.drawable.default_profile_picture);
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
+                            setChanged();
+                            notifyObservers();
                         });
             }
         }).addOnFailureListener(e -> {
@@ -228,15 +232,18 @@ public class User extends Observable implements Serializable {
     }
 
     public void addRequest(String otherUserUID) {
-        requestedList.add(otherUserUID);
 
         documentReference = collectionReference.document(uid);
         documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
                 .addOnSuccessListener(aVoid -> {
-
+                    Log.d("TEST/UserAddRequest", "success");
+                    requestedList.add(otherUserUID);
+                    setChanged();
+                    notifyObservers();
                 }).addOnFailureListener(e -> {
 
-                });
+            Log.d("TEST/UserAddRequest", "failure");
+        });
     }
 
     /**
@@ -245,30 +252,41 @@ public class User extends Observable implements Serializable {
      */
     private void addFollowing(String otherUserUID) {
         if (!followingList.contains(otherUserUID)) {
-            followingList.add(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
+                        followingList.add(otherUserUID);
+                        setChanged();
+                        notifyObservers();
+                        Log.d("TEST/UserAddFollowing", "success");
                     }).addOnFailureListener(e -> {
-
-                    });
+                        Log.d("TEST/UserAddFollowing", "failure :(");
+            });
         }
     }
 
     public void removeFollowing(String otherUserUID) {
         if (followingList.contains(otherUserUID)) {
-            followingList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
+                        followingList.remove(otherUserUID);
+                        Log.d("TEST/UserRemoveFollowing", "success");
+                        setChanged();
+                        notifyObservers();
                     }).addOnFailureListener(e -> {
+                        Log.d("TEST/UserRemoveFollowing", "failure :(");
 
-                    });
+            });
         }
+    }
+
+    @Override
+    public void notifyObservers() {
+        Log.d("TEST/Notify", "notift");
+        super.notifyObservers();
     }
 
     /**
@@ -279,7 +297,7 @@ public class User extends Observable implements Serializable {
         removeRequest(otherUserUID);
 
         User otherUser = UserManager.getUser(otherUserUID);
-        if (!otherUser.getFollowingList().contains(otherUserUID)) {
+        if (!otherUser.getFollowingList().contains(UserManager.getCurrentUserUID())) {
             otherUser.addFollowing(UserManager.getCurrentUserUID());
         }
     }
@@ -290,14 +308,16 @@ public class User extends Observable implements Serializable {
      */
     public void removeRequest(String otherUserUID) {
         if (requestedList.contains(otherUserUID)) {
-            requestedList.remove(otherUserUID);
 
             documentReference = collectionReference.document(uid);
             documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-
+                        requestedList.remove(otherUserUID);
+                        setChanged();
+                        notifyObservers();
+                        Log.d("TEST/UserRemoveRequest", "success");
                     }).addOnFailureListener(e -> {
-
+                        Log.d("TEST/UserRemoveRequest", "failure");
                     });
         }
     }
@@ -392,11 +412,12 @@ public class User extends Observable implements Serializable {
                         null,
                         location,
                         this);
-                if (photoPath != null) {
+                if (photoPath != null && photoPath != "") {
                     storageReference = storage.getReference(photoPath);
                     storageReference.getDownloadUrl()
                             .addOnSuccessListener(uri -> event.setPhoto(uri))
-                            .addOnFailureListener(e -> event.setPhoto(null));
+                            .addOnFailureListener(e -> event.setPhoto(null))
+                            .addOnCompleteListener(uri -> { setChanged(); notifyObservers();});
                 }
                 events.add(event);
             }
@@ -531,6 +552,7 @@ public class User extends Observable implements Serializable {
                         collectionReference = db.collection("users");
                         collectionReference.document(uid).update("profile_picture", picturePath)
                                 .addOnSuccessListener(aVoid -> {
+                                    setChanged();
                                     notifyObservers();
                                 }).addOnFailureListener(e -> {
 
@@ -548,6 +570,7 @@ public class User extends Observable implements Serializable {
             Log.d("URI: ",uri.toString());
             storageReference.putFile(uri)
                     .addOnSuccessListener(taskSnapshot -> {
+                        setChanged();
                         notifyObservers();
                     }).addOnFailureListener(e -> {
 

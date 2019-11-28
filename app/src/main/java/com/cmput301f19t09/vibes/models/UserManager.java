@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -81,6 +82,8 @@ public class UserManager
         {
             registerUser(user_id);
         }
+
+        Log.d("TEST/UserManager", "add observer to " + user_id);
 
         Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
