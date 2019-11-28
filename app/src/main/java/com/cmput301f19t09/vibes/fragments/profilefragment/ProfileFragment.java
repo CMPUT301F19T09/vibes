@@ -164,7 +164,14 @@ public class ProfileFragment extends Fragment implements Observer {
 
         if (otherUser != null)
         {
-            ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
+            if (otherUser.getMostRecentMoodEvent() == null)
+            {
+                hideChild();
+            }
+            else
+            {
+                ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
+            }
         }
 
         Log.d("TEST/ADASD", "checkmode");
@@ -286,6 +293,11 @@ public class ProfileFragment extends Fragment implements Observer {
     }
 
     private void showChild() {
+        if (otherUser.getMostRecentMoodEvent() == null)
+        {
+            return;
+        }
+
         View childView = getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()).getView();
         if (childView != null)
         {
