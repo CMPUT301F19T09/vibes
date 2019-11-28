@@ -60,6 +60,7 @@
             android:id="@+id/reason"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/roboto_regular"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/user_image"

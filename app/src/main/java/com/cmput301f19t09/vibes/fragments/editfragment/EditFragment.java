@@ -78,6 +78,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter.SHOW_MINE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -613,7 +614,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 MainActivity main = (MainActivity) EditFragment.this.getActivity();
                 main.onBackPressed();
-                //main.setListFragment(MoodListFragment.OWN_MOODS);
             }
         });
 
@@ -650,6 +650,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // a mood has been selected so all required fields have been set; allow submitting MoodEvent
             buttonSubmitView.setEnabled(true);
         }*/
+        Log.d("TEST/EditBroke", "onItemClick");
     }
 
     public void onButtonPressed(Uri uri) {
@@ -879,7 +880,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("TEST/EditFragment", "request code was " + requestCode);
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
@@ -910,6 +910,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 break;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -987,6 +989,5 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         if (uri != null){
             Glide.with(this).load(uri).into(imageView);
         }
-
     }
 }

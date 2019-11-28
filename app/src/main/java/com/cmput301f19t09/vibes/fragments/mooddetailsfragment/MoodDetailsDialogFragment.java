@@ -186,24 +186,14 @@ public class MoodDetailsDialogFragment extends DialogFragment
             @Override
             public void onClick(View v)
             {
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener()
-                {
-                    @Override
-                    public void onDismiss(DialogInterface dialog)
-                    {
-                        int mood_index = eventUser.getMoodEvents().indexOf(event);
-
-                        // If the mood is not within the user, return
-                        if (mood_index == -1)
-                        {
-                            return;
-                        }
-
-                        ((MainActivity) getActivity()).setEditFragment(event, mood_index);
-                    }
-                });
-
                 dialog.dismiss();
+                int mood_index = eventUser.getMoodEvents().indexOf(event);
+                if (mood_index == -1)
+                {
+                    return;
+                }
+
+                ((MainActivity) getActivity()).setEditFragment(event, mood_index);
             }
         });
 
