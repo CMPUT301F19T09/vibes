@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserUnitTests {
     User mockUser1, mockUser2;
 
-//    @BeforeEach
+    @BeforeEach
     public void mockUsers() {
-//        mockUser1 = new User();
-//        mockUser2 = new User();
+        mockUser1 = new User();
+        mockUser2 = new User();
 
         mockUser1.setFirstName("abc");
         mockUser1.setLastName("def");
@@ -24,8 +24,13 @@ public class UserUnitTests {
         mockUser2.setLastName("klm");
     }
 
-//    @Test
-    public void testCompareTo() {
+    /**
+     * Tests user custom comparator for when the name which will come later in the list
+     * after a sort is placed into the list first before sorting. Removes the elements
+     * from the array one at a time checking that it is the expected user.
+     */
+    @Test
+    public void testCompareSorts() {
         ArrayList<User> userList = new ArrayList<>();
         // put mockUser2 first because when sorted it should come later in the list
         userList.add(mockUser2);
@@ -36,4 +41,5 @@ public class UserUnitTests {
         assertEquals(mockUser1, userList.remove(0));
         assertEquals(mockUser2, userList.remove(0));
     }
+    
 }

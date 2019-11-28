@@ -100,6 +100,13 @@ public class User extends Observable implements Serializable {
     }
 
     /**
+     * An empty constructor which does nothing and doesn't set attributes properly.
+     * Used ONLY FOR TESTING.
+     */
+    public User() {
+    }
+
+    /**
      * SnapshotListener that will allow real-time updates
      * @return The listener for UserManager
      */

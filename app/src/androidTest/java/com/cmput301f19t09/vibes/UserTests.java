@@ -158,14 +158,14 @@ public class UserTests {
      */
     @Test
     public void testAddRemoveMoodEvent() throws InterruptedException {
-        Thread.sleep(100);
+        Thread.sleep(200);
         int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + start);
 
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
-        Thread.sleep(100);
+        Thread.sleep(200);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent - 1
@@ -174,7 +174,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that a mood was added to the mood list
-        Thread.sleep(100);
+        Thread.sleep(200);
         int intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 1, intermediate);
@@ -183,7 +183,7 @@ public class UserTests {
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
-        Thread.sleep(100);
+        Thread.sleep(200);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent
@@ -194,7 +194,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that another mood was added to the mood list
-        Thread.sleep(100);
+        Thread.sleep(200);
         intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 2, intermediate);
@@ -203,7 +203,7 @@ public class UserTests {
         // navigate to EditFragment
         onView(withId(R.id.main_add_button)).perform(click());
         // we grant device location permissions by default so dont need to interact with that interface
-        Thread.sleep(100);
+        Thread.sleep(200);
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // create a new MoodEvent
@@ -214,7 +214,7 @@ public class UserTests {
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that another mood was added to the mood list
-        Thread.sleep(100);
+        Thread.sleep(200);
         intermediate = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + intermediate);
         assertEquals(start + 3, intermediate);
@@ -232,12 +232,12 @@ public class UserTests {
         }
 
         // confirm we are back with MoodListFragment displayed
-        Thread.sleep(100);
+        Thread.sleep(200);
         onView(withId(R.id.main_activity)).check(matches(isDisplayed()));
         onView(withId(R.id.mood_list_fragment)).check(matches(isDisplayed()));
 
         // confirm that the number of mood events in the list is the same as when we started the test
-        Thread.sleep(100);
+        Thread.sleep(200);
         int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.ml_listview);
         Log.d("MOODLISTCOUNT", "start: " + end);
         assertEquals(start, end);
@@ -299,9 +299,9 @@ public class UserTests {
         // create a new MoodEvent
         // select ANGER
         onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(8).perform(click());
-        onView(withId(R.id.edit_situation_view)).perform(typeText("0"));
+        onView(withId(R.id.edit_situation_view)).perform(typeText("0.0"));
         closeSoftKeyboard();
-        onView(withId(R.id.edit_reason_view)).perform(typeText("three word desc"));
+        onView(withId(R.id.edit_reason_view)).perform(typeText("three words desc"));
         closeSoftKeyboard();
         onView(withId(R.id.button_submit_view)).perform(click());
 
@@ -318,13 +318,15 @@ public class UserTests {
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // verify that the fields are populated correctly
-        onView(withId(R.id.state_text_view)).check(matches(withText("three word desc")));
-        onView(withId(R.id.edit_situation_view)).check(matches(withText("0")));
-        onView(withId(R.id.edit_reason_view)).check(matches(withText("ANGER")));
+        onView(withId(R.id.edit_reason_view)).check(matches(withText("three words desc")));
+        Thread.sleep(100);
+        onView(withId(R.id.edit_situation_view)).check(matches(withText("0.0")));
+        onView(withId(R.id.state_text_view)).check(matches(withText("ANGER")));
 
         // select new mood; HAPPINESS
+        Thread.sleep(10000);
         onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
-        onView(withId(R.id.edit_situation_view)).perform(typeText("1"));
+        onView(withId(R.id.edit_situation_view)).perform(typeText("1.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(typeText("a new desc"));
         closeSoftKeyboard();
@@ -348,13 +350,18 @@ public class UserTests {
         onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()));
 
         // verify that the fields are populated correctly again
-        onView(withId(R.id.state_text_view)).check(matches(withText("a new desc")));
-        onView(withId(R.id.edit_situation_view)).check(matches(withText("1")));
-        onView(withId(R.id.edit_reason_view)).check(matches(withText("HAPPINESS")));
+        onView(withId(R.id.edit_reason_view)).check(matches(withText("a new desc")));
+        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
+        onView(withId(R.id.state_text_view)).check(matches(withText("HAPPINESS")));
         closeSoftKeyboard();
         onView(withId(R.id.button_cancel_view)).perform(click());
 
         Thread.sleep(100);
         deleteMoods(1);
+    }
+
+    @Test
+    public void test() {
+
     }
 }
