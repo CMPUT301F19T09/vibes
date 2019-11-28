@@ -422,8 +422,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             }
 
             editReasonView.setText(moodEvent.getDescription());
-            emotionalState = moodEvent.getState();
 
+            emotionalState = moodEvent.getState();
             ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
 
             photoUri = moodEvent.getPhoto();
@@ -441,7 +441,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             } else {
                 locationSwitch.setChecked(false);
             }
-            // turn of slider interaction as locations should not be editable
+            // turn off slider interaction as locations should not be editable
             locationSwitch.setEnabled(false);
 
             // all required fields are completed already
@@ -465,19 +465,17 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             timeTextView.setText(time.format(timeFormatter));
             // can update immediately because cant be edited
             moodEvent.setTime(time);
-
-            if (!checkPermissions()) { // permissions were denied
-                requestPermissionFragment(); // prompt user for permission
-            }
-            else {
-                startLocationUpdates(); // we have permissions so begin location updates
-            }
         }
 
         locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 useLocation = b; // b indicates whether switch is "ON" = 1 or "OFF" = 0
+                if (b) {
+                    if (!checkPermissions()) { // permissions were denied
+                        requestPermissionFragment(); // prompt user for permission
+                    }
+                }
             }
         });
 
@@ -716,6 +714,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
+            useLocation = false;
+            locationSwitch.setChecked(false);
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, new View.OnClickListener() {
@@ -728,6 +728,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         }
                     });
         } else {
+            useLocation = false;
+            locationSwitch.setChecked(false);
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
@@ -750,12 +752,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 if (grantResults.length <= 0) {
                     // If user interaction was interrupted, the permission request is cancelled and you
                     // receive empty arrays.
+                    useLocation = false;
+                    locationSwitch.setChecked(false);
                     Log.i(TAG, "User interaction was cancelled.");
                 } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
                     startLocationUpdates();
                 } else {
                     // Permission denied.
+                    useLocation = false;
+                    locationSwitch.setChecked(false);
 
                     // Notify the user via a SnackBar that they have rejected a core permission for the
                     // app, which makes the Activity useless. In a real app, core permissions would
@@ -860,7 +866,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
@@ -868,11 +874,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
-                        // Nothing to do. startLocationupdates() gets called in onResume again.
+//                        startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
-                        locationSwitch.setEnabled(false); // make switch unclickable
+                        useLocation = false;
+                        locationSwitch.setChecked(false);
                         break;
                 }
                 break;
@@ -892,8 +899,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 break;
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -908,6 +913,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         Log.i(TAG, "All location settings are satisfied.");
+                        useLocation = true;
+                        locationSwitch.setChecked(true);
 
                         //noinspection MissingPermission
                         fusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -936,7 +943,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                                         "fixed here. Fix in Settings.";
                                 Log.e(TAG, errorMessage);
                                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-                                locationSwitch.setEnabled(false); // make switch unclickable
+                                useLocation = false;
+                                locationSwitch.setChecked(false);
                         }
                     }
                 });
