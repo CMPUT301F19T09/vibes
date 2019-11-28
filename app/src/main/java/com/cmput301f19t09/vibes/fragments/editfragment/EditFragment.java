@@ -317,7 +317,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             @Override
             public void onClick(View v) {
                 photoUri = null;
-                photoImage.setImageResource(R.drawable.empty_picture_image);
+                setPhotoImage(null, photoImage);
             }
         });
 
@@ -339,13 +339,10 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             stateTextView.setText(moodEvent.getState().getEmotion());
 
             photoUri = moodEvent.getPhoto();
-            System.out.println("Jah");
             if (photoUri != null){
-                System.out.println("Hello");
-                Glide.with(this).load(photoUri).into(photoImage);
+                setPhotoImage(photoUri, photoImage);
             } else {
-                System.out.println("Bye");
-                photoImage.setImageResource(R.drawable.empty_picture_image);
+                setPhotoImage(null, photoImage);
             }
 
             // set the use location slider based on whether the mood event has a location or not
@@ -760,12 +757,12 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK && data != null) {
                     photoUri = data.getData();
-                    Glide.with(this).load(photoUri).into(photoImage);
+                    setPhotoImage(photoUri, photoImage);
                 }
                 break;
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
-                    Glide.with(this).load(photoUri).into(photoImage);
+                    setPhotoImage(photoUri, photoImage);
                 }
                 break;
         }
@@ -833,5 +830,21 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    /**
+     * @param uri
+     * @param imageView
+     *
+     * Sets the image displayed in imageView to the photo indicated by uri.
+     * If uri is null, the photo is set to the default photo.
+     */
+    private void setPhotoImage(Uri uri, ImageView imageView){
+        if (uri == null){
+            imageView.setImageResource(R.drawable.empty_picture_image);
+        } else {
+            Glide.with(this).load(uri).into(imageView);
+        }
+
     }
 }

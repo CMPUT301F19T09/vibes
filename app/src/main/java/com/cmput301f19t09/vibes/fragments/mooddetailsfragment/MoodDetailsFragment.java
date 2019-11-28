@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.mooddetailsfragment;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -106,9 +107,14 @@ public class MoodDetailsFragment extends Fragment
 
         String timeString = "~";
 
-        Glide.with(this).load(event.getPhoto()).into(reasonImage);
-        reasonImage.getLayoutParams().height = 800;
-
+        //Sets the photo to the image specified by the event's photo (type uri)
+        Uri photoUri = event.getPhoto();
+        if (photoUri != null){
+            Glide.with(this).load(photoUri).into(reasonImage);
+            reasonImage.getLayoutParams().height = 800;
+        } else {
+            reasonImage.getLayoutParams().height = 0;
+        }
 
         if (timeSincePost.getSeconds() < 60)
         {
