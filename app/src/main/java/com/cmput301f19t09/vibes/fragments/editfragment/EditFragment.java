@@ -109,7 +109,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView stateTextView;
     private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
-    private boolean validReason = false;
+    private boolean validReason = true;
 
     // photo for reason
     private Uri photoUri;

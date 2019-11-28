@@ -53,20 +53,32 @@ public class MoodDetailsFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        Bundle arguments = getArguments();
-
         View view = inflater.inflate(R.layout.mood_details, null);
+        return view;
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
+        Bundle arguments = getArguments();
         MoodEvent event = (MoodEvent) arguments.getSerializable("event");
+        setMoodEvent(event);
+    }
 
-        /*
-        TODO: Add this check somewhere else
-        if a null event was provided, don't show anything
-         */
+    public void setMoodEvent(MoodEvent event)
+    {
+        View view = getView();
+
+        if (view == null)
+        {
+            return;
+        }
+
         if (event == null)
         {
             view.setVisibility(View.GONE);
-            return view;
+            return;
         }
 
         User event_user = event.getUser();
@@ -142,7 +154,5 @@ public class MoodDetailsFragment extends Fragment
         moodReason.setText(event.getDescription());
 
         detailsContainer.setBackgroundResource(R.drawable.mood_details_drop_bg);
-
-        return view;
     }
 }
