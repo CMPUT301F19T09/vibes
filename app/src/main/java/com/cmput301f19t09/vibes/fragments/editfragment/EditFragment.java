@@ -325,7 +325,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         if (editing) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
-
+            locationSwitch.setVisibility(View.INVISIBLE);
+            TextView locationTextView = view.findViewById(R.id.location_text_view);
+            locationTextView.setVisibility(View.INVISIBLE);
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
