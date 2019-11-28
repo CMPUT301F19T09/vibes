@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.mooddetailsfragment;
 
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -104,6 +105,16 @@ public class MoodDetailsFragment extends Fragment
 
         emotionChip.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
         emotionChip.setText(state.getEmotion());
+
+
+        //Sets the photo to the image specified by the event's photo (type uri)
+        Uri photoUri = event.getPhoto();
+        if (photoUri != null){
+            Glide.with(this).load(photoUri).into(reasonImage);
+            reasonImage.setVisibility(View.VISIBLE);
+        } else {
+            reasonImage.setVisibility(View.GONE);
+        }
 
         int situation = event.getSocialSituation();
         if (situation != -1)

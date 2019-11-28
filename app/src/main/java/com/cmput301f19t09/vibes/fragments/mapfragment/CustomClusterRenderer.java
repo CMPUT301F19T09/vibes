@@ -3,6 +3,7 @@ package com.cmput301f19t09.vibes.fragments.mapfragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 
@@ -63,14 +64,20 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<MoodEvent> {
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId, Integer color) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
 //        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-        vectorDrawable.setBounds(0, 0, 500, 100);
+        // Set the bounds of the emoticon to be drawn on the canvas
+        vectorDrawable.setBounds(20, 20, 100, 100);
 
-        Bitmap bitmap2 = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = (Bitmap.createScaledBitmap(bitmap2, 100, 100, true));
-
-        Canvas canvas = new Canvas(bitmap);
+        // An empty bitmap
+        Bitmap finalBitmap = Bitmap.createBitmap(120,120, Bitmap.Config.RGBA_F16);
+        Canvas canvas = new Canvas(finalBitmap);
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
+//        canvas.drawPaint(paint);
+        canvas.drawCircle(60,60,60, paint);
+//        canvas.drawBitmap(bitmap,50, 50, null);
         vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
+        return BitmapDescriptorFactory.fromBitmap(finalBitmap);
     }
 
 }

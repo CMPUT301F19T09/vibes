@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -121,6 +122,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         // Set emotion picture and colour
         emotionImage.setImageResource(event.getState().getImageFile());
+        emotionImage.setClipToOutline(true);
+
         deleteButton.setImageResource(R.drawable.ic_delete_white_24dp);
 
         // Set the username and user's name fields
@@ -129,7 +132,14 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         // Calculate the time since the event was posted
 
-        Glide.with(this).load(event.getPhoto()).into(reasonImage);
+        //Sets the photo to the image specified by the event's photo (type uri)
+        Uri photoUri = event.getPhoto();
+        if (photoUri != null){
+            Glide.with(this).load(photoUri).into(reasonImage);
+            reasonImage.setVisibility(View.VISIBLE);
+        } else {
+            reasonImage.setVisibility(View.GONE);
+        }
 
         moodReason.setText(event.getDescription());
         moodTime.setText(event.getTimeString());

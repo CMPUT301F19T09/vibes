@@ -2,6 +2,7 @@ package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
 import com.cmput301f19t09.vibes.R;
 import com.google.firebase.firestore.CollectionReference;
@@ -544,6 +545,7 @@ public class User extends Observable implements Serializable {
         if (uri != null) {
             String photoPath = "reason_photos/" + uri.hashCode() + ".jpeg";
             storageReference = storage.getReference(photoPath);
+            Log.d("URI: ",uri.toString());
             storageReference.putFile(uri)
                     .addOnSuccessListener(taskSnapshot -> {
                         notifyObservers();

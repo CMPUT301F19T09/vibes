@@ -59,7 +59,7 @@
 
             <include
                 android:id="@+id/emotion_chip"
-                layout="@layout/emotion_info_chip"
+                layout="@layout/info_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
