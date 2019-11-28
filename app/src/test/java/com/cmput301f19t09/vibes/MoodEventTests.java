@@ -17,13 +17,17 @@ public class MoodEventTests {
     private void mockMoodEvents() {
         LocalDate ld = LocalDate.now();
         LocalTime lt = LocalTime.now();
-        m1 = new MoodEvent(ld, lt, "", null, 0, null, null);
+        m1 = new MoodEvent(ld, lt, "", null, 0, null,null, null);
 
         ld = LocalDate.now();
         lt = LocalTime.now();
-        m2 = new MoodEvent(ld, lt, "", null, 1, null, null);
+        m2 = new MoodEvent(ld, lt, "", null, 1, null, null, null);
     }
 
+    /**
+     * Tests that the comparator works as expected for mood events when one mood event
+     * has a date time before the other.
+     */
     @Test
     void testCompareTo() {
         // compareTo returns -1 if m1's LocalDateTime is before m2's
