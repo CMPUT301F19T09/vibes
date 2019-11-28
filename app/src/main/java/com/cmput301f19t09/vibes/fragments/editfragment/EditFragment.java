@@ -376,7 +376,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         captureButton.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-              //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+              // If the user asks to capture a photo using the camera, we check if the user has permission
+              // and the user is using the correct build version, if so the camera is opened.
+              // ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                   if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) ==
                           PackageManager.PERMISSION_DENIED ||
@@ -391,15 +393,13 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                   openCamera();
               }
           }
-
-              //if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                  //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-              //}
         });
         galleryButton = view.findViewById(R.id.gallery_button);
         galleryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // A new intent is created where the user can view all of the photos in
+                // the image directory/
                 Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
                 galleryIntent.setType("image/*");
@@ -412,6 +412,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         clearButton = view.findViewById(R.id.clear_photo_button);
         clearButton.setVisibility(GONE);
         clearButton.setOnClickListener(new View.OnClickListener() {
+            // The image is cleared in both the mood object and the displayed view.
             @Override
             public void onClick(View v) {
                 photoUri = null;
@@ -444,12 +445,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
             ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
 
+            // We set the photo displayed to the photo associated with this mood.
             photoUri = moodEvent.getPhoto();
-            if (photoUri != null){
-                setPhotoImage(photoUri, photoImage);
-            } else {
-                setPhotoImage(null, photoImage);
-            }
+            setPhotoImage(photoUri, photoImage);
 
             // set the use location slider based on whether the mood event has a location or not
             if (moodEvent.getLocation() != null) {
@@ -873,8 +871,11 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     }
 
     /**
-     * Check whether the user provided the required location settings and handle the
-     * cases appropriately.
+     * If the requestCode is REQUEST_CHECK_SETTINGS, wecheck whether the user provided
+     * the required location settings and handle the cases appropriately.
+     *
+     * If the requestCode is REQUEST_IMAGE_GALLERY or REQUEST_IMAGE_CAPTURE, we update the
+     * photo associated with the mood and displayed in this fragment.
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -894,6 +895,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         break;
                 }
                 break;
+            // Upon selecting a photo from the gallery, the photo associated with the MoodEvent
+            // object and the mood displayed in the EditFragment will be changed.
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK && data != null) {
                     photoUri = data.getData();
@@ -902,6 +905,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     setPhotoImage(photoUri, photoImage);
                 }
                 break;
+            // Upon capturing a photo with the camera, the photo associated with the MoodEvent
+            // object and the mood displayed in the EditFragment will be changed.
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
                     photoImage.setVisibility(VISIBLE);
@@ -967,7 +972,17 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         fusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
-    //ref https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+    /**
+     * Starts a new intent to capture a photo using the camera.
+     *
+     * If photo is captured successfully, it is handled under the
+     * method onActivityResult() under the RESULT_IMAGE_CAPTURE case.
+     *
+     * The class variable photoUri will be overwritten and contain the
+     * path to the photo captured.
+     *
+     * https://devofandroid.blogspot.com/2018/09/take-picture-with-camera-android-studio.html
+     */
     private void openCamera() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");

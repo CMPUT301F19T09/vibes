@@ -136,6 +136,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
         Uri photoUri = event.getPhoto();
         if (photoUri != null){
             Glide.with(this).load(photoUri).into(reasonImage);
+            reasonImage.setClipToOutline(true);
             reasonImage.setVisibility(View.VISIBLE);
         } else {
             reasonImage.setVisibility(View.GONE);

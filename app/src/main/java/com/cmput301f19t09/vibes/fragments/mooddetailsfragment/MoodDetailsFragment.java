@@ -147,6 +147,7 @@ public class MoodDetailsFragment extends Fragment
         }
 
         userImage.setClipToOutline(true);
+        reasonImage.setClipToOutline(true);
 
         userUsername.setText(event_user.getUserName());
         userFullName.setText(event_user.getFirstName() + " " + event_user.getLastName());
