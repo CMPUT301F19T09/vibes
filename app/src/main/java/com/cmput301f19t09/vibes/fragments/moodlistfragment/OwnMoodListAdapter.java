@@ -13,12 +13,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 /*
 Subclass of MoodListAdapter, this loads a user's own mood events
  */
 public class OwnMoodListAdapter extends MoodListAdapter
 {
+    private Observer userObserver = (Observable user, Object arg) ->
+    {
+        refreshData();
+    };
+
     public OwnMoodListAdapter(Context context)
     {
         super(context);
@@ -30,65 +36,35 @@ public class OwnMoodListAdapter extends MoodListAdapter
     @Override
     public void refreshData()
     {
-        clear();
-        data = new ArrayList<MoodEvent>();
+        data.clear();
 
-        List<MoodEvent> events = user.getMoodEvents();
-        if (events == null)
+        for (MoodEvent event : user.getMoodEvents())
         {
-            Log.d("TEST/OwnMoodListAdapter", "null MoodEvent list");
-            return;
-        }
-
-        for (MoodEvent event : events)
-        {
-            Log.d("OwnMoodListAdapter", "event:"+event.getState().getEmotion() + " , checking with: " + filter);
-            if(filter != null){
-                if(event.getState().getEmotion().equals(filter)){
-                    // Selected emotion
-                    data.add(event);
-                    Log.d("OwnMoodListAdapter", "Event is added");
-                }else{
-                    // Don't add
-                }
-            }else{
-                // There is no filtering emotion
+            if (filter == null || event.getState().getEmotion().equals(filter))
+            {
                 data.add(event);
-
             }
         }
 
-        //Collections.sort(data);
-        data.sort(new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                return ((MoodEvent) o2).compareTo(o1);
-            }
-        });
+        data.sort((MoodEvent a, MoodEvent b) -> { return b.compareTo(a); });
 
+        clear();
         addAll(data);
-        notifyDataSetChanged();
     }
 
     /*
     Calls refresh data
      */
     @Override
-    public void initializeData()
+    public void onResume()
     {
+        user.addObserver(userObserver);
         refreshData();
     }
 
-    /*
-    When the User notifies it's observers this refreshesData incase any MoodEvents have changed
-    @param user
-        the user, should be current user
-    @param arg
-        optional argument, unused
-     */
     @Override
-    public void update(Observable user, Object arg)
+    public void onPause()
     {
-        refreshData();
+        user.deleteObserver(userObserver);
     }
 }

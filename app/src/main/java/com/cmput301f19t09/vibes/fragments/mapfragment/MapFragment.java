@@ -310,13 +310,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public void showDialogForMultipleEvents(Collection<MoodEvent> events){
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-        builderSingle.setTitle("Multiple moods in same location:-");
+        builderSingle.setTitle("Multiple moods in same location:");
 
         ArrayList listEvents = new ArrayList(events);
 
         final MoodsDialogAdapter customAdapter = new MoodsDialogAdapter(context, listEvents);
 
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builderSingle.setNegativeButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -330,7 +330,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
                 ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
             }
         });
-        builderSingle.show();
+
+        builderSingle.show().getListView().setBackgroundResource(R.color.moodListBackground);
     }
 
     /**

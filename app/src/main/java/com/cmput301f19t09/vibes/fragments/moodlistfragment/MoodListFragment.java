@@ -55,8 +55,14 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
     }
 
     @Override
-    public void onStart() {
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
         displayType = getArguments().getInt("type");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
 
         if (displayType == OWN_MOODS_LOCKED) {
             filterFragment.disableRadioButtons();
@@ -83,7 +89,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
 
     @Override
     public void onResume() {
-        adapter.initializeData();
+        adapter.onResume();
         super.onResume();
     }
 
@@ -97,7 +103,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
         View view = inflater.inflate(R.layout.mood_list, container, false);
 
         ListView listView = view.findViewById(R.id.ml_listview);
-        FrameLayout filterContainer = view.findViewById(R.id.filter_root);
 
         user = UserManager.getCurrentUser();
 
@@ -109,7 +114,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 MoodEvent event = (MoodEvent) parent.getItemAtPosition(position);
-                boolean editable = event.getUser() == user;
+                boolean editable = event.getUser().getUid().equals(user.getUid());
 
                 ((MainActivity) MoodListFragment.this.getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, editable));
             }
@@ -140,9 +145,11 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
     {
         if (this.adapter != null)
         {
-            this.adapter.removeObservers();
+            this.adapter.onPause();
         }
+
         this.adapter = adapter;
+        adapter.onResume();
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
         adapter.refreshData();
@@ -182,7 +189,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener {
     @Override
     public void onPause()
     {
-        adapter.removeObservers();
+        adapter.onPause();
         super.onPause();
     }
 

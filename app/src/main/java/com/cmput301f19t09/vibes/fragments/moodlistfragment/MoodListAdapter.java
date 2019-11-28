@@ -30,7 +30,7 @@ import java.util.Observer;
     This class is responsible for displaying a list of MoodEvents, the functionality of loading events
     is handled by the subclass
  */
-public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements Observer
+public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
 {
     protected List<MoodEvent> data;
     protected User user;
@@ -49,8 +49,6 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         this.context = context;
         this.user = UserManager.getCurrentUser();
         this.data = new ArrayList<MoodEvent>();
-
-        initialize();
     }
 
     @NonNull
@@ -142,24 +140,11 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> implements
         return item;
     }
 
-    /*
-    Add this class as an observer to the main user and call the initializeData fucntion
-     */
-    private void initialize()
-    {
-        UserManager.addUserObserver(user.getUid(), this);
-        initializeData();
-    }
+    public void onResume() { }
 
-    public void initializeData() { }
+    public void onPause() { }
 
     public abstract void refreshData();
-
-    // When this is called, remove this object as an observer of User
-    public void removeObservers()
-    {
-        UserManager.removeUserObserver(user.getUid(), this);
-    }
 
     public void setFilter(String filter)
     {
