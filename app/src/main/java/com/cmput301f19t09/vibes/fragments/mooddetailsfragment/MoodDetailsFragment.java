@@ -70,6 +70,11 @@ public class MoodDetailsFragment extends Fragment
     {
         View view = getView();
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("event", event);
+
+        setArguments(bundle);
+
         if (view == null)
         {
             return;

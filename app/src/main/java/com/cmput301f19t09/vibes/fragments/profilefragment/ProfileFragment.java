@@ -246,8 +246,11 @@ public class ProfileFragment extends Fragment implements Observer {
         super.onResume();
         if (otherUser != null) {
             UserManager.addUserObserver(otherUserUID, this);
+            ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
         }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
+
+        checkMode();
     }
 
     /**
