@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_thin"
-            app:layout_constraintEnd_toEndOf="@+id/reason_image"
+            app:layout_constraintEnd_toEndOf="@+id/emotion_chip"
             app:layout_constraintTop_toBottomOf="@+id/emotion_chip"
             tools:text="11:58" />
 
@@ -97,7 +97,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/chip_16dp"
+            android:background="@drawable/chip_12dp"
             android:maxHeight="200dp"
             android:scaleType="centerInside"
             app:layout_constraintEnd_toEndOf="parent"
