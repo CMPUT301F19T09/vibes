@@ -63,7 +63,8 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_bar"
         app:layout_constraintTop_toBottomOf="@+id/main_top_bar"
-        tools:layout_editor_absoluteX="155dp">
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="65dp">
 
     </LinearLayout>
 

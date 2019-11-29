@@ -126,6 +126,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         {
             mapFilter = MapFilter.getInstance(Filter.SHOW_MINE);
             getChildFragmentManager().beginTransaction().add(R.id.filter_root, mapFilter, "mapFilter").commit();
+        }else{
+//            mapFilter.setYou();
         }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
         return view;
@@ -181,6 +183,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
         switchFilter(Filter.SHOW_MINE, null);
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if(googlemap != null){
+//            googlemap.clear();
+//        }
+//    }
 
     public void switchFilter(Filter filter, @Nullable String emotion) {
         if (googlemap == null) {

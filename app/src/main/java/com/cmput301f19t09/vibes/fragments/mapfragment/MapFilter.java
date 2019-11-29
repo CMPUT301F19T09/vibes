@@ -32,6 +32,10 @@ public class MapFilter extends Fragment {
      */
     private int selectedRadioBox;
 
+    RadioGroup group;
+    RadioButton youButton ;
+    RadioButton everyoneButton ;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +45,12 @@ public class MapFilter extends Fragment {
             selectedRadioBox = bundle.getInt("SELECTED");
             Log.d("MapFilter", "SelectedMode: " + this.selectedRadioBox);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        group.check(youButton.getId());
     }
 
     /**
@@ -74,12 +84,12 @@ public class MapFilter extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.map_filter, container, false);
+        View v = inflater.inflate(R.layout.map_filter2, container, false);
 
         // Setting the layout input views with their corresponding class variables.
-        RadioButton youButton = v.findViewById(R.id.radioYou);
-        RadioButton everyoneButton = v.findViewById(R.id.radioFollowed);
-        RadioGroup group = v.findViewById(R.id.radioGroup);
+        youButton = v.findViewById(R.id.radioYou2);
+        everyoneButton = v.findViewById(R.id.radioFollowed2);
+        group = v.findViewById(R.id.radioGroup2);
 
         // This setOnCheckedChangeLister checks if the user interacts with the radioboxes at the top.
         // We chose to set the listener directly to the radio group as individual listeners
