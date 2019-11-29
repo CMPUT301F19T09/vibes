@@ -23,6 +23,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     {
         super(context);
         this.mainUser = UserManager.getCurrentUser();
+        this.resume();
     }
 
     /**

@@ -153,7 +153,6 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
         this.adapter = adapter;
 
         adapter.setFilter(filter);
-        adapter.resume();
 
         ListView listView = getView().findViewById(R.id.ml_listview);
         listView.setAdapter(this.adapter);
@@ -183,6 +182,13 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
     {
         adapter.pause();
         super.onPause();
+    }
+
+    @Override
+    public void onResume()
+    {
+        adapter.resume();
+        super.onResume();
     }
 
     /**

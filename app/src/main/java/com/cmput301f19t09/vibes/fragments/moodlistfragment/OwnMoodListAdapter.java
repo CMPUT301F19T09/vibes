@@ -26,6 +26,7 @@ public class OwnMoodListAdapter extends MoodListAdapter
 
         // Get the primary User from the UserManager
         this.user = UserManager.getCurrentUser();
+        this.resume();
     }
 
     /**
