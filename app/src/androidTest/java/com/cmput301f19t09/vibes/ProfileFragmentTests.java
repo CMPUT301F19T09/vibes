@@ -1,20 +1,18 @@
 package com.cmput301f19t09.vibes;
 
-import android.app.Activity;
 import android.util.Log;
-import android.view.View;
 
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import io.victoralbertos.device_animation_test_rule.DeviceAnimationTestRule;
 
@@ -23,11 +21,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class ProfileFragmentTests {
     // automate disabling device animations which is required by espresso
@@ -75,10 +73,12 @@ public class ProfileFragmentTests {
 
     /**
      * Tests that the logout button is displayed on main activity navigation bar when
-     * the profile fragment is open. Checks that confirming the dialog logs out.
+     * the profile fragment is open. Checks that confirming the dialog logs out. This test
+     * must be run after all other tests if running all tests at once, hence the 'z' and
+     * sort ascending.
      */
-    @Test
-    public void logoutTest() throws InterruptedException {
+//    @Test
+    public void zlogoutTest() throws InterruptedException {
         onView(withId(R.id.logoutButton)).check(matches(isDisplayed()));
         // open the logout dialog
         onView(withId(R.id.logoutButton)).perform(click());
