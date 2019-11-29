@@ -6,6 +6,7 @@ import android.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observer;
@@ -59,7 +60,7 @@ public class UserManager
     public static void unregisterUser(String user_id)
     {
         // Make sure the user is already registered, also don't unregister current user
-        if (registeredUsers.containsKey(user_id) && !mainUserUID.equals(user_id))
+        if (registeredUsers.containsKey(user_id))
         {
             // Get the user, remove the registration then remove the user from the map
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -205,7 +206,8 @@ public class UserManager
     }
 
     public static void unregisterAllUsers() {
-        for (String uid : registeredUsers.keySet()) {
+
+        for (String uid : new ArrayList<String>(registeredUsers.keySet())) {
             unregisterUser(uid);
         }
     }
