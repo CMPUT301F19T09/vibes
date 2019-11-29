@@ -77,7 +77,7 @@ public class ProfileFragmentTests {
      * must be run after all other tests if running all tests at once, hence the 'z' and
      * sort ascending.
      */
-    @Test
+//    @Test
     public void zlogoutTest() throws InterruptedException {
         onView(withId(R.id.logoutButton)).check(matches(isDisplayed()));
         // open the logout dialog
