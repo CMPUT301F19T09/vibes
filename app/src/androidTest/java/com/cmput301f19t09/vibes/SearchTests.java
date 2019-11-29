@@ -13,12 +13,15 @@ import org.junit.runner.RunWith;
 
 import io.victoralbertos.device_animation_test_rule.DeviceAnimationTestRule;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class SearchTests {
@@ -57,10 +60,20 @@ public class SearchTests {
         onView(withId(R.id.main_search_button)).check(matches(isDisplayed()));
     }
 
-//    @Test
-    public void searchName() {
-        // search for test users are they should be stable in the 
-        onView(withId(R.id.edit_reason_view)).perform(typeText("?"));
+    @Test
+    public void searchName() throws InterruptedException {
+        Thread.sleep(500);
+        int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.search_listview);
+        // whe the fragment starts their should be no elements in the list view
+        assertEquals(0, start);
 
+        // search for test users are they should be stable in the
+        onView(withId(R.id.search_edittext)).perform(typeText("?"));
+        closeSoftKeyboard();
+
+        Thread.sleep(500);
+        int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.search_listview);
+
+        assertTrue(end > start);
     }
 }
