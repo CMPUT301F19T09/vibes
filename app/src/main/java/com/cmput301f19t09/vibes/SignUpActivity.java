@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
+    final private String TAG = "authentication";
+    final private String USER_COLLECTION = "users";
     private TextView emailTextView;
     private TextView usernameTextView;
     private TextView firstNameTextView;
@@ -37,19 +39,15 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView confirmPasswordTextView;
     private Button signUpButton;
     private Button loginButton;
-
     private FirebaseAuth mAuth;
     private FirebaseFirestore mStore;
     private FirebaseStorage mStorage;
     private StorageReference mStorageReference;
-
     private boolean isLoading = false;
-
-    final private String TAG = "authentication";
-    final private String USER_COLLECTION = "users";
 
     /**
      * Initialize the sign up activity
+     *
      * @param savedInstanceState
      */
     @Override
@@ -111,6 +109,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     /**
      * Check if the password and confirm password match
+     *
      * @param password
      * @param confirmPassword
      * @return
@@ -122,6 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
     /**
      * After user enters all the sign up fields and presses sign up button, this function creates
      * a user in Firebase Authentication.
+     *
      * @param email
      * @param username
      * @param firstName
@@ -150,6 +150,7 @@ public class SignUpActivity extends AppCompatActivity {
      * This function creates a Firestore document with name that matches the UID of Firebase
      * Authentication user inside the 'users' collection. The Firestore document stores
      * information about user
+     *
      * @param email
      * @param username
      * @param firstName

@@ -22,8 +22,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
@@ -42,23 +42,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         ClusterManager.OnClusterItemInfoWindowClickListener<MoodEvent> {
 
     GoogleMap googlemap;
-    private ClusterManager<MoodEvent> mClusterManager;
     boolean firstPointPut = false;
     Context context;
-    private MapFilter mapFilter;
-
-    /**
-     * This is used to filter out the moods being showed;
-     */
-    public enum Filter{
-        SHOW_MINE,
-        SHOW_EVERYONE
-    }
-
     Filter filter;
     String emotionSelected;
+    private ClusterManager<MoodEvent> mClusterManager;
+    private MapFilter mapFilter;
     private List<String> observedUsers;
-
     /**
      * The map fragment shows the locations of the moods.
      * It can show an interactive MoodEvent, helping the mood to be able to get edited or viewed
@@ -70,12 +60,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         observedUsers = new ArrayList<>();
     }
 
-    public static MapFragment newInstance(Context context){
+    public static MapFragment newInstance(Context context) {
         return new MapFragment(context);
     }
 
     /**
      * Checks for the bundle.
+     *
      * @param savedInstanceState
      */
     @Override
@@ -85,10 +76,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * Displays the MoodEvent in the map.
+     *
      * @param event The MoodEvent that you're trying to show.
      */
-    public void showMoodEvent(MoodEvent event){
-        if(googlemap != null){
+    public void showMoodEvent(MoodEvent event) {
+        if (googlemap != null) {
             // Adding the event to the cluster manager
             if (event.getLocation() != null) {
                 mClusterManager.addItem(event);
@@ -102,7 +94,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         }
     }
 
-    public void setEmotionSelected(String emotion){
+    public void setEmotionSelected(String emotion) {
         this.emotionSelected = emotion;
     }
 
@@ -119,14 +111,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.map_fragment, container,false);
+        View view = inflater.inflate(R.layout.map_fragment, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SupportMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
-        if (mapFilter == null)
-        {
+        if (mapFilter == null) {
             mapFilter = MapFilter.getInstance(Filter.SHOW_MINE);
             getChildFragmentManager().beginTransaction().add(R.id.filter_root, mapFilter, "mapFilter").commit();
-        }else{
+        } else {
 //            mapFilter.setYou();
         }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
@@ -135,6 +126,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * This is a callback function. It is called when the map is ready.
+     *
      * @param mMap
      */
     @Override
@@ -184,14 +176,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         switchFilter(Filter.SHOW_MINE, null);
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if(googlemap != null){
-//            googlemap.clear();
-//        }
-//    }
-
     public void switchFilter(Filter filter, @Nullable String emotion) {
         if (googlemap == null) {
             Log.e("SWITCH FILTER", "NO GOOGLEMAP DEFINED");
@@ -207,8 +191,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             showUserEvents(emotion);
         } else if (filter == Filter.SHOW_EVERYONE) {
             Log.d("TEST/Map", "Showing everyone's events");
-            for (String id : user.getFollowingList())
-            {
+            for (String id : user.getFollowingList()) {
                 Log.d("TEST/Map", "Adding " + id);
                 observedUsers.add(id);
                 User followed_user = UserManager.getUser(id);
@@ -224,45 +207,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
                     }
                 });
             }
-        }else{
+        } else {
             throw new RuntimeException("Map filter is not recognized.");
         }
     }
 
-    private void showFollowedEvents()
-    {
-        for (String id : observedUsers)
-        {
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if(googlemap != null){
+//            googlemap.clear();
+//        }
+//    }
+
+    private void showFollowedEvents() {
+        for (String id : observedUsers) {
             User user = UserManager.getUser(id);
-            if (user.isLoaded() && user.getMostRecentMoodEvent() != null)
-            {
+            if (user.isLoaded() && user.getMostRecentMoodEvent() != null) {
                 showEvent(user.getMostRecentMoodEvent());
             }
         }
     }
 
-    private void showUserEvents(@Nullable String emotion)
-    {
+    private void showUserEvents(@Nullable String emotion) {
         for (MoodEvent event : UserManager.getCurrentUser().getMoodEvents()) {
-            if(emotion != null){
-                if(event.getState().getEmotion() == emotion){
+            if (emotion != null) {
+                if (event.getState().getEmotion() == emotion) {
                     showEvent(event);
                 }
-            }else{
+            } else {
                 showEvent(event);
             }
         }
     }
 
-    private void showEvent(MoodEvent event)
-    {
+    private void showEvent(MoodEvent event) {
         showMoodEvent(event);
     }
 
-    private void removeObservers()
-    {
-        for (String id : observedUsers)
-        {
+    private void removeObservers() {
+        for (String id : observedUsers) {
             UserManager.getUser(id).deleteObservers();
         }
     }
@@ -274,7 +258,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         super.onPause();
     }
 
-    public void clusterCleanUp(){
+    public void clusterCleanUp() {
         mClusterManager.clearItems();
         mClusterManager.cluster();
         Log.d("TEST/Map", "Cleared the cluster items");
@@ -284,16 +268,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
     public void update(Observable o, Object arg) {
         Log.d("TEST/Map", "Current User Update");
         clusterCleanUp();
-        if (filter == Filter.SHOW_MINE)
-        {
+        if (filter == Filter.SHOW_MINE) {
             showUserEvents(null);
-        }
-        else
-        {
-            for (String id : ((User)o).getFollowingList())
-            {
-                if (!observedUsers.contains(id))
-                {
+        } else {
+            for (String id : ((User) o).getFollowingList()) {
+                if (!observedUsers.contains(id)) {
                     observedUsers.add(id);
                     User followed_user = UserManager.getUser(id);
                     if (followed_user.isLoaded()) {
@@ -315,9 +294,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * Shows up a dialog when there are multiple moods in the same location in a cluster.
+     *
      * @param events
      */
-    public void showDialogForMultipleEvents(Collection<MoodEvent> events){
+    public void showDialogForMultipleEvents(Collection<MoodEvent> events) {
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
         builderSingle.setTitle("Multiple moods in same location:");
@@ -337,7 +317,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 MoodEvent eventSelected = customAdapter.getItem(which);
-                ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
+                ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(eventSelected, filter == Filter.SHOW_MINE));
             }
         });
 
@@ -346,6 +326,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     /**
      * Triggered when you click on a cluster that has multiple moods in it.
+     *
      * @param events
      * @return
      */
@@ -359,7 +340,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
         final LatLngBounds bounds = builder.build();
         Log.d("LatLngBounds", bounds.toString());
 
-        if(bounds.northeast.equals(bounds.southwest)){
+        if (bounds.northeast.equals(bounds.southwest)) {
             Log.d("DEV", "This cluster has multiple in the same point.");
             showDialogForMultipleEvents(events.getItems());
             return true;
@@ -387,8 +368,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Observe
 
     @Override
     public void onClusterItemInfoWindowClick(MoodEvent event) {
-        ((MainActivity)getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
+        ((MainActivity) getActivity()).openDialogFragment(MoodDetailsDialogFragment.newInstance(event, filter == Filter.SHOW_MINE));
         Log.d("MAP", "clusterPoint info is clicked.");
+    }
+
+    /**
+     * This is used to filter out the moods being showed;
+     */
+    public enum Filter {
+        SHOW_MINE,
+        SHOW_EVERYONE
     }
 
 

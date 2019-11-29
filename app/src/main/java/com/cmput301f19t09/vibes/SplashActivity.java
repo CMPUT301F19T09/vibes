@@ -21,6 +21,7 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * Initialize the splash activity. Gets instance of Firebase Authentication and Firebase
      * Firestore.
+     *
      * @param savedInstanceState
      */
     @Override
@@ -49,16 +50,14 @@ public class SplashActivity extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             intent = new Intent(this, MainActivity.class);
-            if (UserManager.getCurrentUser() == null)
-            {
+            if (UserManager.getCurrentUser() == null) {
                 UserManager.registerCurrentUser(new Consumer<User>() {
                     @Override
                     public void accept(User currentUser) {
                         SplashActivity.this.startActivity(intent);
                     }
                 });
-            }
-            else {
+            } else {
                 startActivity(intent);
             }
         } else {

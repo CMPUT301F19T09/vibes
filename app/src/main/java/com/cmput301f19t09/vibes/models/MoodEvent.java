@@ -15,7 +15,7 @@ import java.time.LocalTime;
  * and description. For a MoodEvent date and time are not optional while description
  * is. MoodEvent also has a non-optional EmotionalState and optional socialSituation and
  * Location. A MoodEvent is associated with a particular User.
- *
+ * <p>
  * Implements serializable to be passable in intents. Implements Comparable to allow
  * MoodList to be sorted in reverse chronological order of LocalDateTime of the MoodEvents.
  *
@@ -35,23 +35,15 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Creates a new MoodEvent object by accepting a date, time, description, state, socialSituation,
      * location, and user.
      *
-     * @param   date
-     *      Date of when the event occurred; should have the format ISO_LOCAL_DATE (yyyy-MM-dd).
-     * @param   time
-     *      Time of when the event occurred; should have the format HH:mm.
-     * @param   description
-     *      Describes the circumstances surrounding an event.
-     * @param   state
-     *      The EmotionalState of a MoodEvent which contains an emotion, emoticon, and associated color.
-     * @param   socialSituation
-     *      The context surrounding an event; can be one of alone, with one other person, with two
-     *      to several people, or with a crowd.
-     * @param   photo
-     *      Used in part to describe the circumstances of an event. The path to a photo.
-     * @param   location
-     *      Where a MoodEvent occurred; the location should contain latitude and longitude coordinates.
-     * @param   user
-     *      The user that the created the MoodEvent.
+     * @param date            Date of when the event occurred; should have the format ISO_LOCAL_DATE (yyyy-MM-dd).
+     * @param time            Time of when the event occurred; should have the format HH:mm.
+     * @param description     Describes the circumstances surrounding an event.
+     * @param state           The EmotionalState of a MoodEvent which contains an emotion, emoticon, and associated color.
+     * @param socialSituation The context surrounding an event; can be one of alone, with one other person, with two
+     *                        to several people, or with a crowd.
+     * @param photo           Used in part to describe the circumstances of an event. The path to a photo.
+     * @param location        Where a MoodEvent occurred; the location should contain latitude and longitude coordinates.
+     * @param user            The user that the created the MoodEvent.
      */
     public MoodEvent(LocalDate date, LocalTime time, String description, EmotionalState state,
                      int socialSituation, Uri photo, Location location, User user) {
@@ -67,8 +59,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Getter for the EmotionalState. An EmotionalState is used to collect an emotion with
      * its associated emoticon and color.
      *
-     * @return
-     *      The EmotionalState associated with a MoodEvent.
+     * @return The EmotionalState associated with a MoodEvent.
      */
     public EmotionalState getState() {
         return state;
@@ -78,8 +69,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Sets the state attribute. EmotionalState used to indicate the emotion that was felt
      * during a MoodEvent. A MoodEvent can only be associated with one EmotionalState.
      *
-     * @param   state
-     *      The EmotionalState associated with a MoodEvent.
+     * @param state The EmotionalState associated with a MoodEvent.
      */
     public void setState(EmotionalState state) {
         this.state = state;
@@ -90,11 +80,9 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * the number of individuals present during a mood event. A predefined set of values;
      * can be one of alone, with one other person, with two to several people, or with a crowd.
      *
+     * @return The socialSituation associated with a MoodEvent; return value of -1 indicates that
+     * SocialSituation has not been specified.
      * @TODO: Enforce the set of possible choices.
-     *
-     * @return
-     *      The socialSituation associated with a MoodEvent; return value of -1 indicates that
-     *      SocialSituation has not been specified.
      */
     public int getSocialSituation() {
         return socialSituation;
@@ -105,10 +93,8 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * the number of individuals present during a mood event. A predefined set of values;
      * can be one of alone, with one other person, with two to several people, or with a crowd.
      *
+     * @param socialSituation The socialSituation associated with a MoodEvent.
      * @TODO: Enforce the set of possible choices.
-     *
-     * @param   socialSituation
-     *      The socialSituation associated with a MoodEvent.
      */
     public void setSocialSituation(int socialSituation) {
         this.socialSituation = socialSituation;
@@ -126,8 +112,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Sets the photo for a mood event. Used in part to describe a mood event along with
      * description.
      *
-     * @param   photo
-     *      The photo path to attach to a mood event.
+     * @param photo The photo path to attach to a mood event.
      */
     public void setPhoto(Uri photo) {
         this.photo = photo;
@@ -137,20 +122,30 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Getter for the location attribute. The location is where a MoodEvent was created. It contains
      * the latitude and longitude coordinates. Location is used to map where a MoodEvent occurred.
      *
-     * @return
-     *      The location associated with a MoodEvent; return value of null indicates that
-     *      location has not been specified; could be due to app permissions issues.
+     * @return The location associated with a MoodEvent; return value of null indicates that
+     * location has not been specified; could be due to app permissions issues.
      */
     public Location getLocation() {
         return location;
     }
 
     /**
+     * Setter for the location attribute. The location is where a MoodEvent was created. It contains
+     * the latitude and longitude coordinates. Location is typically set by a location services API.
+     * The location passed in should represent where a MoodEvent occurred and therefore should be
+     * acquired when creating a new MoodEvent only.
+     *
+     * @param location The location associated with a MoodEvent.
+     */
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    /**
      * Converts the Location object into a printable string. Used for displaying the latitude
      * and longitude coordinates associated with a Location object.
      *
-     * @return
-     *      The String representation of: "<location_lat> <location_long>"
+     * @return The String representation of: "<location_lat> <location_long>"
      */
     public String getLocationString() {
         return Location.convert(
@@ -161,24 +156,10 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     }
 
     /**
-     * Setter for the location attribute. The location is where a MoodEvent was created. It contains
-     * the latitude and longitude coordinates. Location is typically set by a location services API.
-     * The location passed in should represent where a MoodEvent occurred and therefore should be
-     * acquired when creating a new MoodEvent only.
-     *
-     * @param   location
-     *      The location associated with a MoodEvent.
-     */
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    /**
      * Getter for the user attribute. The user attribute represents who created this MoodEvent. Used
      * for storing in the database and for displaying on that users moodList.
      *
-     * @return
-     *      The user who created this MoodEvent.
+     * @return The user who created this MoodEvent.
      */
     public User getUser() {
         return user;
@@ -189,8 +170,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * the user who is currently in session and creating a new MoodEvent should be associated with
      * a the newly created MoodEvent.
      *
-     * @param   user
-     *      The user associated with a MoodEvent.
+     * @param user The user associated with a MoodEvent.
      */
     public void setUser(User user) {
         this.user = user;
@@ -199,28 +179,29 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     /**
      * Custom comparator to allow MoodEvent objects to be compared.
      *
-     * @return
-     *      A positive integer, if the current MoodEvent is greater than the passed in MoodEvent o.
-     *      The integer 0, if both objects are considered to be the same.
-     *      A negative integer, if the current MoodEvent is less than the passed in MoodEvent o.
+     * @return A positive integer, if the current MoodEvent is greater than the passed in MoodEvent o.
+     * The integer 0, if both objects are considered to be the same.
+     * A negative integer, if the current MoodEvent is less than the passed in MoodEvent o.
      */
     @Override
     public int compareTo(Object o) {
-        return this.getLocalDateTime().compareTo(((MoodEvent)o).getLocalDateTime());
+        return this.getLocalDateTime().compareTo(((MoodEvent) o).getLocalDateTime());
     }
 
     /**
      * Used in the maps fragment to get the location of the mood event in the
      * LatLng form
-     * @return  Returns the LatLng of the location the moodevent has.
+     *
+     * @return Returns the LatLng of the location the moodevent has.
      */
-    public LatLng getLanLng(){
+    public LatLng getLanLng() {
         return new LatLng(this.location.getLatitude(), this.location.getLongitude());
     }
 
     /**
      * Used in the maps fragment to get the position of the mood event.
      * This function is called by the CustomClusterRenderer
+     *
      * @return
      */
     @Override
@@ -232,6 +213,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Used in the maps fragment to get the title of the mood event.
      * Curently it is set to being the emotion.
      * This function is called by the CustomClusterRenderer.
+     *
      * @return returns the emotion of the mood event
      */
     @Override
@@ -247,6 +229,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * Used in the maps fragment to get the snippet of the mood event.
      * Curently it is set to being the description.
      * This function is called by the CustomClusterRenderer.
+     *
      * @return Returns the description of the mood event.
      */
     @Override

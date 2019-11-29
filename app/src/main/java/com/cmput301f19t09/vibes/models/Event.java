@@ -13,20 +13,17 @@ import java.time.format.DateTimeParseException;
  * time, and description. Implements serializable to be passable in intents.
  */
 public class Event implements Serializable {
-    protected LocalDate date; // format yyyy-MM-dd; ISO_LOCAL_DATE
     protected static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    protected LocalDate date; // format yyyy-MM-dd; ISO_LOCAL_DATE
     protected LocalTime time; // format HH:mm
     protected String description;
 
     /**
      * Creates a new Event object by accepting a date, time, and description.
      *
-     * @param date
-     *      Date of when the event occurred; should have the format ISO_LOCAL_DATE (yyyy-MM-dd).
-     * @param time
-     *      Time of when the event occurred; should have the format HH:mm.
-     * @param description
-     *      Describes the circumstances surrounding an event.
+     * @param date        Date of when the event occurred; should have the format ISO_LOCAL_DATE (yyyy-MM-dd).
+     * @param time        Time of when the event occurred; should have the format HH:mm.
+     * @param description Describes the circumstances surrounding an event.
      */
     public Event(LocalDate date, LocalTime time, String description) {
         this.date = date;
@@ -37,9 +34,8 @@ public class Event implements Serializable {
     /**
      * Getter for the date attribute.
      *
-     * @return
-     *      LocalDate object representing the date an event occurred.
-     *      Has the format yyyy-MM-dd.
+     * @return LocalDate object representing the date an event occurred.
+     * Has the format yyyy-MM-dd.
      */
     public LocalDate getDate() {
         return date;
@@ -49,9 +45,8 @@ public class Event implements Serializable {
      * Getter for the date attribute returned as an ISO_LOCAL_DATE formatted string.
      * Used for displaying the date.
      *
-     * @return
-     *      String representation of a LocalDate object representing the date an event occurred.
-     *      Has the format yyyy-MM-dd.
+     * @return String representation of a LocalDate object representing the date an event occurred.
+     * Has the format yyyy-MM-dd.
      */
     public String getDateString() {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -61,10 +56,8 @@ public class Event implements Serializable {
      * Sets the date attribute. Date is used to indicate in part when an event
      * occurred. An Event can have only one date.
      *
-     * @param   date
-     *      Date of when an Event occurred. Must have the format yyyy-MM-dd or will not be accepted.
-     * @return
-     *      True if date was set correctly, otherwise False.
+     * @param date Date of when an Event occurred. Must have the format yyyy-MM-dd or will not be accepted.
+     * @return True if date was set correctly, otherwise False.
      */
     public Boolean setDate(String date) {
         try {
@@ -81,21 +74,29 @@ public class Event implements Serializable {
     /**
      * Getter for the time attribute.
      *
-     * @return
-     *      LocalTime object representing the time an event occurred.
-     *      Has the format HH:mm.
+     * @return LocalTime object representing the time an event occurred.
+     * Has the format HH:mm.
      */
     public LocalTime getTime() {
         return time;
     }
 
     /**
+     * Sets the time attribute. Time is used to indicate in part when an event
+     * occurred. An Event can have only one date.
+     *
+     * @param time Time of when an Event occurred.
+     */
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    /**
      * Getter for the time attribute returned as an HH:mm formatted string.
      * Used for displaying the time.
      *
-     * @return
-     *      String representation of a LocalTime object representing the time an event occurred.
-     *      Has the format HH:mm.
+     * @return String representation of a LocalTime object representing the time an event occurred.
+     * Has the format HH:mm.
      */
     public String getTimeString() {
         return time.format(timeFormatter);
@@ -105,10 +106,8 @@ public class Event implements Serializable {
      * Sets the time attribute. Time is used to indicate in part when an event
      * occurred. An Event can have only one date.
      *
-     * @param   time
-     *      Time of when an Event occurred. Must have the format HH:mm or will not be accepted.
-     * @return
-     *      True if time was set correctly, otherwise False.
+     * @param time Time of when an Event occurred. Must have the format HH:mm or will not be accepted.
+     * @return True if time was set correctly, otherwise False.
      */
     public boolean setTime(String time) {
         try {
@@ -123,21 +122,9 @@ public class Event implements Serializable {
     }
 
     /**
-     * Sets the time attribute. Time is used to indicate in part when an event
-     * occurred. An Event can have only one date.
-     *
-     * @param   time
-     *      Time of when an Event occurred.
-     */
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
-
-    /**
      * Getter for the description attribute.
      *
-     * @return
-     *      Description which describes the details of an Event.
+     * @return Description which describes the details of an Event.
      */
     public String getDescription() {
         return description;
@@ -147,9 +134,8 @@ public class Event implements Serializable {
      * Sets the description attribute. Description is used to provide details
      * which gives context to an event.
      *
-     * @param   description
-     *      Description must be a String and should provide details which give
-     *      context to an Event.
+     * @param description Description must be a String and should provide details which give
+     *                    context to an Event.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -159,9 +145,8 @@ public class Event implements Serializable {
      * Combines the date and time attributes of the Event into a LocalDateTime object
      * Used for comparison of Events based on the time they occurred.
      *
-     * @return
-     *      LocalDateTime object which is the combination of the LocalDate date and
-     *      LocalTime time attributes.
+     * @return LocalDateTime object which is the combination of the LocalDate date and
+     * LocalTime time attributes.
      */
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.of(date, time);
@@ -173,8 +158,7 @@ public class Event implements Serializable {
      * 1st of January 1970. Used for conversion into an acceptable format to store
      * in firebase.
      *
-     * @return
-     *      Long UTC epoch representation of the combined date and time attribute.
+     * @return Long UTC epoch representation of the combined date and time attribute.
      */
     public long getEpochUTC() {
         LocalDateTime dateTime = getLocalDateTime();

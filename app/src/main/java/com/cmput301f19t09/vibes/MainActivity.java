@@ -1,5 +1,12 @@
 package com.cmput301f19t09.vibes;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AlertDialog;
@@ -9,22 +16,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
@@ -34,45 +28,34 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.List;
+
 /**
- * MainActivity is the main activity that shows up in the app right now.
+ * This Activity hosts the different Fragments of the app. Fragments are held in the fragment_root View.
+ * Fragments are reused.
  */
 public class MainActivity extends FragmentActivity {
 
-    private enum ButtonMode {LIST, MAP}
-
-    private ButtonMode currentButtonMode;
-    private @IdRes
-    int fragment_root;
-    private User user;
-    Context mcontext;
-
     AlertDialog alertDialog = null;
+    // Whether the 'view' button (bottom left in the layout) opens the Map or List of Moods
+    private ButtonMode currentButtonMode;
 
-
-    //TODO: DEBUG, REMOVE THIS
-    private final String logTag = "TEST/MainActivity";
-    
-    private MapFragment.Filter mapFilter = MapFragment.Filter.SHOW_MINE; // The filter of the map.
-    private String listFilter = "";
-
+    /**
+     * Create the activity, including adding button listeners to switch between Fragments
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mcontext = this;
-        // Set the button in the bottom left to open the map fragment
-
-        user = UserManager.getCurrentUser();
 
         // Defines onClickListeners for the components defined above in the class.
         initialize();
 
-        setListFragment(MoodListFragment.OWN_MOODS);
-
-        /*
-            Add a backstack listener to change what the "view" (list/map) button displays
-            when a new fragment is opened
+        /**
+         * Add a listener to the FragmentManager, when the current fragment is changed set the 'view'
+         * button to show: MAP if on MoodListFragment and LIST if on any other fragment
          */
         final FragmentManager manager = getSupportFragmentManager();
         manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -80,10 +63,21 @@ public class MainActivity extends FragmentActivity {
             public void onBackStackChanged() {
                 List<Fragment> fragments = manager.getFragments();
                 Fragment currentFragment = fragments.get(fragments.size() - 1);
+                String tag = currentFragment.getTag();
 
-                if (currentFragment == null || currentFragment.getClass().equals(MoodListFragment.class)) {
+                //Log.d("MAIN-ACTIVITY", "Backstack changed -->" + tag);
+
+                if (tag == null || !tag.equals(MapFragment.class.getSimpleName())) {
+                    //Log.d("MAIN-ACTIVITY", "Switching to list");
+                    if (tag != null && tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID())) {
+                        findViewById(R.id.logoutButton).setVisibility(View.VISIBLE);
+                    } else {
+                        findViewById(R.id.logoutButton).setVisibility(View.GONE);
+                    }
+
                     currentButtonMode = ButtonMode.MAP;
                 } else {
+                    //Log.d("MAIN-ACTIVITY", "Switching to map");
                     currentButtonMode = ButtonMode.LIST;
                 }
 
@@ -92,54 +86,62 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-    /*
-     *  Initializes the views in the main activity layout
+    /**
+     * Initialise the buttons in the layout
      */
     private void initialize() {
-
-        fragment_root = R.id.main_fragment_root;
         currentButtonMode = ButtonMode.MAP;
+
+        // The root View to add fragments to
+        @IdRes int fragment_root = R.id.main_fragment_root;
+        User user = UserManager.getCurrentUser();
 
         View addButton, searchButton, followingButton, viewButton, logoutButton;
         ImageView profileButton;
+
         addButton = findViewById(R.id.main_add_button);
         profileButton = findViewById(R.id.main_profile_button);
         followingButton = findViewById(R.id.main_follow_list_button);
         logoutButton = findViewById(R.id.logoutButton);
         searchButton = findViewById(R.id.main_search_button);
         viewButton = findViewById(R.id.main_view_button);
-        logoutButton.setVisibility(View.INVISIBLE);
+
+        logoutButton.setVisibility(View.GONE);
+
         Glide.with(this).load(user.getProfileURL()).into(profileButton);
         profileButton.setClipToOutline(true);
 
+        // When the addButton is clicked, open an EditFragment
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMainFragment(EditFragment.newInstance());
-                logoutButton.setVisibility(View.INVISIBLE);
                 setEditFragment();
             }
         });
 
+        // When the searchButton is clicked, open a SearchFragment
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMainFragment(SearchFragment.newInstance());
-                logoutButton.setVisibility(View.INVISIBLE);
                 setSearchFragment();
             }
         });
 
+        // When the profileButton is clicked, open a ProfileFragment of the main User
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMainFragment(ProfileFragment.newInstance());
-                logoutButton.setVisibility(View.VISIBLE);
                 setProfileFragment();
             }
         });
 
+        // When the logount button is pressed, ask to log the user out
         logoutButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Open a dialog asking the user whether they want to log out. On positive, log the user out,
+             * on negative dismiss the dialog and keep the user logged in.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
@@ -155,11 +157,10 @@ public class MainActivity extends FragmentActivity {
                 dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Logout action
-                        UserManager.unregisterAllUsers();
-                        FirebaseAuth.getInstance().signOut();
+                        UserManager.unregisterAllUsers();       // Unregister all users that have snapshot listeners
+                        FirebaseAuth.getInstance().signOut();   // Sign out via Firebase
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        finish();
+                        finish();                               // End the MainActivity and go back to login
                     }
                 });
 
@@ -168,32 +169,25 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
+        // When the followingButton is clicked, open the FollowingFragment
         followingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //setMainFragment(FollowingFragment.newInstance(UserManager.getCurrentUser()));
-                logoutButton.setVisibility(View.INVISIBLE);
                 setFollowingFragment();
             }
         });
 
+        // When the 'view' button is clicked open either the MapFragment or the MoodListFragment depending on buttonMode
         viewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
-                Set the button to represent which fragment will be opened the NEXT TIME the button
-                is pressed (i.e. the current fragment)
-                 */
-                logoutButton.setVisibility(View.INVISIBLE);
-
                 switch (currentButtonMode) {
                     case LIST:
-                        //setMainFragment(MoodListFragment.newInstance(MoodListFragment.OWN_MOODS));
-                        setListFragment(MoodListFragment.OWN_MOODS);
+                        setListFragment();
                         currentButtonMode = ButtonMode.MAP;
                         break;
                     default:
-                        //setMainFragment(MapFragment.newInstance(getApplicationContext()));
                         setMapFragment();
                         currentButtonMode = ButtonMode.LIST;
                         break;
@@ -201,104 +195,119 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        user.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                Glide.with(MainActivity.this).load(user.getProfileURL()).into(profileButton);
-            }
-        });
+        Glide.with(MainActivity.this).load(user.getProfileURL()).into(profileButton);
 
-        updateViewButton(); // Updates the view button only.
+        setListFragment();
+        updateViewButton();
     }
 
-
-    /*
-        Creates a FragmentTransaction which replaces the current fragment with the specified one
-        @param fragment
-            the fragment to place in the main view
+    /**
+     * Performs a replace operation to show the given Fragment on the screen. If the Fragment that is
+     * currently shown has the same tag as the provided tag, then it does not perform the replacement
+     *
+     * @param fragment The fragment to show in the activity
+     * @param tag      The tag to associate with that fragment
      */
-    public void setMainFragment(Fragment fragment, String tag) {
+    private void setMainFragment(Fragment fragment, String tag) {
         FragmentManager manager = getSupportFragmentManager();
 
         int entryCount = manager.getBackStackEntryCount();
 
+        // Check to see if the given Fragment is already shown (by tag), if it is don't replace it
         if (entryCount != 0 &&
                 tag != null &&
-                tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName()))
-        {
+                tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName())) {
             return;
         }
 
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(fragment_root, fragment, tag);
+        transaction.replace(R.id.main_fragment_root, fragment, tag);    // Replace the currently shown fragment
         transaction.addToBackStack(tag);
         transaction.commit();
     }
 
-    private Fragment getFragmentInstance(String tag)
-    {
+    /**
+     * Finds a fragment on the backstack with a given tag
+     *
+     * @param tag The tag to search for
+     * @return The Fragment matching tag, or null if there is none
+     */
+    private Fragment getFragmentInstance(String tag) {
         FragmentManager manager = getSupportFragmentManager();
         Fragment instance = manager.findFragmentByTag(tag);
 
         return instance;
     }
 
-    public void setMainFragment(Fragment f) {}
-
-    public void setListFragment(int arg)
-    {
+    /**
+     * Set the currently shown Fragment to be MoodListFragment showing the users own moods, this is
+     * the default behaviour of MoodListFragment
+     */
+    public void setListFragment() {
+        // Use the class name as the tag
         String tag = MoodListFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
+        // If the Fragment hasn't previously been created then create a new one
+        if (instance == null) {
             instance = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS);
         }
 
         setMainFragment(instance, tag);
     }
 
-    public void setMapFragment()
-    {
+    /**
+     * Set the currently shown Fragment to be MapFragment
+     */
+    public void setMapFragment() {
+        // Use the class name as the tag
         String tag = MapFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
+        // If the Fragment hasn't previously been created then create a new one
+        if (instance == null) {
             instance = MapFragment.newInstance(getApplicationContext());
         }
 
         setMainFragment(instance, tag);
     }
 
-    public void setProfileFragment()
-    {
+    /**
+     * Set the currently shown fragment to be a ProfileFragment displaying the signed-in User's own
+     * profile
+     */
+    public void setProfileFragment() {
         setProfileFragment(null);
     }
 
-    public void setProfileFragment(String uid)
-    {
+    /**
+     * Set the currently shown fragment to be a ProfileFragment
+     *
+     * @param uid The UID of the User whose profile you want to show. If uid is null, then it displays
+     *            the signed-in User's own profile
+     */
+    public void setProfileFragment(String uid) {
+        // Tag begins with the class name
         String tag = ProfileFragment.class.getSimpleName();
 
-        if (uid != null)
-        {
+        // Append the UID to the tag. This way a single instance of ProfileFragment will be created for
+        // each UID, but the instance can still be reused
+        if (uid != null) {
             tag += uid;
-        }
-        else
-        {
+        } else {
             tag += UserManager.getCurrentUserUID();
         }
 
+        // Check if an instance of ProfileFragment already exists for the given User
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
-            if (uid == null)
-            {
+        // If a ProfileFragment associated with tag has not already been created then create a new one
+        if (instance == null) {
+            if (uid == null) {
+                // For the signed-in User, create a ProfileFragment for own profile
                 instance = ProfileFragment.newInstance();
-            }
-            else
-            {
+            } else {
+                // For a different User, create a ProfileFragment for that user
                 instance = ProfileFragment.newInstance(uid);
             }
         }
@@ -306,48 +315,68 @@ public class MainActivity extends FragmentActivity {
         setMainFragment(instance, tag);
     }
 
-    public void setEditFragment()
-    {
+    /**
+     * Open a new EditFragment in add-mood mode
+     */
+    public void setEditFragment() {
         setEditFragment(null, -1);
     }
 
-    public void setEditFragment(MoodEvent event, int index)
-    {
+    /**
+     * Open a new EditFragment
+     *
+     * @param event The event to edit or null. If null, then it will open the fragment in add-mode
+     * @param index The index that the event has in its parent User object
+     */
+    public void setEditFragment(MoodEvent event, int index) {
         Fragment instance = null;
 
         if (event == null) {
+            // Add Fragment
             instance = EditFragment.newInstance();
         } else {
+            // Edit Fragment
             instance = EditFragment.newInstance(event, index);
         }
 
+        // Use a null tag so that EditFragment cannot be returned to when pressing the back button
         setMainFragment(instance, null);
     }
 
-    public void setFollowingFragment()
-    {
+    /**
+     * Set the current fragment to a FollowingFragment
+     */
+    public void setFollowingFragment() {
+        // Use class name as the tag
         String tag = FollowingFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = FollowingFragment.newInstance();
         }
 
         setMainFragment(instance, tag);
     }
 
-    public void setSearchFragment()
-    {
+    /**
+     * Set the current fragment to a SearchFragment
+     */
+    public void setSearchFragment() {
+        // Use class name as tag
         String tag = SearchFragment.class.getSimpleName();
-        Fragment instance = SearchFragment.newInstance();
+        Fragment instance = getFragmentInstance(tag);
+
+        if (instance == null) {
+            instance = SearchFragment.newInstance();
+        }
+
         setMainFragment(instance, tag);
     }
 
-    /*
-        Creates a FragmentTransaction to open a DialogFragment in the main view
-        @param fragment
-            the fragment to open
+    /**
+     * Open a DialogFragment in MainActivty
+     *
+     * @param fragment The DialogFragment to open
      */
     public void openDialogFragment(DialogFragment fragment) {
         FragmentManager manager = getSupportFragmentManager();
@@ -356,39 +385,44 @@ public class MainActivity extends FragmentActivity {
         fragment.show(transaction, null);
     }
 
-    /*
-    Update the image of the list/map button to reflect the type of fragment it will open if pressed
-    @param fragmentType
-        The type of fragment that the button will open if pressed
-    */
+    /**
+     * Set the image of the viewButton to correspond to the current mode
+     */
     private void updateViewButton() {
         ImageButton viewButton = findViewById(R.id.main_view_button);
         @DrawableRes int image;
 
         switch (currentButtonMode) {
+
+            case MAP:
+                image = R.drawable.ic_map_white_36dp;
+                break;
             case LIST:
+            default:
                 image = R.drawable.ic_list_white_36dp;
                 break;
-            case MAP:
-            default:
-                image = R.drawable.ic_map_white_36dp;
         }
 
         viewButton.setImageResource(image);
     }
 
+    /**
+     * When the back-button is pressed, pop the FragmentManager's backstack to show the previous
+     * Fragment. If the previous Fragment's tag is null, continue popping the backstack until it isn't.
+     * <p>
+     * Doesn't pop the backstack if there is only one Fragment (so that there is always one Fragment shown
+     * in MainActivity. This should be whichever Fragment was first added to the activity
+     */
     @Override
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (manager.getBackStackEntryCount() > 1)
-        {
+        if (manager.getBackStackEntryCount() > 1) {
             manager.popBackStackImmediate();
         }
 
         while (manager.getBackStackEntryCount() > 1 &&
-                manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null)
-        {
+                manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null) {
             manager.popBackStackImmediate();
         }
     }
@@ -397,11 +431,12 @@ public class MainActivity extends FragmentActivity {
      * Gives access to the most recently set alert dialog. Can be used to access the
      * logout dialog in tests and programmatically.
      *
-     * @return
-     *      The most recent alert dialog
+     * @return The most recent alert dialog
      */
     public AlertDialog getAlertDialog() {
         return alertDialog;
     }
+
+    private enum ButtonMode {LIST, MAP}
 }
 

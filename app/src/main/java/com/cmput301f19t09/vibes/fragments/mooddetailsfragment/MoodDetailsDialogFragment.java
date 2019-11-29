@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,34 +25,29 @@ import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
 import com.cmput301f19t09.vibes.models.UserManager;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-
-/*
-This fragment opens a Dialog that shows the event. If the event belongs to the current user, then
-it is editable and the user can delete it from the database. Clicking on the user's profile picture
-will open the profile (ProfileFragmetn) of that user
+/**
+ * This fragment opens a Dialog that shows a MoodEvent. If the event belongs to the current user, then
+ * it is editable and the user can delete it from the database. Clicking on the user's profile picture
+ * will open the profile (ProfileFragment) of that user
  */
-public class MoodDetailsDialogFragment extends DialogFragment
-{
+public class MoodDetailsDialogFragment extends DialogFragment {
     private MoodEvent event;
     private User user;
     private User eventUser;
     private boolean editable;
 
 
-    /*
-    Create a new fragment for the event, set the editable flag to editable
-    @param event
-        The MoodEvent to show the details of
-    @param editable
-        Whether the MoodEvent should be editable
+    /**
+     * Create a new instance of MoodDetailsDialogFragment to show the given event. If editable is true,
+     * then the user is able edit or delete the event
+     *
+     * @param event    The event to show
+     * @param editable True -> The event is editable, False -> The event is not editable
+     * @return A MoodDetailsDialogFragment with the given arguments
      */
-    public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
-    {
+    public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable) {
         Bundle bundle = new Bundle();
         MoodDetailsDialogFragment fragment = new MoodDetailsDialogFragment();
 
@@ -64,10 +58,15 @@ public class MoodDetailsDialogFragment extends DialogFragment
         return fragment;
     }
 
+    /**
+     * Create the Dialog and populate its fields with the MoodEvent's details
+     *
+     * @param savedInstanceState
+     * @return A Dialog showing the details of the MoodEvent given to the class
+     */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Bundle arguments = getArguments();
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -84,9 +83,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
         ImageButton deleteButton;
 
         userImage = view.findViewById(R.id.user_image);
-        emotionImage =  view.findViewById(R.id.emotion_image);
+        emotionImage = view.findViewById(R.id.emotion_image);
         reasonImage = view.findViewById(R.id.reason_image);
-        userUsername =  view.findViewById(R.id.username);
+        userUsername = view.findViewById(R.id.username);
         userFullName = view.findViewById(R.id.full_name);
         moodTime = view.findViewById(R.id.mood_time);
         moodDate = view.findViewById(R.id.mood_date);
@@ -105,18 +104,19 @@ public class MoodDetailsDialogFragment extends DialogFragment
         emotionImage.setImageResource(state.getImageFile());
 
         emotionChip.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
-        emotionChip.setText(state.getEmotion());
+        String emotionName = state.getEmotion();
+        emotionChip.setText(emotionName.charAt(0) + emotionName.substring(1).toLowerCase());
 
         int situation = event.getSocialSituation();
-        if (situation != -1)
-        {
+
+        // If the MoodEvent has a social situation, set the social situation view to show that situation,
+        // otherwise, don't show the view
+        if (situation != -1) {
             socialChip.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null)));
             String[] socialSituations = getResources().getStringArray(R.array.situations);
             situation %= socialSituations.length;
             socialChip.setText(socialSituations[situation]);
-        }
-        else
-        {
+        } else {
             socialChip.setVisibility(View.GONE);
         }
 
@@ -134,7 +134,7 @@ public class MoodDetailsDialogFragment extends DialogFragment
 
         //Sets the photo to the image specified by the event's photo (type uri)
         Uri photoUri = event.getPhoto();
-        if (photoUri != null){
+        if (photoUri != null) {
             Glide.with(this).load(photoUri).into(reasonImage);
             reasonImage.setClipToOutline(true);
             reasonImage.setVisibility(View.VISIBLE);
@@ -146,12 +146,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
         moodTime.setText(event.getTimeString());
         moodDate.setText(event.getDateString());
 
-        if (editable)
-        {
+        if (editable) {
             editButton.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+        } else {
             // If the MoodEvent is not editable, disable the editButton, this also disables the delte
             // button
             editButton.setVisibility(View.GONE);
@@ -161,18 +158,15 @@ public class MoodDetailsDialogFragment extends DialogFragment
         final Dialog dialog = builder.setView(view)
                 .create();
 
-        deleteButton.setOnClickListener(new View.OnClickListener()
-        {
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 // Calculate the index of this event within the user's list of events
                 int mood_index = eventUser.getMoodEvents().indexOf(event);
 
                 // If the event doesn't exist in the user, return (i.e. the event has been deleted since
                 // the fragment was opened
-                if (mood_index == -1)
-                {
+                if (mood_index == -1) {
                     return;
                 }
 
@@ -182,15 +176,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
             }
         });
 
-        editButton.setOnClickListener(new View.OnClickListener()
-        {
+        editButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 dialog.dismiss();
                 int mood_index = eventUser.getMoodEvents().indexOf(event);
-                if (mood_index == -1)
-                {
+                if (mood_index == -1) {
                     return;
                 }
 
@@ -198,11 +189,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
             }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener()
-        {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
@@ -218,13 +207,10 @@ public class MoodDetailsDialogFragment extends DialogFragment
                     public void onDismiss(DialogInterface d) {
                         ProfileFragment profileFragment;
 
-                        if (user == eventUser)
-                        {
+                        if (user == eventUser) {
                             // Open own profile
                             ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment();
-                        }
-                        else
-                        {
+                        } else {
                             // Open other user's profile
                             ((MainActivity) MoodDetailsDialogFragment.this.getActivity()).setProfileFragment(eventUser.getUid());
                         }

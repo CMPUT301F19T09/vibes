@@ -7,8 +7,6 @@ import android.widget.Checkable;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -33,7 +31,6 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -356,7 +353,7 @@ public class UserTests {
         // create a new MoodEvent
         // select ANGER
         onView(withTagValue(is("ANGER"))).perform(click());
-        onView(withText("By Myself")).perform(setChecked(true));
+        onView(withText("By myself")).perform(setChecked(true));
 //        onView(withId(R.id.edit_situation_view)).perform(typeText("0.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(typeText("three words desc"));
@@ -378,16 +375,15 @@ public class UserTests {
         // verify that the fields are populated correctly
         onView(withId(R.id.edit_reason_view)).check(matches(withText("three words desc")));
         Thread.sleep(100);
-        onView(withText("By Myself")).check(matches(isChecked()));
+        onView(withText("By myself")).check(matches(isChecked()));
 //        onView(withId(R.id.social_chip_group)).check(matches(isNotChecked()));
         onView(withText("Anger")).check(matches(isChecked()));
-//        onView(withId(R.id.state_text_view)).check(matchesChecks());
 
         // select new mood; HAPPINESS
         Thread.sleep(100);
         onView(withTagValue(is("HAPPINESS"))).perform(click());
 //        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
-        onView(withText("With Someone Else")).perform(setChecked(true));
+        onView(withText("With someone else")).perform(setChecked(true));
 //        onView(withId(R.id.edit_situation_view)).perform(typeText("1.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(replaceText("a new desc"));
@@ -413,10 +409,9 @@ public class UserTests {
 
         // verify that the fields are populated correctly again
         onView(withId(R.id.edit_reason_view)).check(matches(withText("a new desc")));
-        onView(withText("With Someone Else")).check(matches(isChecked()));
+        onView(withText("With someone else")).check(matches(isChecked()));
 //        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
         onView(withText("Happiness")).check(matches(isChecked()));
-//        onView(withId(R.id.state_text_view)).check(matches(withText("HAPPINESS")));
         closeSoftKeyboard();
         onView(withId(R.id.button_cancel_view)).perform(ViewActions.scrollTo()).perform(click());
 
