@@ -1,10 +1,13 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -154,25 +157,38 @@ public class FollowingFragment extends Fragment {
      * @param listView
      */
     private void resizeListView(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
+        ArrayAdapter<String> listAdapter = (ArrayAdapter) listView.getAdapter();
         int count = listAdapter.getCount();
         int itemHeight;
 
         View oneChild = listView.getChildAt(0);
-        if (oneChild == null) {
-            return;
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
+
+        if (oneChild == null)
+        {
+            itemHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 96, getResources().getDisplayMetrics()));
+        }
+        else if (count > 0)
+        {
+            itemHeight = oneChild.getHeight();
+
+        }
+        else
+        {
+            itemHeight = 0;
         }
 
-        itemHeight = oneChild.getHeight();
-
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
+
         listView.setLayoutParams(params);
+
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onPause()
     {
+        Log.d("TEST~", "ON PAUSE");
         user.deleteObservers();
 
         for (String uid : user.getFollowingList())
@@ -186,21 +202,12 @@ public class FollowingFragment extends Fragment {
     @Override
     public void onResume()
     {
-        UserManager.addUserObserver(user.getUid(), new Observer()
+        Log.d("TEST~", "ON RESUME");
+        UserManager.addUserObserver(UserManager.getCurrentUserUID(), new Observer()
         {
             @Override
             public void update(Observable o, Object arg)  {
-                //followingList.clear();
-                //followingAdapter.clear();
-
-                //requestedList.clear();
-                //requestedAdapter.clear();
-
-                //followingList.addAll(user.getFollowingList());
-                //requestedList.addAll(user.getRequestedList());
-
-                //followingAdapter.refreshData(followingList);
-                //requestedAdapter.refreshData(requestedList);
+                Log.d("TEST/Following", "User got updated!!!");
 
                 followingAdapter.refreshData(user.getFollowingList());
                 requestedAdapter.refreshData(user.getRequestedList());
@@ -209,6 +216,16 @@ public class FollowingFragment extends Fragment {
                 resizeListView(requestedLinearLayout);
             }
         });
+
+        if (user.isLoaded())
+        {
+            followingAdapter.refreshData(user.getFollowingList());
+            requestedAdapter.refreshData(user.getRequestedList());
+        }
+
+        resizeListView(followingLinearLayout);
+        resizeListView(requestedLinearLayout);
+
         super.onResume();
     }
 }

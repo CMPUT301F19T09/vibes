@@ -245,7 +245,7 @@ public class User extends Observable implements Serializable {
         documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
                 .addOnSuccessListener(aVoid -> {
                     Log.d("TEST/UserAddRequest", "success");
-                    requestedList.add(otherUserUID);
+                    //requestedList.add(otherUserUID);
                     setChanged();
                     notifyObservers();
                 }).addOnFailureListener(e -> {
@@ -264,7 +264,7 @@ public class User extends Observable implements Serializable {
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-                        followingList.add(otherUserUID);
+                        //followingList.add(otherUserUID);
                         setChanged();
                         notifyObservers();
                         Log.d("TEST/UserAddFollowing", "success");
@@ -280,7 +280,7 @@ public class User extends Observable implements Serializable {
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-                        followingList.remove(otherUserUID);
+                        //followingList.remove(otherUserUID);
                         Log.d("TEST/UserRemoveFollowing", "success");
                         setChanged();
                         notifyObservers();
@@ -289,12 +289,6 @@ public class User extends Observable implements Serializable {
 
             });
         }
-    }
-
-    @Override
-    public void notifyObservers() {
-        Log.d("TEST/Notify", "notift");
-        super.notifyObservers();
     }
 
     /**

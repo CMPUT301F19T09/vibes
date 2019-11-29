@@ -120,6 +120,8 @@ public class UserManager
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             User user = p.second;
 
+            Log.d("TEST~", "deleting observer of " + user_id);
+            if (user_id.equals(mainUserUID)) Log.d("TEST~", "######DELETE OBSERVER MAIN USER######");
             user.deleteObservers();
         }
     }

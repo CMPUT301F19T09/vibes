@@ -28,7 +28,7 @@ import java.util.Observer;
  * in FollowingFragment
  */
 public class FollowingFragmentAdapter extends ArrayAdapter<String> {
-    private ArrayList<String> userList;
+    private List<String> userList;
     private Context context;
     private int viewMode;
 
@@ -65,11 +65,11 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = convertView;
+        //View view = convertView;
 
-        if (view == null){
-            view = LayoutInflater.from(context).inflate(viewMode, parent, false);
-        }
+        //if (view == null){
+            View view = LayoutInflater.from(context).inflate(viewMode, parent, false);
+        //}
 
         final TextView fullNameText = view.findViewById(R.id.fullName);
         final TextView usernameText = view.findViewById(R.id.username);
@@ -92,6 +92,23 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             usernameText.setText(user.getUserName());
         }
+        else
+        {
+            user.addObserver(new Observer()
+            {
+                @Override
+                public void update(Observable o, Object arg)
+                {
+                    Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
+                    userImage.setClipToOutline(true);
+
+                    fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+                    usernameText.setText(user.getUserName());
+
+                    user.deleteObserver(this);
+                }
+            });
+        }
 
         userImage.setOnClickListener(v -> goToProfile(userUID));
 
@@ -111,6 +128,23 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
                     currentUser.removeRequest(user.getUid());
                 }
             });
+
+            view.findViewById(R.id.req_cont).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToProfile(userUID);
+                }
+            });
+
+        }
+        else
+        {
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToProfile(userUID);
+                }
+            });
         }
 
         return view;
@@ -118,13 +152,13 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
 
     void refreshData(List<String> uidList) {
 
+        userList.clear();
+        clear();
+
         for (String id : userList)
         {
             UserManager.removeUserObservers(id);
         }
-
-        userList.clear();
-        clear();
 
         if (uidList == null) {
             return;
@@ -137,44 +171,14 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
                 @Override
                 public void update(Observable o, Object arg)
                 {
-                    sortData();
                     notifyDataSetChanged();
                 }
             });
         }
 
-        sortData();
+        //userList.addAll(uidList);
         userList.addAll(uidList);
         addAll(uidList);
-
-        sortData();
-    }
-
-    private void sortData()
-    {
-        super.sort(new Comparator<String>()
-        {
-            @Override
-            public int compare (String uid_a, String uid_b)
-            {
-            User user_a = UserManager.getUser(uid_a);
-            User user_b = UserManager.getUser(uid_b);
-
-            Log.d("TEST/Sorting", "-> {" + user_a.isLoaded() + " | " + user_b.isLoaded() + " }");
-
-            if (user_a.isLoaded() && user_b.isLoaded())
-            {
-                Log.d("TEST/Sorting", "Comparing " + user_a.getFirstName() + " and " + user_b.getFirstName());
-                return user_a.getFirstName().compareTo(user_b.getUserName());
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    });
-
-        notifyDataSetChanged();
     }
 
     private void goToProfile(String uid)
@@ -184,5 +188,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         {
             ((MainActivity) getContext()).setProfileFragment(user.getUid());
         }
+    }
+
+    public int getViewMode() {
+        return viewMode;
     }
 }
