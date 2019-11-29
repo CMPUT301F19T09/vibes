@@ -3,31 +3,22 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
-import com.cmput301f19t09.vibes.dialogs.MoodFilterDialog;
-import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 
 import java.util.ArrayList;

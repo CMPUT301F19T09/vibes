@@ -1,7 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
