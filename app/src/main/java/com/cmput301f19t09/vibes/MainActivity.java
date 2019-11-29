@@ -173,7 +173,7 @@ public class MainActivity extends FragmentActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         UserManager.unregisterAllUsers();       // Unregister all users that have snapshot listeners
                         FirebaseAuth.getInstance().signOut();   // Sign out via Firebase
-                        startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         finish();                               // End the MainActivity and go back to login
                     }
                 });
