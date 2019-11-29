@@ -88,41 +88,10 @@ public class FollowingFragment extends Fragment {
         requestedLinearLayout = view.findViewById(R.id.requested_list);
         requestedLinearLayout.setAdapter(requestedAdapter);
 
-        assert user != null;
-        if (user.isLoaded()) {
-            followingList.clear();
-            followingAdapter.clear();
+        followingAdapter.refreshData(user.getFollowingList());
+        requestedAdapter.refreshData(user.getRequestedList());
 
-            requestedList.clear();
-            requestedAdapter.clear();
-
-            followingList.addAll(user.getFollowingList());
-            requestedList.addAll(user.getRequestedList());
-
-            followingAdapter.refreshData(followingList);
-            requestedAdapter.refreshData(requestedList);
-
-            resizeListView(followingLinearLayout);
-            resizeListView(requestedLinearLayout);
-        }
-
-        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
-            followingList.clear();
-            followingAdapter.clear();
-
-            requestedList.clear();
-            requestedAdapter.clear();
-
-            followingList.addAll(user.getFollowingList());
-            requestedList.addAll(user.getRequestedList());
-
-            followingAdapter.refreshData(followingList);
-            requestedAdapter.refreshData(requestedList);
-
-            resizeListView(followingLinearLayout);
-            resizeListView(requestedLinearLayout);
-        });
-
+        /*
         followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -138,6 +107,8 @@ public class FollowingFragment extends Fragment {
                 requestedAdapter.notifyDataSetChanged();
             }
         });
+
+         */
 
         // Allowing two listviews to scroll as one
         // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
@@ -195,5 +166,44 @@ public class FollowingFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
         listView.setLayoutParams(params);
+        listView.deferNotifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause()
+    {
+        user.deleteObservers();
+
+        for (String uid : user.getFollowingList())
+        {
+            UserManager.removeUserObservers(uid);
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    public void onResume()
+    {
+        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
+            //followingList.clear();
+            //followingAdapter.clear();
+
+            //requestedList.clear();
+            //requestedAdapter.clear();
+
+            //followingList.addAll(user.getFollowingList());
+            //requestedList.addAll(user.getRequestedList());
+
+            //followingAdapter.refreshData(followingList);
+            //requestedAdapter.refreshData(requestedList);
+
+            followingAdapter.refreshData(user.getFollowingList());
+            requestedAdapter.refreshData(user.getRequestedList());
+
+            resizeListView(followingLinearLayout);
+            resizeListView(requestedLinearLayout);
+        });
+        super.onResume();
     }
 }

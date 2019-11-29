@@ -1,6 +1,7 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * FollowingFragmentAdapter is an ArrayAdapter that is used for both ListView's
@@ -78,7 +82,8 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
 
         final User user = UserManager.getUser(userUID);
 
-        if (user.isLoaded()) {
+        if (user.isLoaded())
+        {
             Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
             userImage.setClipToOutline(true);
 
@@ -86,15 +91,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             usernameText.setText(user.getUserName());
         }
 
-        UserManager.addUserObserver(userUID, (o, arg) -> {
-            Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
-            userImage.setClipToOutline(true);
+        sortData();
 
-            fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-            usernameText.setText(user.getUserName());
-        });
-
-        userImage.setOnClickListener(v -> ((MainActivity) getContext()).setProfileFragment(user.getUid()));
+        userImage.setOnClickListener(v -> goToProfile(userUID));
 
         if (viewMode == R.layout.requested_list) {
             Button confirmButton = view.findViewById(R.id.btn_confirm);
@@ -118,16 +117,64 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
         return view;
     }
 
-    void refreshData(ArrayList<String> uidList) {
+    void refreshData(List<String> uidList) {
         userList.clear();
         clear();
-        notifyDataSetChanged();
 
         if (uidList == null) {
             return;
         }
 
+        for (String uid : uidList)
+        {
+            User user = UserManager.getUser(uid);
+
+            if (!user.isLoaded())
+            {
+                user.addObserver((Observable o, Object a) ->
+                {
+                    sortData();
+                });
+            }
+        }
         userList.addAll(uidList);
         addAll(uidList);
+
+        sortData();
+    }
+
+    private void sortData()
+    {
+        sort((String uid_a, String uid_b) ->
+        {
+            User user_a = UserManager.getUser(uid_a);
+            User user_b = UserManager.getUser(uid_b);
+
+            if (user_a.isLoaded() && user_b.isLoaded())
+            {
+                return user_a.getFirstName().compareTo(user_b.getUserName());
+            }
+            else if (user_a.isLoaded())
+            {
+                return -1;
+            }
+            else if (user_b.isLoaded())
+            {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        notifyDataSetChanged();
+    }
+
+    private void goToProfile(String uid)
+    {
+        User user = UserManager.getUser(uid);
+        if (user.isLoaded())
+        {
+            ((MainActivity) getContext()).setProfileFragment(user.getUid());
+        }
     }
 }
