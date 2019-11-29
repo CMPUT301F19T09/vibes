@@ -2,12 +2,16 @@ package com.cmput301f19t09.vibes;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,6 +32,7 @@ import com.cmput301f19t09.vibes.fragments.searchfragment.SearchFragment;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * MainActivity is the main activity that shows up in the app right now.
@@ -40,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     private @IdRes
     int fragment_root;
     private User user;
+    Context mcontext;
 
     //TODO: DEBUG, REMOVE THIS
     private final String logTag = "TEST/MainActivity";
@@ -51,7 +57,7 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mcontext = this;
         // Set the button in the bottom left to open the map fragment
 
         user = UserManager.getCurrentUser();
@@ -91,14 +97,15 @@ public class MainActivity extends FragmentActivity {
         fragment_root = R.id.main_fragment_root;
         currentButtonMode = ButtonMode.MAP;
 
-        View addButton, searchButton, followingButton, viewButton;
+        View addButton, searchButton, followingButton, viewButton, logoutButton;
         ImageView profileButton;
         addButton = findViewById(R.id.main_add_button);
         profileButton = findViewById(R.id.main_profile_button);
         followingButton = findViewById(R.id.main_follow_list_button);
+        logoutButton = findViewById(R.id.logoutButton);
         searchButton = findViewById(R.id.main_search_button);
         viewButton = findViewById(R.id.main_view_button);
-
+        logoutButton.setVisibility(View.INVISIBLE);
         Glide.with(this).load(user.getProfileURL()).into(profileButton);
         profileButton.setClipToOutline(true);
 
@@ -106,6 +113,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 //setMainFragment(EditFragment.newInstance());
+                logoutButton.setVisibility(View.INVISIBLE);
                 setEditFragment();
             }
         });
@@ -114,6 +122,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 //setMainFragment(SearchFragment.newInstance());
+                logoutButton.setVisibility(View.INVISIBLE);
                 setSearchFragment();
             }
         });
@@ -122,7 +131,37 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 //setMainFragment(ProfileFragment.newInstance());
+                logoutButton.setVisibility(View.VISIBLE);
                 setProfileFragment();
+            }
+        });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                //Yes button clicked
+                                // Log out action
+//                                UserManager.unre
+                                FirebaseAuth.getInstance().signOut();
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                                finish();
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
+                builder.setMessage("Do you want to logout?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
             }
         });
 
@@ -130,6 +169,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 //setMainFragment(FollowingFragment.newInstance(UserManager.getCurrentUser()));
+                logoutButton.setVisibility(View.INVISIBLE);
                 setFollowingFragment();
             }
         });
@@ -141,6 +181,7 @@ public class MainActivity extends FragmentActivity {
                 Set the button to represent which fragment will be opened the NEXT TIME the button
                 is pressed (i.e. the current fragment)
                  */
+                logoutButton.setVisibility(View.INVISIBLE);
 
                 switch (currentButtonMode) {
                     case LIST:
