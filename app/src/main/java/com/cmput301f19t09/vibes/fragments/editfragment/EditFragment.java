@@ -445,6 +445,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
 
             photoUri = moodEvent.getPhoto();
+            System.out.println(photoUri);
             if (photoUri != null){
                 setPhotoImage(photoUri, photoImage);
             } else {
@@ -988,6 +989,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private void setPhotoImage(Uri uri, ImageView imageView){
         if (uri != null){
             Glide.with(this).load(uri).into(imageView);
+            imageView.setVisibility(VISIBLE);
         }
     }
 }
