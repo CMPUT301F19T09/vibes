@@ -1,5 +1,12 @@
 package com.cmput301f19t09.vibes;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AlertDialog;
@@ -9,20 +16,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
-
-import java.util.List;
-
 import com.cmput301f19t09.vibes.fragments.editfragment.EditFragment;
+import com.cmput301f19t09.vibes.fragments.followingfragment.FollowingFragment;
 import com.cmput301f19t09.vibes.fragments.mapfragment.MapFragment;
 import com.cmput301f19t09.vibes.fragments.moodlistfragment.MoodListFragment;
 import com.cmput301f19t09.vibes.fragments.profilefragment.ProfileFragment;
@@ -32,25 +28,25 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.List;
+
 /**
  * This Activity hosts the different Fragments of the app. Fragments are held in the fragment_root View.
  * Fragments are reused.
  */
 public class MainActivity extends FragmentActivity {
 
-    private enum ButtonMode {LIST, MAP}
-
+    AlertDialog alertDialog = null;
     // Whether the 'view' button (bottom left in the layout) opens the Map or List of Moods
     private ButtonMode currentButtonMode;
-    AlertDialog alertDialog = null;
 
     /**
      * Create the activity, including adding button listeners to switch between Fragments
+     *
      * @param savedInstanceState
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,33 +58,25 @@ public class MainActivity extends FragmentActivity {
          * button to show: MAP if on MoodListFragment and LIST if on any other fragment
          */
         final FragmentManager manager = getSupportFragmentManager();
-        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener()
-        {
+        manager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
-            public void onBackStackChanged()
-            {
+            public void onBackStackChanged() {
                 List<Fragment> fragments = manager.getFragments();
                 Fragment currentFragment = fragments.get(fragments.size() - 1);
                 String tag = currentFragment.getTag();
 
                 //Log.d("MAIN-ACTIVITY", "Backstack changed -->" + tag);
 
-                if (tag == null || !tag.equals(MapFragment.class.getSimpleName()))
-                {
+                if (tag == null || !tag.equals(MapFragment.class.getSimpleName())) {
                     //Log.d("MAIN-ACTIVITY", "Switching to list");
-                    if (tag != null && tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID()))
-                    {
+                    if (tag != null && tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID())) {
                         findViewById(R.id.logoutButton).setVisibility(View.VISIBLE);
-                    }
-                    else
-                    {
+                    } else {
                         findViewById(R.id.logoutButton).setVisibility(View.GONE);
                     }
 
                     currentButtonMode = ButtonMode.MAP;
-                }
-                else
-                {
+                } else {
                     //Log.d("MAIN-ACTIVITY", "Switching to map");
                     currentButtonMode = ButtonMode.LIST;
                 }
@@ -101,8 +89,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * Initialise the buttons in the layout
      */
-    private void initialize()
-    {
+    private void initialize() {
         currentButtonMode = ButtonMode.MAP;
 
         // The root View to add fragments to
@@ -156,8 +143,7 @@ public class MainActivity extends FragmentActivity {
              * @param view
              */
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
                 dialog.setTitle("Logout");
                 dialog.setMessage("Are you sure you want to logout?");
@@ -215,12 +201,12 @@ public class MainActivity extends FragmentActivity {
         updateViewButton();
     }
 
-
     /**
      * Performs a replace operation to show the given Fragment on the screen. If the Fragment that is
      * currently shown has the same tag as the provided tag, then it does not perform the replacement
+     *
      * @param fragment The fragment to show in the activity
-     * @param tag The tag to associate with that fragment
+     * @param tag      The tag to associate with that fragment
      */
     private void setMainFragment(Fragment fragment, String tag) {
         FragmentManager manager = getSupportFragmentManager();
@@ -230,8 +216,7 @@ public class MainActivity extends FragmentActivity {
         // Check to see if the given Fragment is already shown (by tag), if it is don't replace it
         if (entryCount != 0 &&
                 tag != null &&
-                tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName()))
-        {
+                tag.equals(manager.getBackStackEntryAt(entryCount - 1).getName())) {
             return;
         }
 
@@ -243,11 +228,11 @@ public class MainActivity extends FragmentActivity {
 
     /**
      * Finds a fragment on the backstack with a given tag
+     *
      * @param tag The tag to search for
      * @return The Fragment matching tag, or null if there is none
      */
-    private Fragment getFragmentInstance(String tag)
-    {
+    private Fragment getFragmentInstance(String tag) {
         FragmentManager manager = getSupportFragmentManager();
         Fragment instance = manager.findFragmentByTag(tag);
 
@@ -258,15 +243,13 @@ public class MainActivity extends FragmentActivity {
      * Set the currently shown Fragment to be MoodListFragment showing the users own moods, this is
      * the default behaviour of MoodListFragment
      */
-    public void setListFragment()
-    {
+    public void setListFragment() {
         // Use the class name as the tag
         String tag = MoodListFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
         // If the Fragment hasn't previously been created then create a new one
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS);
         }
 
@@ -276,15 +259,13 @@ public class MainActivity extends FragmentActivity {
     /**
      * Set the currently shown Fragment to be MapFragment
      */
-    public void setMapFragment()
-    {
+    public void setMapFragment() {
         // Use the class name as the tag
         String tag = MapFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
         // If the Fragment hasn't previously been created then create a new one
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = MapFragment.newInstance(getApplicationContext());
         }
 
@@ -295,29 +276,25 @@ public class MainActivity extends FragmentActivity {
      * Set the currently shown fragment to be a ProfileFragment displaying the signed-in User's own
      * profile
      */
-    public void setProfileFragment()
-    {
+    public void setProfileFragment() {
         setProfileFragment(null);
     }
 
     /**
      * Set the currently shown fragment to be a ProfileFragment
+     *
      * @param uid The UID of the User whose profile you want to show. If uid is null, then it displays
      *            the signed-in User's own profile
      */
-    public void setProfileFragment(String uid)
-    {
+    public void setProfileFragment(String uid) {
         // Tag begins with the class name
         String tag = ProfileFragment.class.getSimpleName();
 
         // Append the UID to the tag. This way a single instance of ProfileFragment will be created for
         // each UID, but the instance can still be reused
-        if (uid != null)
-        {
+        if (uid != null) {
             tag += uid;
-        }
-        else
-        {
+        } else {
             tag += UserManager.getCurrentUserUID();
         }
 
@@ -325,15 +302,11 @@ public class MainActivity extends FragmentActivity {
         Fragment instance = getFragmentInstance(tag);
 
         // If a ProfileFragment associated with tag has not already been created then create a new one
-        if (instance == null)
-        {
-            if (uid == null)
-            {
+        if (instance == null) {
+            if (uid == null) {
                 // For the signed-in User, create a ProfileFragment for own profile
                 instance = ProfileFragment.newInstance();
-            }
-            else
-            {
+            } else {
                 // For a different User, create a ProfileFragment for that user
                 instance = ProfileFragment.newInstance(uid);
             }
@@ -345,19 +318,17 @@ public class MainActivity extends FragmentActivity {
     /**
      * Open a new EditFragment in add-mood mode
      */
-    public void setEditFragment()
-    {
+    public void setEditFragment() {
         setEditFragment(null, -1);
     }
 
-
     /**
      * Open a new EditFragment
+     *
      * @param event The event to edit or null. If null, then it will open the fragment in add-mode
      * @param index The index that the event has in its parent User object
      */
-    public void setEditFragment(MoodEvent event, int index)
-    {
+    public void setEditFragment(MoodEvent event, int index) {
         Fragment instance = null;
 
         if (event == null) {
@@ -375,14 +346,12 @@ public class MainActivity extends FragmentActivity {
     /**
      * Set the current fragment to a FollowingFragment
      */
-    public void setFollowingFragment()
-    {
+    public void setFollowingFragment() {
         // Use class name as the tag
         String tag = FollowingFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = FollowingFragment.newInstance();
         }
 
@@ -392,14 +361,12 @@ public class MainActivity extends FragmentActivity {
     /**
      * Set the current fragment to a SearchFragment
      */
-    public void setSearchFragment()
-    {
+    public void setSearchFragment() {
         // Use class name as tag
         String tag = SearchFragment.class.getSimpleName();
         Fragment instance = getFragmentInstance(tag);
 
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = SearchFragment.newInstance();
         }
 
@@ -408,6 +375,7 @@ public class MainActivity extends FragmentActivity {
 
     /**
      * Open a DialogFragment in MainActivty
+     *
      * @param fragment The DialogFragment to open
      */
     public void openDialogFragment(DialogFragment fragment) {
@@ -441,7 +409,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * When the back-button is pressed, pop the FragmentManager's backstack to show the previous
      * Fragment. If the previous Fragment's tag is null, continue popping the backstack until it isn't.
-     *
+     * <p>
      * Doesn't pop the backstack if there is only one Fragment (so that there is always one Fragment shown
      * in MainActivity. This should be whichever Fragment was first added to the activity
      */
@@ -449,14 +417,12 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
 
-        if (manager.getBackStackEntryCount() > 1)
-        {
+        if (manager.getBackStackEntryCount() > 1) {
             manager.popBackStackImmediate();
         }
 
         while (manager.getBackStackEntryCount() > 1 &&
-                manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null)
-        {
+                manager.getBackStackEntryAt(manager.getBackStackEntryCount() - 1).getName() == null) {
             manager.popBackStackImmediate();
         }
     }
@@ -465,11 +431,12 @@ public class MainActivity extends FragmentActivity {
      * Gives access to the most recently set alert dialog. Can be used to access the
      * logout dialog in tests and programmatically.
      *
-     * @return
-     *      The most recent alert dialog
+     * @return The most recent alert dialog
      */
     public AlertDialog getAlertDialog() {
         return alertDialog;
     }
+
+    private enum ButtonMode {LIST, MAP}
 }
 

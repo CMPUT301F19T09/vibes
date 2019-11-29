@@ -27,22 +27,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.function.Consumer;
 
 public class LoginActivity extends AppCompatActivity {
+    final private String TAG = "authentication";
     private TextView emailTextView;
     private TextView passwordTextView;
     private Button loginButton;
     private Button signUpButton;
-
     // Components for retrieving forgot password.
     private Button forgotPassword;
     private String m_Text;
     private Context context;
-
     private FirebaseAuth mAuth;
-
-    final private String TAG = "authentication";
 
     /**
      * Initialize login activity
+     *
      * @param savedInstanceState
      */
     @Override
@@ -121,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                                    .setNegativeButton(android.R.string.no, null)
 //                                                    .setIcon(android.R.drawable.ic_dialog_alert)
                                                     .show();
-                                        }else{
+                                        } else {
                                             Log.d("forgotPassword", "Retrieving password failed.");
                                         }
                                     }
@@ -169,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Authenticate user with email and password
+     *
      * @param email
      * @param password
      */

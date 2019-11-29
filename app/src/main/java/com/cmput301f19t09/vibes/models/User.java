@@ -31,6 +31,17 @@ import java.util.Observable;
  * Snapshot Listeners from being produced for an individual user between fragments.
  */
 public class User extends Observable implements Serializable {
+    /**
+     * A comparator that is used for sort a list of users by firstName+lastName
+     */
+    public static Comparator<User> sortByName = (user1, user2) -> (user1.getFirstName() +
+            user1.getLastName())
+            .compareTo(user2.getFirstName() + user2.getLastName());
+    private transient static CollectionReference collectionReference;
+    private transient static DocumentReference documentReference;
+    private transient static FirebaseStorage storage;
+    private transient static StorageReference storageReference;
+    private static boolean connectionStarted;
     private String uid;
     private String userName;
     private String firstName;
@@ -39,38 +50,24 @@ public class User extends Observable implements Serializable {
     private String picturePath;
     private List<String> followingList;
     private List<String> requestedList;
-
     private boolean loadedData;
-
     // Objects are not serializable - will crash on switching app if not omitted from serialization
     // Ref https://stackoverflow.com/questions/14582440/how-to-exclude-field-from-class-serialization-in-runtime
     private transient FirebaseFirestore db;
-    private transient static CollectionReference collectionReference ;
-    private transient static DocumentReference documentReference;
-    private transient static FirebaseStorage storage;
-    private transient static StorageReference storageReference;
     private transient Uri profileURL;
     private transient List<MoodEvent> moodEvents;
     private transient List<Map> moods;
 
-    private static boolean connectionStarted;
-
-    /**
-     * Callback listener when data from the database is retrieved
-     */
-    public interface FirebaseCallback {
-        void onCallback(User user);
-    }
-
     /**
      * Constructs the user object, sets the UID to the passed in UID, and checks if the connection
      * was started before to prevent multiple connections
+     *
      * @param uid UID of the user being constructed
      */
     public User(String uid) {
         this.uid = uid;
         this.loadedData = false;
-        if(!connectionStarted) { // Makes sure these definitions are called only once.
+        if (!connectionStarted) { // Makes sure these definitions are called only once.
             connectionStarted = true;
 
             db = FirebaseFirestore.getInstance();
@@ -89,6 +86,7 @@ public class User extends Observable implements Serializable {
 
     /**
      * SnapshotListener that will allow real-time updates
+     *
      * @return The listener for UserManager
      */
     ListenerRegistration getSnapshotListener() {
@@ -98,8 +96,7 @@ public class User extends Observable implements Serializable {
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         return documentReference.addSnapshotListener((documentSnapshot, e) -> {
 
-            if (documentSnapshot == null)
-            {
+            if (documentSnapshot == null) {
                 return;
             }
 
@@ -130,11 +127,11 @@ public class User extends Observable implements Serializable {
                             setChanged();
                             notifyObservers();
                         }).addOnFailureListener(e1 -> {
-                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
-                                    + R.drawable.default_profile_picture);
-                            setChanged();
-                            notifyObservers();
-                        });
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
+                    setChanged();
+                    notifyObservers();
+                });
             }
         });
     }
@@ -142,10 +139,11 @@ public class User extends Observable implements Serializable {
     /**
      * Reads the data from the database and calls back to a location once information retrieved from
      * the database due to asynchronous calls
+     *
      * @param firebaseCallback The callback listener once information is retrieved
      */
     void readData(final FirebaseCallback firebaseCallback) {
-        if(uid == null) {
+        if (uid == null) {
             throw new RuntimeException("[UserClass]: Username isn't defined for readData()");
         }
 
@@ -180,13 +178,13 @@ public class User extends Observable implements Serializable {
                             setChanged();
                             notifyObservers();
                         }).addOnFailureListener(e -> {
-                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
-                                    + R.drawable.default_profile_picture);
-                            firebaseCallback.onCallback(User.this);
-                            loadedData = true;
-                            setChanged();
-                            notifyObservers();
-                        });
+                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                            + R.drawable.default_profile_picture);
+                    firebaseCallback.onCallback(User.this);
+                    loadedData = true;
+                    setChanged();
+                    notifyObservers();
+                });
             }
         }).addOnFailureListener(e -> {
         });
@@ -194,6 +192,7 @@ public class User extends Observable implements Serializable {
 
     /**
      * Parse the mapped mood events to MoodEvent objects
+     *
      * @return List of MoodEvent objects
      */
     private List<MoodEvent> parseToMoodEvent() {
@@ -271,15 +270,14 @@ public class User extends Observable implements Serializable {
     /**
      * Flag used to verify user's data is loaded upon retrieving data from
      * readData or getSnapshotListener method
+     *
      * @return True or false if the user's information is loaded or not respectively
      */
-    public boolean isLoaded()
-    {
+    public boolean isLoaded() {
         return loadedData;
     }
 
-    public String getUid()
-    {
+    public String getUid() {
         return uid;
     }
 
@@ -287,12 +285,24 @@ public class User extends Observable implements Serializable {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
     }
 
-    public String getUserName() { ;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUserName() {
         return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPicturePath() {
@@ -305,6 +315,10 @@ public class User extends Observable implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public List<String> getFollowingList() {
@@ -321,6 +335,7 @@ public class User extends Observable implements Serializable {
 
     /**
      * Gets the most recent mood event of the user
+     *
      * @return The most recent MoodEvent object
      */
     public MoodEvent getMostRecentMoodEvent() {
@@ -341,24 +356,9 @@ public class User extends Observable implements Serializable {
         }
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     /**
      * Adds a request to the user's requested_list array in the database
+     *
      * @param otherUserUID The UID of the user to add to your requested_list array
      */
     public void addRequest(String otherUserUID) {
@@ -367,11 +367,13 @@ public class User extends Observable implements Serializable {
                 .addOnSuccessListener(aVoid -> {
                     setChanged();
                     notifyObservers();
-                }).addOnFailureListener(e -> {});
+                }).addOnFailureListener(e -> {
+        });
     }
 
     /**
      * Adds the user's UID to your following_list array in the database
+     *
      * @param otherUserUID The UID of the user to add to your following_list array
      */
     private void addFollowing(String otherUserUID) {
@@ -381,12 +383,14 @@ public class User extends Observable implements Serializable {
                     .addOnSuccessListener(aVoid -> {
                         setChanged();
                         notifyObservers();
-                    }).addOnFailureListener(e -> {});
+                    }).addOnFailureListener(e -> {
+            });
         }
     }
 
     /**
      * Removes the user's UID from your following_list array in the database
+     *
      * @param otherUserUID The UID of the user to remove from your following_list array
      */
     public void removeFollowing(String otherUserUID) {
@@ -396,13 +400,15 @@ public class User extends Observable implements Serializable {
                     .addOnSuccessListener(aVoid -> {
                         setChanged();
                         notifyObservers();
-                    }).addOnFailureListener(e -> {});
+                    }).addOnFailureListener(e -> {
+            });
         }
     }
 
     /**
      * Removes the UID from your requested_list and adds to the other user's following_list in the
      * database
+     *
      * @param otherUserUID The UID of the user you are accepting
      */
     public void acceptRequest(String otherUserUID) {
@@ -416,6 +422,7 @@ public class User extends Observable implements Serializable {
     /**
      * Removes the UID from your requested_list and does not add to the other user's following_list
      * in the database
+     *
      * @param otherUserUID The UID of the user to remove request from requested_list
      */
     public void removeRequest(String otherUserUID) {
@@ -426,12 +433,14 @@ public class User extends Observable implements Serializable {
                         requestedList.remove(otherUserUID);
                         setChanged();
                         notifyObservers();
-                    }).addOnFailureListener(e -> {});
+                    }).addOnFailureListener(e -> {
+            });
         }
     }
 
     /**
      * Adds a mood event to the database. Puts location and photo data if exists
+     *
      * @param moodEvent The mood event to add to the database
      */
     public void addMood(MoodEvent moodEvent) {
@@ -456,20 +465,20 @@ public class User extends Observable implements Serializable {
             }
             if (moodEvent.getPhoto() != null) {
                 // Get's the hashcode of the photo and stores in the database before updating document
-                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
+                String photoPath = "reason_photos/" + moodEvent.getPhoto().hashCode() + ".jpeg";
                 mood.put("photo", photoPath);
                 storageReference = storage.getReference(photoPath);
                 storageReference.putFile(moodEvent.getPhoto())
                         .addOnSuccessListener(taskSnapshot -> {
-                    documentReference = collectionReference.document(uid);
-                    documentReference.update("moods", FieldValue.arrayUnion(mood))
-                            .addOnSuccessListener(aVoid -> {
-                                setChanged();
-                                notifyObservers();
+                            documentReference = collectionReference.document(uid);
+                            documentReference.update("moods", FieldValue.arrayUnion(mood))
+                                    .addOnSuccessListener(aVoid -> {
+                                        setChanged();
+                                        notifyObservers();
+                                    }).addOnFailureListener(e -> {
                             }).addOnFailureListener(e -> {
-                    }).addOnFailureListener(e -> {
-                    });
-                });
+                            });
+                        });
             } else {
                 mood.put("photo", null);
                 documentReference = collectionReference.document(uid);
@@ -486,8 +495,9 @@ public class User extends Observable implements Serializable {
     /**
      * Takes a MoodEvent and replace it in the database at the given index location. Checks if the
      * photo is a local photo or a Firebase photo and compare the changes before updating
+     *
      * @param moodEvent The mood event to replace in the database
-     * @param index The location in the array in the database
+     * @param index     The location in the array in the database
      */
     public void editMood(MoodEvent moodEvent, Integer index) {
         if (index <= moods.size() - 1) {
@@ -522,19 +532,21 @@ public class User extends Observable implements Serializable {
                 moods.set(index, mood);
                 documentReference = collectionReference.document(uid);
                 documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
-                }).addOnFailureListener(e -> { });
+                }).addOnFailureListener(e -> {
+                });
             } else if (moodEvent.getPhoto() != null) {
                 // Only updates Firebase Storage if photo is changed
-                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
+                String photoPath = "reason_photos/" + moodEvent.getPhoto().hashCode() + ".jpeg";
                 mood.put("photo", photoPath);
                 moods.set(index, mood);
                 storageReference = storage.getReference(photoPath);
                 storageReference.putFile(moodEvent.getPhoto())
                         .addOnSuccessListener(taskSnapshot -> {
-                    documentReference = collectionReference.document(uid);
-                    documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
-                    }).addOnFailureListener(e -> { });
-                });
+                            documentReference = collectionReference.document(uid);
+                            documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
+                            }).addOnFailureListener(e -> {
+                            });
+                        });
             } else {
                 // Does not set storage reference or photo field if photo is empty
                 mood.put("photo", null);
@@ -542,13 +554,15 @@ public class User extends Observable implements Serializable {
                 documentReference = collectionReference.document(uid);
                 documentReference.update("moods", moods)
                         .addOnSuccessListener(aVoid -> {
-                        }).addOnFailureListener(e -> { });
+                        }).addOnFailureListener(e -> {
+                });
             }
         }
     }
 
     /**
      * Removes a mood event from the database by index number
+     *
      * @param index Array index to remove MoodEvent
      */
     public void deleteMood(Integer index) {
@@ -559,12 +573,14 @@ public class User extends Observable implements Serializable {
                     .addOnSuccessListener(aVoid -> {
                         setChanged();
                         notifyObservers();
-                    }).addOnFailureListener(e -> {});
+                    }).addOnFailureListener(e -> {
+            });
         }
     }
 
     /**
      * Changes the user's profile picture from local storage and stores in Firebase by hashcode
+     *
      * @param uri The uri of the selected photo to change to
      */
     public void changeProfilePicture(Uri uri) {
@@ -579,15 +595,17 @@ public class User extends Observable implements Serializable {
                                 .addOnSuccessListener(aVoid -> {
                                     setChanged();
                                     notifyObservers();
-                                }).addOnFailureListener(e -> {});
-                    }).addOnFailureListener(e -> {});
+                                }).addOnFailureListener(e -> {
+                        });
+                    }).addOnFailureListener(e -> {
+            });
         }
     }
 
     /**
-     * A comparator that is used for sort a list of users by firstName+lastName
+     * Callback listener when data from the database is retrieved
      */
-    public static Comparator<User> sortByName = (user1, user2) -> (user1.getFirstName() +
-            user1.getLastName())
-            .compareTo(user2.getFirstName() + user2.getLastName());
+    public interface FirebaseCallback {
+        void onCallback(User user);
+    }
 }

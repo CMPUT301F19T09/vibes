@@ -1,7 +1,6 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
@@ -35,9 +36,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
      * request ListView in the FollowingFragment based on the mode passed in.
      *
      * @param context : Get's the context to associate with the adapter
-     * @param mode : Gets the mode to display - either "following" or "request"
+     * @param mode    : Gets the mode to display - either "following" or "request"
      */
-    FollowingFragmentAdapter(Context context, String mode){
+    FollowingFragmentAdapter(Context context, String mode) {
         super(context, 0);
         this.userList = new ArrayList<>();
 
@@ -53,11 +54,10 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
      * full name, username, and profile picture. Displays the accept and deny request button only
      * if the layout is the requested ListView
      *
-     * @param position Position to set in the list
+     * @param position    Position to set in the list
      * @param convertView : Gets the view of the following fragment
-     * @param parent : Gets the parent ViewGroup
+     * @param parent      : Gets the parent ViewGroup
      * @return The view of the single item
-     *
      */
     @NonNull
     @Override
@@ -130,6 +130,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
 
     /**
      * Refreshes the adapter with the updated list of requested or following users
+     *
      * @param uidList The List of users' UIDs to add to the adapter
      */
     void refreshData(List<String> uidList) {
@@ -161,6 +162,7 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     /**
      * Sets the fragment from the following fragment to the profile fragment of the user you would
      * like to view
+     *
      * @param uid The UID of the user to access their profile
      */
     private void goToProfile(String uid) {

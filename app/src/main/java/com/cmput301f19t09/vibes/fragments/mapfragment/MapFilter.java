@@ -25,16 +25,42 @@ public class MapFilter extends Fragment {
      */
     public static final int SHOW_MINE = 0;
     public static final int SHOW_EVERYONE = 1;
-
+    RadioGroup group;
+    RadioButton youButton;
+    RadioButton everyoneButton;
     /**
      * selectedRadioBox is the current status of the MapFilter.
      * It can have two values SHOW_MINE, or SHOW_EVERYONE
      */
     private int selectedRadioBox;
 
-    RadioGroup group;
-    RadioButton youButton ;
-    RadioButton everyoneButton ;
+    /**
+     * This is a static function that returns a MapFilter.
+     * The filter parameter is used as an On-Start value.
+     * There is no function for updating the MapFilter.
+     *
+     * @param filter This is a MapFragment.Filter object. It tells the MapFilter to start with Following/You filter.
+     * @return
+     */
+    public static MapFilter getInstance(MapFragment.Filter filter) {
+        // The conditioning below checks if the selected filter exists.
+        // Otherwise, it throws a RuntimeException.
+        int mode;
+        if (filter == MapFragment.Filter.SHOW_EVERYONE) {
+            mode = SHOW_EVERYONE;
+        } else if (filter == MapFragment.Filter.SHOW_MINE) {
+            mode = SHOW_MINE;
+        } else {
+            throw new RuntimeException("Error occured in getting instance of mapFilter");
+        }
+
+        // Sending the verified filter into the mapfilter in a bundle.
+        Bundle filterBundle = new Bundle();
+        filterBundle.putInt("SELECTED", mode);
+        MapFilter filterFragment = new MapFilter();
+        filterFragment.setArguments(filterBundle);
+        return filterFragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,34 +79,6 @@ public class MapFilter extends Fragment {
         group.check(youButton.getId());
     }
 
-    /**
-     * This is a static function that returns a MapFilter.
-     * The filter parameter is used as an On-Start value.
-     * There is no function for updating the MapFilter.
-     * @param filter
-     * This is a MapFragment.Filter object. It tells the MapFilter to start with Following/You filter.
-     * @return
-     */
-    public static MapFilter getInstance(MapFragment.Filter filter){
-        // The conditioning below checks if the selected filter exists.
-        // Otherwise, it throws a RuntimeException.
-        int mode;
-        if(filter == MapFragment.Filter.SHOW_EVERYONE) {
-            mode = SHOW_EVERYONE;
-        }else if(filter == MapFragment.Filter.SHOW_MINE){
-            mode = SHOW_MINE;
-        }else{
-            throw new RuntimeException("Error occured in getting instance of mapFilter");
-        }
-
-        // Sending the verified filter into the mapfilter in a bundle.
-        Bundle filterBundle = new Bundle();
-        filterBundle.putInt("SELECTED", mode);
-        MapFilter filterFragment = new MapFilter();
-        filterFragment.setArguments(filterBundle);
-        return filterFragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,16 +95,15 @@ public class MapFilter extends Fragment {
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == youButton.getId())
-                {
-                    ((MapFragment)getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE, null);
+                if (checkedId == youButton.getId()) {
+                    ((MapFragment) getParentFragment()).switchFilter(MapFragment.Filter.SHOW_MINE, null);
                     everyoneButton.setChecked(false);
-                }
-                else {
+                } else {
                     ((MapFragment) getParentFragment()).switchFilter(MapFragment.Filter.SHOW_EVERYONE, null);
                     youButton.setChecked(false);
                 }
-        }});
+            }
+        });
 
         // Inflate the layout for this fragment
         return v;

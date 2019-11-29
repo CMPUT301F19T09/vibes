@@ -2,8 +2,6 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,31 +17,27 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.EmotionalState;
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
-import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 /**
  * This is an abstract class responsible for managing a list of MoodEvents. The specifics of which MoodEvents
  * to load, and how to display them are delegated to the subclass
  */
-public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
-{
+public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent> {
     protected List<MoodEvent> data; // The list of MoodEvents to be shown
     protected String filter;        // A specific emotion to filter, or null to show all
     private Context context;        // The application context
 
     /**
      * Constructor for a MoodListAdapter
+     *
      * @param context The application context that the adapter is created in
      */
-    public MoodListAdapter(Context context)
-    {
+    public MoodListAdapter(Context context) {
         super(context, 0);
 
         this.context = context;
@@ -52,6 +46,7 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
 
     /**
      * This inflates a View representing a given MoodEvent
+     *
      * @param position
      * @param convertView
      * @param parent
@@ -59,21 +54,18 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
      */
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
-    {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View item = convertView;
 
         // If the View cannot be reused from another event, create a new one
-        if (item == null)
-        {
+        if (item == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             item = inflater.inflate(R.layout.mood_list_item, null);
         }
 
         MoodEvent event = data.get(position);
 
-        if (event == null)
-        {
+        if (event == null) {
             return item;
         }
 
@@ -113,41 +105,31 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
     /**
      * Creates a String representing the time between the given LocalDateTime and now. For example:
      * "5 s", "12 h", or "100 d" for seconds, hours, or days
+     *
      * @param dateTime The LocalDateTime that your are comparing against
      * @return A formatted string representing the time since dateTime
      */
-    private String getRelativeTimeString(LocalDateTime dateTime)
-    {
+    private String getRelativeTimeString(LocalDateTime dateTime) {
         // Get the time elapsed since dateTime
         Duration timeSincePost = Duration.between(dateTime, LocalDateTime.now());
 
         String result;
 
         // If dateTime is after now, return this. Due to LocalDateTime handling timezones for us, this should not happen
-        if (timeSincePost.isNegative())
-        {
+        if (timeSincePost.isNegative()) {
             return "***FUTURE***";
         }
 
         // Determine the formatting of the result
-        if (timeSincePost.getSeconds() < 60)
-        {
+        if (timeSincePost.getSeconds() < 60) {
             result = String.format("%2d s", timeSincePost.getSeconds());
-        }
-        else if (timeSincePost.toMinutes() < 60)
-        {
+        } else if (timeSincePost.toMinutes() < 60) {
             result = String.format("%2d m", timeSincePost.toMinutes());
-        }
-        else if (timeSincePost.toHours() < 24)
-        {
+        } else if (timeSincePost.toHours() < 24) {
             result = String.format("%2d h", timeSincePost.toHours());
-        }
-        else if (timeSincePost.toDays() < 365)
-        {
+        } else if (timeSincePost.toDays() < 365) {
             result = String.format("%d d", timeSincePost.toDays());
-        }
-        else
-        {
+        } else {
             result = String.format("%d y", timeSincePost.toDays() / 365);
         }
 
@@ -157,12 +139,14 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
     /**
      * This can be used if the subclass needs to be aware of its parent's lifecycle
      */
-    public void resume() { }
+    public void resume() {
+    }
 
     /**
      * This can be used if the subclass needs to be aware of its parent's lifecycle
      */
-    public void pause() { }
+    public void pause() {
+    }
 
     /**
      * This is where logic for populating the data set should go
@@ -171,10 +155,10 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
 
     /**
      * Set the filter to a certain EmotionalState
+     *
      * @param filter The key of the EmotionalState to filter for
      */
-    public void setFilter(String filter)
-    {
+    public void setFilter(String filter) {
         this.filter = filter;
         refreshData();
     }

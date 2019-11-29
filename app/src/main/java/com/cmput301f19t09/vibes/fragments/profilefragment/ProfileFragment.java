@@ -4,13 +4,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
@@ -23,17 +27,12 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 /**
  * ProfileFragment contains information about the the current user logged in or information of
  * other users being viewed based on whether you're following the other user or not. Calls a child
  * fragment to view user's own mood history if on own user profile but calls a child fragment to
  * view other user's most recent mood event if following
- *
+ * <p>
  * Following other users not implemented yet
  */
 public class ProfileFragment extends Fragment implements Observer {
@@ -45,10 +44,10 @@ public class ProfileFragment extends Fragment implements Observer {
     private User user;
     private String otherUserUID;
     private Fragment childFragment;
-    private enum Mode {OWN, FOLLOWING, REQUESTED, NONE}
 
     /**
      * Creates a new instance of the profile fragment for the current user
+     *
      * @return ProfileFragment of the current user
      */
     public static ProfileFragment newInstance() {
@@ -57,6 +56,7 @@ public class ProfileFragment extends Fragment implements Observer {
 
     /**
      * Creates a new instance of the profile fragment for the user being viewed
+     *
      * @param otherUserUID The UID of the other user you want to view
      * @return ProfileFragment of the user you want to view
      */
@@ -72,6 +72,7 @@ public class ProfileFragment extends Fragment implements Observer {
      * Gets bundled arguments when creating the view and creates a child fragment based on which
      * user you are observing. Creates other profile if not yours and creates your own profile
      * if yours.
+     *
      * @param savedInstanceState Saved instance state of the MainActivity
      */
     @Override
@@ -119,8 +120,9 @@ public class ProfileFragment extends Fragment implements Observer {
     /**
      * Creates the view of the ProfileFragment and loading specific fields with values based on
      * who's profile is being viewed
-     * @param inflater Makes the view of the fragment from the XML layout file
-     * @param container Parent container to store the fragment in
+     *
+     * @param inflater           Makes the view of the fragment from the XML layout file
+     * @param container          Parent container to store the fragment in
      * @param savedInstanceState Saved instance state of the MainActivity
      * @return The created ProfileFragment view
      */
@@ -140,7 +142,8 @@ public class ProfileFragment extends Fragment implements Observer {
 
     /**
      * Shows information of whichever user you're view when the view is created
-     * @param view Gets the current view of the fragment
+     *
+     * @param view               Gets the current view of the fragment
      * @param savedInstanceState Saved instance state of the MainActivity
      */
     @Override
@@ -157,14 +160,15 @@ public class ProfileFragment extends Fragment implements Observer {
 
     /**
      * Updates the fragment with new values if there was an update from the database.
-     * @param user The user object being observed for changes
+     *
+     * @param user   The user object being observed for changes
      * @param object Any object being handed in (will always be null)
      */
     @Override
     public void update(Observable user, Object object) {
-        if (((User)user).isLoaded() &&
+        if (((User) user).isLoaded() &&
                 (otherUser == null || (otherUser != null &&
-                        ((User)user).getUid().equals(otherUserUID)))) {
+                        ((User) user).getUid().equals(otherUserUID)))) {
             setInfo((User) user);
         }
 
@@ -172,7 +176,7 @@ public class ProfileFragment extends Fragment implements Observer {
             if (otherUser.getMostRecentMoodEvent() == null) {
                 hideChild();
             } else {
-                ((MoodDetailsFragment)childFragment)
+                ((MoodDetailsFragment) childFragment)
                         .setMoodEvent(otherUser.getMostRecentMoodEvent());
             }
         }
@@ -183,6 +187,7 @@ public class ProfileFragment extends Fragment implements Observer {
     /**
      * Updates the button, show or hide the child fragment, and set listeners based on the current
      * mode
+     *
      * @param mode Mode to set views and listeners
      */
     private void updateButton(Mode mode) {
@@ -226,14 +231,15 @@ public class ProfileFragment extends Fragment implements Observer {
 
     /**
      * Updates the fields with user information
+     *
      * @param user The object to get the values from
      */
     private void setInfo(final User user) {
-            fullNameTextView.setText(String.format("%s %s",
-                    user.getFirstName(), user.getLastName()));
-            userNameTextView.setText(user.getUserName());
-            Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
-            profilePictureImageView.setClipToOutline(true);
+        fullNameTextView.setText(String.format("%s %s",
+                user.getFirstName(), user.getLastName()));
+        userNameTextView.setText(user.getUserName());
+        Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
+        profilePictureImageView.setClipToOutline(true);
     }
 
     /**
@@ -245,7 +251,7 @@ public class ProfileFragment extends Fragment implements Observer {
         super.onResume();
         if (otherUser != null) {
             UserManager.addUserObserver(otherUserUID, this);
-            ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
+            ((MoodDetailsFragment) childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
         }
         UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
 
@@ -278,9 +284,10 @@ public class ProfileFragment extends Fragment implements Observer {
 
     /**
      * Gets the data returned when returned back to the profile fragment
+     *
      * @param requestCode The code of the file explorer
-     * @param resultCode Result code from the file explorer
-     * @param data The new photo received from the file explorer
+     * @param resultCode  Result code from the file explorer
+     * @param data        The new photo received from the file explorer
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -339,4 +346,6 @@ public class ProfileFragment extends Fragment implements Observer {
             updateButton(Mode.NONE);
         }
     }
+
+    private enum Mode {OWN, FOLLOWING, REQUESTED, NONE}
 }

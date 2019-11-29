@@ -10,6 +10,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.UserManager;
@@ -21,10 +25,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 /**
  * Fragment to implement searching capabilities. Searching can only be done by order sensitive,
@@ -38,6 +38,7 @@ public class SearchFragment extends Fragment {
 
     /**
      * Creates a instance of the SearchFragment
+     *
      * @return The new SearchFragment
      */
     public static SearchFragment newInstance() {
@@ -46,6 +47,7 @@ public class SearchFragment extends Fragment {
 
     /**
      * Connects with the database when created
+     *
      * @param savedInstanceState The saved instance of the MainActivity
      */
     @Override
@@ -58,8 +60,9 @@ public class SearchFragment extends Fragment {
 
     /**
      * Gets views and set adapter when creating the search fragment
-     * @param inflater Makes the view of the fragment from the XML layout file
-     * @param container Parent container to store the fragment in
+     *
+     * @param inflater           Makes the view of the fragment from the XML layout file
+     * @param container          Parent container to store the fragment in
      * @param savedInstanceState Saved instance state of the MainActivity
      * @return he created ProfileFragment view
      */
@@ -101,21 +104,21 @@ public class SearchFragment extends Fragment {
                             .startAt(searchField.getText().toString())
                             .endAt(searchField.getText().toString() + "\uf8ff")
                             .get().addOnCompleteListener(task -> {
-                                QuerySnapshot documentSnapshots = task.getResult();
+                        QuerySnapshot documentSnapshots = task.getResult();
 
-                                if (searchField.getText().length() == 0) {
-                                    return;
-                                }
+                        if (searchField.getText().length() == 0) {
+                            return;
+                        }
 
-                                userList.clear();
-                                adapter.clear();
-                                assert documentSnapshots != null;
-                                for (QueryDocumentSnapshot document : documentSnapshots) {
-                                    userList.add(document.getId());
-                                }
+                        userList.clear();
+                        adapter.clear();
+                        assert documentSnapshots != null;
+                        for (QueryDocumentSnapshot document : documentSnapshots) {
+                            userList.add(document.getId());
+                        }
 
-                                adapter.refreshData(userList);
-                            });
+                        adapter.refreshData(userList);
+                    });
                 }
             }
 

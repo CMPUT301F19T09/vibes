@@ -8,6 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.User;
@@ -18,9 +21,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * SearchListAdapter is an ArrayAdapter used in the search fragment to display user information
  */
@@ -30,6 +30,7 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
     /**
      * Constructs the adapter
+     *
      * @param context Get's the context associated with the adapter
      */
     SearchListAdapter(Context context) {
@@ -40,9 +41,10 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
     /**
      * Constructs the view of a single item. Gets user's full name, username, and profile picture
-     * @param position Position to set in the list
+     *
+     * @param position    Position to set in the list
      * @param convertView Gets the view of the search fragment
-     * @param parent Gets the parent ViewGroup
+     * @param parent      Gets the parent ViewGroup
      * @return The view of the single item
      */
     @NonNull
@@ -82,19 +84,18 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
     /**
      * Refreshes the adapter with the updated list of the search results
+     *
      * @param userList The updated search result list
      */
     void refreshData(List<String> userList) {
         data.clear();
         clear();
 
-        for (String uid : userList)
-        {
+        for (String uid : userList) {
             UserManager.removeUserObservers(uid);
         }
 
-        for (String uid : userList)
-        {
+        for (String uid : userList) {
             UserManager.addUserObserver(uid, new Observer() {
                 @Override
                 public void update(Observable observable, Object o) {
@@ -108,8 +109,9 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
     /**
      * Clears the list on update
+     *
      * @param observable Object that can notify observers
-     * @param o Objects being passed in
+     * @param o          Objects being passed in
      */
     @Override
     public void update(Observable observable, Object o) {
