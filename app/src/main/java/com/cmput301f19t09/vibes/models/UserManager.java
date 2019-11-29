@@ -106,11 +106,6 @@ public class UserManager
             User user = p.second;
 
             user.deleteObserver(observer);
-
-            if (user.countObservers() == 0)
-            {
-                unregisterUser(user_id);
-            }
         }
     }
 
