@@ -97,6 +97,12 @@ public class User extends Observable implements Serializable {
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         return documentReference.addSnapshotListener((documentSnapshot, e) -> {
+
+            if (documentSnapshot == null)
+            {
+                return;
+            }
+
             userName = documentSnapshot.getString("username");
             firstName = documentSnapshot.getString("first");
             lastName = documentSnapshot.getString("last");
