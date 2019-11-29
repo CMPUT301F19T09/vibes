@@ -79,7 +79,7 @@ public class UserMangerTests {
         assertEquals("?tester", user.getLastName());
         assertEquals("?intenttestuser", user.getUserName());
         assertEquals("?intenttest@gmail.com", user.getEmail());
-        assertEquals("image/?intenttestuser.png", user.getPicturePath());
+        assertEquals("image/?intenttestuser.jpeg", user.getPicturePath());
     }
 
 }
