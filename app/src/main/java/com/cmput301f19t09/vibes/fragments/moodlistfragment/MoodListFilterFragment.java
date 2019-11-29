@@ -81,7 +81,7 @@ public class MoodListFilterFragment extends Fragment
             ImageView moodImage = listItem.findViewById(R.id.moodIcon);
             TextView moodName = listItem.findViewById(R.id.moodName);
 
-            if(mood != "No Filter") {
+            if(!mood.toUpperCase().equals("NO FILTER")) {
                 EmotionalState emotion = new EmotionalState(mood.toUpperCase());
                 moodImage.setImageResource(emotion.getImageFile());
                 moodName.setBackgroundTintList(ColorStateList.valueOf(emotion.getColour()));
