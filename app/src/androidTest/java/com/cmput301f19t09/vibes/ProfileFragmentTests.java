@@ -75,7 +75,8 @@ public class ProfileFragmentTests {
      * Tests that the logout button is displayed on main activity navigation bar when
      * the profile fragment is open. Checks that confirming the dialog logs out. This test
      * must be run after all other tests if running all tests at once, hence the 'z' and
-     * sort ascending.
+     * sort ascending. The mood filter fragment may not be being destroyed correctly in which
+     * case this test will fail saying that main activity has leaked a DecorView.
      */
     @Test
     public void zlogoutTest() throws InterruptedException {
