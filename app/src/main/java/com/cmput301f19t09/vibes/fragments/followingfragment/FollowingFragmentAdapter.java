@@ -129,8 +129,8 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     }
 
     /**
-     * Refreshes the data
-     * @param uidList
+     * Refreshes the adapter with the updated list of requested or following users
+     * @param uidList The List of users' UIDs to add to the adapter
      */
     void refreshData(List<String> uidList) {
 
@@ -159,8 +159,9 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
     }
 
     /**
-     *
-     * @param uid
+     * Sets the fragment from the following fragment to the profile fragment of the user you would
+     * like to view
+     * @param uid The UID of the user to access their profile
      */
     private void goToProfile(String uid) {
         User user = UserManager.getUser(uid);
