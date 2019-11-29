@@ -21,16 +21,30 @@ import java.util.Observer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * SearchListAdapter is an ArrayAdapter used in the search fragment to display user information
+ */
 public class SearchListAdapter extends ArrayAdapter<String> implements Observer {
     protected List<String> data;
     private Context context;
 
+    /**
+     * Constructs the adapter
+     * @param context Get's the context associated with the adapter
+     */
     SearchListAdapter(Context context) {
         super(context, 0);
         this.context = context;
         this.data = new ArrayList<>();
     }
 
+    /**
+     * Constructs the view of a single item. Gets user's full name, username, and profile picture
+     * @param position Position to set in the list
+     * @param convertView Gets the view of the search fragment
+     * @param parent Gets the parent ViewGroup
+     * @return The view of the single item
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -66,6 +80,10 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
         return item;
     }
 
+    /**
+     * Refreshes the adapter with the updated list of the search results
+     * @param userList The updated search result list
+     */
     void refreshData(List<String> userList) {
         data.clear();
         clear();
@@ -73,10 +91,6 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
         for (String uid : userList)
         {
             UserManager.removeUserObservers(uid);
-        }
-
-        if (userList == null) {
-            return;
         }
 
         for (String uid : userList)
@@ -92,6 +106,11 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
         addAll(data);
     }
 
+    /**
+     * Clears the list on update
+     * @param observable Object that can notify observers
+     * @param o Objects being passed in
+     */
     @Override
     public void update(Observable observable, Object o) {
         refreshData(null);

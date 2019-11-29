@@ -53,10 +53,10 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
      * full name, username, and profile picture. Displays the accept and deny request button only
      * if the layout is the requested ListView
      *
-     * @param position : int
-     * @param convertView : View
-     * @param parent : ViewGroup
-     * @return view
+     * @param position Position to set in the list
+     * @param convertView : Gets the view of the following fragment
+     * @param parent : Gets the parent ViewGroup
+     * @return The view of the single item
      *
      */
     @NonNull

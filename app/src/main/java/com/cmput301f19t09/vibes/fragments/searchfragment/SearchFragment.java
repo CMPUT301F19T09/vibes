@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.cmput301f19t09.vibes.MainActivity;
 import com.cmput301f19t09.vibes.R;
@@ -27,15 +26,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+/**
+ * Fragment to implement searching capabilities. Searching can only be done by order sensitive,
+ * case sensitive, and username. Search automatically pulls from the database on text changes to
+ * provide quick searches
+ */
 public class SearchFragment extends Fragment {
     private SearchListAdapter adapter;
     private List<String> userList;
     private CollectionReference collectionReference;
 
+    /**
+     * Creates a instance of the SearchFragment
+     * @return The new SearchFragment
+     */
     public static SearchFragment newInstance() {
         return new SearchFragment();
     }
 
+    /**
+     * Connects with the database when created
+     * @param savedInstanceState The saved instance of the MainActivity
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +56,13 @@ public class SearchFragment extends Fragment {
         userList = new ArrayList<>();
     }
 
+    /**
+     * Gets views and set adapter when creating the search fragment
+     * @param inflater Makes the view of the fragment from the XML layout file
+     * @param container Parent container to store the fragment in
+     * @param savedInstanceState Saved instance state of the MainActivity
+     * @return he created ProfileFragment view
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -58,6 +77,7 @@ public class SearchFragment extends Fragment {
         adapter = new SearchListAdapter(getContext());
         searchList.setAdapter(adapter);
 
+        // Goes to profile of the selected user
         searchList.setOnItemClickListener((adapterView, view12, i, l) -> {
             String uid = (String) adapterView.getItemAtPosition(i);
             if (uid.equals(UserManager.getCurrentUserUID())) {
@@ -67,6 +87,7 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        // Updates the adapter when text changes to use new results
         searchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -74,7 +95,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                // Searching by username, ordered, and case-sensitive
                 if (searchField.getText().length() > 0) {
                     collectionReference.orderBy("username")
                             .startAt(searchField.getText().toString())
@@ -100,6 +121,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                // checks if search field is empty before clearing so empty field won't show anything
                 if (searchField.getText().length() == 0) {
                     userList.clear();
                     adapter.clear();
