@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -23,9 +24,12 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -67,7 +71,7 @@ public class UserTests {
         onView(withId(R.id.main_add_button)).perform(click());
         // create a new MoodEvent - 1
         // select LOVE
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(2).perform(click());
+        onView(withTagValue(is("LOVE"))).perform(click());
         onView(withId(R.id.button_submit_view)).perform(click());
         Thread.sleep(100);
 
@@ -76,7 +80,7 @@ public class UserTests {
         onView(withId(R.id.main_add_button)).perform(click());
         // create a new MoodEvent
         // select SURPRISE
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(3).perform(click());
+        onView(withTagValue(is("SURPRISE"))).perform(click());
         onView(withId(R.id.edit_reason_view)).perform(typeText("2nd test moodevent"));
         closeSoftKeyboard();
         onView(withId(R.id.button_submit_view)).perform(click());
@@ -87,7 +91,7 @@ public class UserTests {
         onView(withId(R.id.main_add_button)).perform(click());
         // create a new MoodEvent
         // select TRUST
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(6).perform(click());
+        onView(withTagValue(is("TRUST"))).perform(click());
         onView(withId(R.id.edit_reason_view)).perform(typeText("thisistwentycharacte"));
         closeSoftKeyboard();
         onView(withId(R.id.button_submit_view)).perform(click());
@@ -170,7 +174,7 @@ public class UserTests {
 
         // create a new MoodEvent - 1
         // select HAPPINESS
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(0).perform(click());
+        onView(withTagValue(is("HAPPINESS"))).perform(click());
         onView(withId(R.id.button_submit_view)).perform(click());
 
         // check that a mood was added to the mood list
@@ -188,7 +192,7 @@ public class UserTests {
 
         // create a new MoodEvent
         // select ANGER
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(8).perform(click());
+        onView(withTagValue(is("ANGER"))).perform(click());
         onView(withId(R.id.edit_reason_view)).perform(typeText("This is 3"));
         closeSoftKeyboard();
         onView(withId(R.id.button_submit_view)).perform(click());
@@ -208,7 +212,7 @@ public class UserTests {
 
         // create a new MoodEvent
         // select ANTICIPATION
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(4).perform(click());
+        onView(withTagValue(is("ANTICIPATION"))).perform(click());
         onView(withId(R.id.edit_reason_view)).perform(typeText("thisistwentycharacte"));
         closeSoftKeyboard();
         onView(withId(R.id.button_submit_view)).perform(click());
@@ -298,8 +302,8 @@ public class UserTests {
 
         // create a new MoodEvent
         // select ANGER
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(8).perform(click());
-        onView(withId(R.id.edit_situation_view)).perform(typeText("0.0"));
+        onView(withTagValue(is("ANGER"))).perform(click());
+//        onView(withId(R.id.edit_situation_view)).perform(typeText("0.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(typeText("three words desc"));
         closeSoftKeyboard();
@@ -320,13 +324,19 @@ public class UserTests {
         // verify that the fields are populated correctly
         onView(withId(R.id.edit_reason_view)).check(matches(withText("three words desc")));
         Thread.sleep(100);
-        onView(withId(R.id.edit_situation_view)).check(matches(withText("0.0")));
-        onView(withId(R.id.state_text_view)).check(matches(withText("ANGER")));
+        onView(withTagValue(is("LOVE"))).perform(click());
+
+
+
+
+
+//        onView(withId(R.id.social_chip_group)).check(matches(isNotChecked()));
+//        onView(withId(R.id.state_text_view)).check(matchesChecks());
 
         // select new mood; HAPPINESS
-        Thread.sleep(10000);
-        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
-        onView(withId(R.id.edit_situation_view)).perform(typeText("1.0"));
+        Thread.sleep(100);
+//        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
+//        onView(withId(R.id.edit_situation_view)).perform(typeText("1.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(typeText("a new desc"));
         closeSoftKeyboard();
@@ -351,8 +361,8 @@ public class UserTests {
 
         // verify that the fields are populated correctly again
         onView(withId(R.id.edit_reason_view)).check(matches(withText("a new desc")));
-        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
-        onView(withId(R.id.state_text_view)).check(matches(withText("HAPPINESS")));
+//        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
+//        onView(withId(R.id.state_text_view)).check(matches(withText("HAPPINESS")));
         closeSoftKeyboard();
         onView(withId(R.id.button_cancel_view)).perform(click());
 

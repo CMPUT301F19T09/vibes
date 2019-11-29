@@ -483,6 +483,9 @@ public class EditFragment extends Fragment {
                     if (!checkPermissions()) { // permissions were denied
                         requestPermissionFragment(); // prompt user for permission
                     }
+                    else {
+                        startLocationUpdates();
+                    }
                 }
             }
         });
