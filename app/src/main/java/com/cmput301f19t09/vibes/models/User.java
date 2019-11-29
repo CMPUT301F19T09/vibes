@@ -4,7 +4,11 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.cmput301f19t09.vibes.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,6 +19,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -415,14 +420,21 @@ public class User extends Observable implements Serializable {
                         null,
                         location,
                         this);
-                if (photoPath != null && photoPath != "") {
+                if (photoPath != null && !photoPath.equals("")) {
                     storageReference = storage.getReference(photoPath);
                     storageReference.getDownloadUrl()
-                            .addOnSuccessListener(uri -> event.setPhoto(uri))
-                            .addOnFailureListener(e -> event.setPhoto(null))
-                            .addOnCompleteListener(uri -> { setChanged(); notifyObservers();});
+                            .addOnSuccessListener(uri -> {
+                                event.setPhoto(uri);
+                                events.add(event);
+                            })
+                            .addOnFailureListener(e -> {
+                                event.setPhoto(null);
+                                events.add(event);
+                            });
+                } else {
+                    events.add(event);
                 }
-                events.add(event);
+//                events.add(event);
             }
         }
         return events;
@@ -467,6 +479,11 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
+            mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
+            mood.put("reason", moodEvent.getDescription());
+            mood.put("social", moodEvent.getSocialSituation());
+            mood.put("username", moodEvent.getUser().getUserName());
+
             if (moodEvent.getLocation() != null) {
                 mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
                         moodEvent.getLocation().getLongitude()));
@@ -476,20 +493,24 @@ public class User extends Observable implements Serializable {
             if (moodEvent.getPhoto() != null) {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
-                changeMoodPhoto(moodEvent.getPhoto());
-            } else {
-                mood.put("photo", null);
-            }
-            mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
-            mood.put("reason", moodEvent.getDescription());
-            mood.put("social", moodEvent.getSocialSituation());
-            mood.put("username", moodEvent.getUser().getUserName());
-
-            documentReference = collectionReference.document(uid);
-            documentReference.update("moods", FieldValue.arrayUnion(mood))
-                    .addOnSuccessListener(aVoid -> {
+//                changeMoodPhoto(moodEvent.getPhoto());
+                storageReference = storage.getReference(photoPath);
+                storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
+                    documentReference = collectionReference.document(uid);
+                    documentReference.update("moods", FieldValue.arrayUnion(mood))
+                            .addOnSuccessListener(aVoid -> {
+                            }).addOnFailureListener(e -> {
                     }).addOnFailureListener(e -> {
                     });
+                });
+            } else {
+                mood.put("photo", null);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", FieldValue.arrayUnion(mood))
+                        .addOnSuccessListener(aVoid -> {
+                        }).addOnFailureListener(e -> {
+                });
+            }
         }
     }
 
@@ -504,6 +525,11 @@ public class User extends Observable implements Serializable {
             Map<String, Object> mood = new HashMap<>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
+            mood.put("reason", moodEvent.getDescription());
+            mood.put("social", moodEvent.getSocialSituation());
+            mood.put("timestamp", moodEvent.getEpochUTC());
+            mood.put("username", moodEvent.getUser().getUserName());
+
             if (moodEvent.getLocation() != null) {
                 mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
                         moodEvent.getLocation().getLongitude()));
@@ -513,21 +539,23 @@ public class User extends Observable implements Serializable {
             if (moodEvent.getPhoto() != null) {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
-                changeMoodPhoto(moodEvent.getPhoto());
-            } else {
-                mood.put("photo", null);
-            }
-            mood.put("reason", moodEvent.getDescription());
-            mood.put("social", moodEvent.getSocialSituation());
-            mood.put("timestamp", moodEvent.getEpochUTC());
-            mood.put("username", moodEvent.getUser().getUserName());
-
-            moods.set(index, mood);
-            documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods)
-                    .addOnSuccessListener(aVoid -> {
+//                changeMoodPhoto(moodEvent.getPhoto());
+                moods.set(index, mood);
+                storageReference = storage.getReference(photoPath);
+                storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
+                    documentReference = collectionReference.document(uid);
+                    documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
                     }).addOnFailureListener(e -> {
                     });
+                });
+            } else {
+                mood.put("photo", null);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", moods)
+                        .addOnSuccessListener(aVoid -> {
+                        }).addOnFailureListener(e -> {
+                });
+            }
         }
     }
 
