@@ -7,6 +7,7 @@ import com.cmput301f19t09.vibes.models.UserManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
 
@@ -62,19 +63,26 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
             User followed_user = UserManager.getUser(user_id);
 
             // When the observer is notified, it will update this user's event
-            followed_user.addObserver((Observable observable, Object arg) ->
+            followed_user.addObserver(new Observer()
             {
-                setUserEvent((User)observable);
+                @Override
+                public void update(Observable observable, Object arg)
+                {
+                    setUserEvent((User)observable);
+                }
             });
         }
 
         // The mainUser's observer clears and reinitialises the Observers in case its following list has changed
-        mainUser.addObserver((Observable observable, Object arg) ->
+        mainUser.addObserver(new Observer()
         {
-            clearObservers();
-            addObservers();
+            public void update (Observable observable, Object arg)
+            {
+                clearObservers();
+                addObservers();
 
-            refreshData();
+                refreshData();
+            }
         });
     }
 
