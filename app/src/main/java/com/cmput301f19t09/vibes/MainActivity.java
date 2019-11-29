@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -70,8 +71,11 @@ public class MainActivity extends FragmentActivity {
                 Fragment currentFragment = fragments.get(fragments.size() - 1);
                 String tag = currentFragment.getTag();
 
+                //Log.d("MAIN-ACTIVITY", "Backstack changed -->" + tag);
+
                 if (tag == null || !tag.equals(MapFragment.class.getSimpleName()))
                 {
+                    //Log.d("MAIN-ACTIVITY", "Switching to list");
                     if (tag != null && tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID()))
                     {
                         findViewById(R.id.logoutButton).setVisibility(View.VISIBLE);
@@ -81,11 +85,12 @@ public class MainActivity extends FragmentActivity {
                         findViewById(R.id.logoutButton).setVisibility(View.GONE);
                     }
 
-                    currentButtonMode = ButtonMode.LIST;
+                    currentButtonMode = ButtonMode.MAP;
                 }
                 else
                 {
-                    currentButtonMode = ButtonMode.MAP;
+                    //Log.d("MAIN-ACTIVITY", "Switching to map");
+                    currentButtonMode = ButtonMode.LIST;
                 }
 
                 updateViewButton();
