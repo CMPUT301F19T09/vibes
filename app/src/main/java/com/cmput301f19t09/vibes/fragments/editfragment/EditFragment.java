@@ -985,6 +985,7 @@ public class EditFragment extends Fragment {
     private void setPhotoImage(Uri uri, ImageView imageView){
         if (uri != null){
             Glide.with(this).load(uri).into(imageView);
+            imageView.setVisibility(VISIBLE);
         }
     }
 }
