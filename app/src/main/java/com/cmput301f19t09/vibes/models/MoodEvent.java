@@ -26,8 +26,8 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
     // time not optional
     // description optional
     private EmotionalState state; // not optional
-    private double socialSituation; // optional
-    private transient Uri photo;
+    private int socialSituation; // optional
+    private transient Uri photo; // optional
     private transient Location location; // optional
     private User user; // the user that the mood is associated with
 
@@ -46,6 +46,8 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   socialSituation
      *      The context surrounding an event; can be one of alone, with one other person, with two
      *      to several people, or with a crowd.
+     * @param   photo
+     *      Used in part to describe the circumstances of an event. The path to a photo.
      * @param   location
      *      Where a MoodEvent occurred; the location should contain latitude and longitude coordinates.
      * @param   user
@@ -94,7 +96,7 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      *      The socialSituation associated with a MoodEvent; return value of -1 indicates that
      *      SocialSituation has not been specified.
      */
-    public double getSocialSituation() {
+    public int getSocialSituation() {
         return socialSituation;
     }
 
@@ -108,14 +110,25 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   socialSituation
      *      The socialSituation associated with a MoodEvent.
      */
-    public void setSocialSituation(double socialSituation) {
+    public void setSocialSituation(int socialSituation) {
         this.socialSituation = socialSituation;
     }
 
+    /**
+     * Returns the photo for a mood event. Used in part to describe a mood event along with
+     * description.
+     */
     public Uri getPhoto() {
         return this.photo;
     }
 
+    /**
+     * Sets the photo for a mood event. Used in part to describe a mood event along with
+     * description.
+     *
+     * @param   photo
+     *      The photo path to attach to a mood event.
+     */
     public void setPhoto(Uri photo) {
         this.photo = photo;
     }

@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Looper;
@@ -30,6 +33,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,6 +49,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.MoodEvent;
@@ -62,10 +67,18 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
+import io.opencensus.resource.Resource;
+
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.cmput301f19t09.vibes.fragments.mapfragment.MapFilter.SHOW_MINE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,9 +88,8 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
  * Use the {@link EditFragment#newInstance} factory method to
  * create an instance of this fragment.
  * TODO: make the social situation editor a drop down with predefined values
- * TODO: implement pulling location from GPS
  */
-public class EditFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class EditFragment extends Fragment {
 
     // the fragment initialization parameters
     public static final String VIBES_MOODEVENT = "com.cmput301f19t09.vibes.MOODEVENT";
@@ -92,22 +104,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private TextView timeTextView;
 
     // state setting
-    private GridView stateGridView;
-    private TextView stateTextView;
-    private ArrayList<String> stateKeys = EmotionalState.getListOfKeys();
+    private ArrayList<String> emotionalStateKeys = EmotionalState.getListOfKeys();
     private EmotionalState emotionalState = null;
+    private boolean validReason = true;
 
     // photo for reason
     private Uri photoUri;
     private ImageView photoImage;
-    private Button captureButton;
+    private ImageButton captureButton;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-    private Button galleryButton;
+    private ImageButton galleryButton;
     private static final int REQUEST_IMAGE_GALLERY = 3;
-    private Button clearButton;
+    private ImageButton clearButton;
     private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 4;
-
-    private EditText editSituationView;
     private EditText editReasonView;
 
     // location services
@@ -115,6 +124,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     private Switch locationSwitch;
     private boolean useLocation = false;
     private FusedLocationProviderClient fusedLocationClient;
+
+    private Snackbar snackbar;
 
     /**
      * Code used in requesting runtime permissions.
@@ -264,17 +275,90 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         buttonCancelView.setEnabled(true);
 
 
-        stateGridView = view.findViewById(R.id.state_grid_view);
-        stateGridView.setAdapter(new ImageAdapter(getActivity()));
-        stateGridView.setOnItemClickListener(this);
-        stateTextView = view.findViewById(R.id.state_text_view);
+        TextView titleTextView = view.findViewById(R.id.title_textview);
+        ChipGroup stateChipGroup = view.findViewById(R.id.emotion_chip_group);
+        ImageView emotionImageView = view.findViewById(R.id.emotion_image);
+
+        emotionImageView.setVisibility(GONE);
+
+        int bgColor = ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null);
+
+        for (String key : emotionalStateKeys)
+        {
+            Chip emotionChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+            stateChipGroup.addView(emotionChip);
+
+            emotionChip.setCheckable(true);
+            emotionChip.setClickable(true);
+
+            EmotionalState state = new EmotionalState(key);
+
+            emotionChip.setText(key.charAt(0) + key.substring(1).toLowerCase());
+            emotionChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked)
+                    {
+                        emotionalState = state;
+
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(state.getColour()));
+                        emotionImageView.setImageResource(state.getImageFile());
+                        Log.d("TEST/Chips", state.getEmotion() + " is checked");
+                    } else
+                    {
+                        emotionChip.setChipBackgroundColor(ColorStateList.valueOf(bgColor));
+                        Log.d("TEST/Chips", state.getEmotion() + " is unchecked");
+                    }
+                }
+            });
+            emotionChip.setTag(key);
+        }
+
+        stateChipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ChipGroup chipGroup, int i) {
+                if (i == -1)
+                {
+                    emotionalState = null;
+                    emotionImageView.setVisibility(GONE);
+                    buttonSubmitView.setEnabled(false);
+                }
+                else
+                {
+                    emotionImageView.setVisibility(VISIBLE);
+                }
+
+                if (validReason)
+                {
+                    buttonSubmitView.setEnabled(true);
+                }
+            }
+        });
+
+        stateChipGroup.setClickable(true);
+        stateChipGroup.setEnabled(true);
+
+        ChipGroup socialChipGroup = view.findViewById(R.id.social_chip_group);
+
+        for (String situation : getResources().getStringArray(R.array.situations))
+        {
+            Chip socialChip = (Chip) inflater.inflate(R.layout.edit_chip, null);
+
+            socialChip.setClickable(true);
+            socialChip.setCheckable(true);
+
+            socialChip.setText(situation);
+
+            socialChipGroup.addView(socialChip);
+            socialChip.setTag(situation);
+        }
 
         dateTextView = view.findViewById(R.id.date_text_view);
         timeTextView = view.findViewById(R.id.time_text_view);
-        editSituationView = view.findViewById(R.id.edit_situation_view);
         editReasonView = view.findViewById(R.id.edit_reason_view);
 
         photoImage = view.findViewById(R.id.photo_image);
+        photoImage.setVisibility(GONE);
         captureButton = view.findViewById(R.id.capture_button);
         captureButton.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -313,11 +397,15 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             }
         });
         clearButton = view.findViewById(R.id.clear_photo_button);
+        clearButton.setVisibility(GONE);
         clearButton.setOnClickListener(new View.OnClickListener() {
             // The image is cleared in both the mood object and the displayed view.
             @Override
             public void onClick(View v) {
                 photoUri = null;
+
+                photoImage.setVisibility(GONE);
+                clearButton.setVisibility(GONE);
                 setPhotoImage(null, photoImage);
             }
         });
@@ -326,30 +414,42 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
 
         if (editing) {
             // populate the EditText's with the MoodEvent attributes; we are editing an existing MoodEvent
-            locationSwitch.setVisibility(View.INVISIBLE);
-            TextView locationTextView = view.findViewById(R.id.location_text_view);
-            locationTextView.setVisibility(View.INVISIBLE);
+
+            titleTextView.setText(R.string.edit_mood_title);
+
             dateTextView.setText(moodEvent.getDateString());
             timeTextView.setText(moodEvent.getTimeString());
+            int socialSituation = moodEvent.getSocialSituation();
             if (moodEvent.getSocialSituation() != -1) { // social situation was specified
-                String situationString = Double.toString(moodEvent.getSocialSituation());
-                editSituationView.setText(situationString);
+                String[] situations = getResources().getStringArray(R.array.situations);
+                // Make sure the situation index is wrapped (since many moods were uploaded before this was constrained)
+                socialSituation %= situations.length;
+                ((Chip)socialChipGroup.findViewWithTag(situations[socialSituation])).setChecked(true);
             }
+
             editReasonView.setText(moodEvent.getDescription());
+
             emotionalState = moodEvent.getState();
-            stateTextView.setText(moodEvent.getState().getEmotion());
+            ((Chip)stateChipGroup.findViewWithTag(emotionalState.getEmotion())).setChecked(true);
 
             // We set the photo displayed to the photo associated with this mood.
             photoUri = moodEvent.getPhoto();
-            setPhotoImage(photoUri, photoImage);
+
+            if (photoUri != null){
+                setPhotoImage(photoUri, photoImage);
+            } else {
+                setPhotoImage(null, photoImage);
+            }
 
             // set the use location slider based on whether the mood event has a location or not
             if (moodEvent.getLocation() != null) {
                 // set the slider to ON
                 useLocation = true;
                 locationSwitch.setChecked(true);
+            } else {
+                locationSwitch.setChecked(false);
             }
-            // turn of slider interaction as locations should not be editable
+            // turn off slider interaction as locations should not be editable
             locationSwitch.setEnabled(false);
 
             // all required fields are completed already
@@ -358,6 +458,7 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         else {
             // don't prepopulate the EditText's; we are creating a new MoodEvent
             // set moodEvent to be an empty new MoodEvent object for the current user
+            titleTextView.setText(R.string.new_mood_title);
             moodEvent = new MoodEvent(null, null, null, null, -1, null, null, user);
 
             // set the current date
@@ -372,19 +473,17 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             timeTextView.setText(time.format(timeFormatter));
             // can update immediately because cant be edited
             moodEvent.setTime(time);
-
-            if (!checkPermissions()) { // permissions were denied
-                requestPermissionFragment(); // prompt user for permission
-            }
-            else {
-                startLocationUpdates(); // we have permissions so begin location updates
-            }
         }
 
         locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 useLocation = b; // b indicates whether switch is "ON" = 1 or "OFF" = 0
+                if (b) {
+                    if (!checkPermissions()) { // permissions were denied
+                        requestPermissionFragment(); // prompt user for permission
+                    }
+                }
             }
         });
 
@@ -400,10 +499,14 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 String[] splitStr = str.trim().split("\\s+"); // split the string at whitespace
 
                 // reason must be 3 words or less and must have all required fields set
-                if (splitStr.length <= 3 && emotionalState != null) {
+                if (splitStr.length <= 3) {
+                    validReason = true;
+                    if (emotionalState != null){
                     buttonSubmitView.setEnabled(true);
+                    }
                 }
                 else { // disable the button
+                    validReason = false;
                     buttonSubmitView.setEnabled(false);
                 }
             }
@@ -421,9 +524,29 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             public void onClick(View view1) {
                 moodEvent.setState(emotionalState);
 
-                // set optional fields
-                if (!editSituationView.getText().toString().isEmpty()) {
-                    moodEvent.setSocialSituation(Double.parseDouble(editSituationView.getText().toString()));
+                Chip selectedSocial = (Chip)view.findViewById(socialChipGroup.getCheckedChipId());
+                if (selectedSocial != null)
+                {
+                    String socialText = selectedSocial.getText().toString();
+                    String[] situations = getResources().getStringArray(R.array.situations);
+
+                    boolean found_situation = false;
+
+                    for (int i = 0; i < situations.length; i++)
+                    {
+                        if (situations[i].equals(socialText))
+                        {
+                            found_situation = true;
+                            moodEvent.setSocialSituation(i);
+                            break;
+                        }
+                    }
+
+                    if (!found_situation)
+                    {
+                        Log.d("TEST/SocialChips", "no situation selected");
+                        moodEvent.setSocialSituation(-1);
+                    }
                 }
 
                 // set location
@@ -473,7 +596,6 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 }
                 MainActivity main = (MainActivity) EditFragment.this.getActivity();
                 main.onBackPressed();
-                //main.setListFragment(MoodListFragment.OWN_MOODS);
             }
         });
 
@@ -488,27 +610,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         return view;
     }
 
-    /**
-     * The onItemClick listener for the EmotionalState selector gridview. Callback invoked
-     * when an item in the AdapterView has been clicked.
-     *
-     * @param   adapterView
-     *      An AdapterView that was clicked on in the fragment.
-     * @param   view
-     *      The view within the AdapterView that was clicked.
-     * @param   i
-     *      The position of the view in the adapter.
-     * @param   l
-     *      The row id of the item that was clicked.
-     */
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (adapterView.getId() == R.id.state_grid_view) {
-            emotionalState = new EmotionalState(stateKeys.get(i));
-            // update the state text view
-            stateTextView.setText(emotionalState.getEmotion());
-            // a mood has been selected so all required fields have been set; allow submitting MoodEvent
-            buttonSubmitView.setEnabled(true);
+    public void onDestroy() {
+        super.onDestroy();
+
+        /* Remove the snackbar which was being displayed on the fragment so that
+         * if the user goes back and the fragment is still being displayed there will
+         * be a not attached to fragment issue.
+        */
+        if (snackbar != null) {
+            snackbar.dismiss();
         }
     }
 
@@ -537,11 +648,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      */
     private void showSnackbar(final int mainTextStringId, final int actionStringId,
                               View.OnClickListener listener) {
-        Snackbar.make(
+        if (snackbar != null) {
+            snackbar.dismiss();
+        }
+
+        snackbar = Snackbar.make(
                 getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
+                .setAction(getString(actionStringId), listener);
+        snackbar.show();
     }
 
     /**
@@ -593,6 +709,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
+            useLocation = false;
+            locationSwitch.setChecked(false);
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, new View.OnClickListener() {
@@ -605,6 +723,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                         }
                     });
         } else {
+            useLocation = false;
+            locationSwitch.setChecked(false);
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
@@ -627,12 +747,16 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                 if (grantResults.length <= 0) {
                     // If user interaction was interrupted, the permission request is cancelled and you
                     // receive empty arrays.
+                    useLocation = false;
+                    locationSwitch.setChecked(false);
                     Log.i(TAG, "User interaction was cancelled.");
                 } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
                     startLocationUpdates();
                 } else {
                     // Permission denied.
+                    useLocation = false;
+                    locationSwitch.setChecked(false);
 
                     // Notify the user via a SnackBar that they have rejected a core permission for the
                     // app, which makes the Activity useless. In a real app, core permissions would
@@ -741,17 +865,19 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
-                        // Nothing to do. startLocationupdates() gets called in onResume again.
+//                        startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
-                        locationSwitch.setEnabled(false); // make switch unclickable
+                        useLocation = false;
+                        locationSwitch.setChecked(false);
                         break;
                 }
                 break;
@@ -760,6 +886,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK && data != null) {
                     photoUri = data.getData();
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
                     setPhotoImage(photoUri, photoImage);
                 }
                 break;
@@ -767,6 +895,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
             // object and the mood displayed in the EditFragment will be changed.
             case REQUEST_IMAGE_CAPTURE:
                 if (resultCode == RESULT_OK && data != null) {
+                    photoImage.setVisibility(VISIBLE);
+                    clearButton.setVisibility(VISIBLE);
                     setPhotoImage(photoUri, photoImage);
                 }
                 break;
@@ -785,6 +915,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         Log.i(TAG, "All location settings are satisfied.");
+                        useLocation = true;
+                        locationSwitch.setChecked(true);
 
                         //noinspection MissingPermission
                         fusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -813,7 +945,8 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
                                         "fixed here. Fix in Settings.";
                                 Log.e(TAG, errorMessage);
                                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-                                locationSwitch.setEnabled(false); // make switch unclickable
+                                useLocation = false;
+                                locationSwitch.setChecked(false);
                         }
                     }
                 });
@@ -855,11 +988,9 @@ public class EditFragment extends Fragment implements AdapterView.OnItemClickLis
      * If uri is null, the photo is set to the default photo.
      */
     private void setPhotoImage(Uri uri, ImageView imageView){
-        if (uri == null){
-            imageView.setImageResource(R.drawable.empty_picture_image);
-        } else {
+        if (uri != null){
             Glide.with(this).load(uri).into(imageView);
+            imageView.setVisibility(VISIBLE);
         }
-
     }
 }

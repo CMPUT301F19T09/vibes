@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,10 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 /**
@@ -43,6 +46,7 @@ public class ProfileFragment extends Fragment implements Observer {
     private User otherUser;
     private User user;
     private String otherUserUID;
+    private Fragment childFragment;
     private enum Mode {OWN, FOLLOWING, REQUESTED, NONE}
 
     /**
@@ -66,6 +70,49 @@ public class ProfileFragment extends Fragment implements Observer {
         return profileFragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        // Verifies if other user's UID is passed in through new instance
+        otherUserUID = null;
+        if (getArguments() != null) {
+            otherUserUID = getArguments().getString("otherUserUID");
+        }
+
+        // Creates a user and observer for the user being viewed
+        otherUser = null;
+        // Gets the current user from UserManager
+        user = UserManager.getCurrentUser();
+        if (otherUserUID != null) {
+            otherUser = UserManager.getUser(otherUserUID);
+        }
+
+        UserManager.addUserObserver(user.getUid(), this);
+
+        // Verifies if user exists
+        if (user == null) {
+            throw new RuntimeException("[ERROR]: USER IS NOT DEFINED");
+        }
+
+        if (childFragment == null)
+        {
+            if (otherUser == null)
+            {
+                childFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
+            }
+            else
+            {
+                childFragment = MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent());
+
+            }
+
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.add(R.id.user_mood_list, childFragment, childFragment.getClass().getSimpleName());
+            transaction.commit();
+        }
+        super.onCreate(savedInstanceState);
+    }
+
     /**
      * Creates the view of the ProfileFragment and loading specific fields with values based on
      * who's profile is being viewed
@@ -84,58 +131,22 @@ public class ProfileFragment extends Fragment implements Observer {
         profilePictureImageView = view.findViewById(R.id.profile_picture);
         followButton = view.findViewById(R.id.follow_button);
 
-        // Verifies if other user's UID is passed in through new instance
-        otherUserUID = null;
-        if (getArguments() != null) {
-            otherUserUID = getArguments().getString("otherUserUID");
-        }
-
-        // Creates a user and observer for the user being viewed
-        otherUser = null;
-        if (otherUserUID != null) {
-            otherUser = UserManager.getUser(otherUserUID);
-            UserManager.addUserObserver(otherUserUID, this);
-        }
-
-        // Gets the current user from UserManager
-        user = UserManager.getCurrentUser();
-
-        // Verifies if user exists
-        if (user == null) {
-            throw new RuntimeException("[ERROR]: USER IS NOT DEFINED");
-        }
-
-        // Show's your own profile if other user wasn't passed in, set's the info, and gets the child
-        // fragment MoodListFragment of the mood list of the current user
-        if (otherUser == null) {
-            MoodListFragment moodListFragment = MoodListFragment.newInstance(MoodListFragment.OWN_MOODS_LOCKED);
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.user_mood_list, moodListFragment, MoodListFragment.class.getSimpleName()).commit();
-            updateButton(Mode.OWN);
-        } else {
-            // Checks if the user is following the other user and show their latest mood event by
-            // calling the child fragment MoodDetailsFragment
-
-            if (otherUser.isLoaded()) {
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
-                transaction.commitNow();
-
-                checkMode();
-            }
-
-            user.addObserver((o, arg) -> {
-//                createChild();
-                checkMode();
-            });
-
-            otherUser.addObserver((observable, o) -> {
-//                createChild();
-                checkMode();
-            });
-        }
-
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (otherUser != null)
+        {
+            setInfo(otherUser);
+        }
+        else
+        {
+            setInfo(user);
+        }
+
+        checkMode();
     }
 
     /**
@@ -145,7 +156,26 @@ public class ProfileFragment extends Fragment implements Observer {
      */
     @Override
     public void update(Observable user, Object object) {
-        setInfo((User) user);
+        if (((User)user).isLoaded() &&
+                (otherUser == null || (otherUser != null && ((User)user).getUid().equals(otherUserUID))))
+        {
+            setInfo((User) user);
+        }
+
+        if (otherUser != null)
+        {
+            if (otherUser.getMostRecentMoodEvent() == null)
+            {
+                hideChild();
+            }
+            else
+            {
+                ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
+            }
+        }
+
+        Log.d("TEST/ADASD", "checkmode");
+        checkMode();
     }
 
     private void updateButton(Mode mode) {
@@ -154,7 +184,7 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setVisibility(View.INVISIBLE);
                 profilePictureImageView.setOnClickListener(view -> openFileExplorer());
 
-                setInfo(user);
+                //setInfo(user);
                 break;
 
             case REQUESTED:
@@ -164,10 +194,10 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button_outline);
                 followButton.setOnClickListener(view -> {
                     otherUser.removeRequest(user.getUid());
-                    updateButton(Mode.NONE);
+                    //updateButton(Mode.NONE);
                 });
 
-                setInfo(otherUser);
+                //setInfo(otherUser);
                 break;
 
             case FOLLOWING:
@@ -177,10 +207,10 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button_grey_outline);
                 followButton.setOnClickListener(view -> {
                     user.removeFollowing(otherUser.getUid());
-                    updateButton(Mode.NONE);
+                    //updateButton(Mode.NONE);
                 });
 
-                setInfo(otherUser);
+                //setInfo(otherUser);
                 break;
 
             case NONE:
@@ -190,10 +220,10 @@ public class ProfileFragment extends Fragment implements Observer {
                 followButton.setBackgroundResource(R.drawable.rounded_button);
                 followButton.setOnClickListener(view -> {
                     otherUser.addRequest(user.getUid());
-                    updateButton(Mode.REQUESTED);
+                    //updateButton(Mode.REQUESTED);
                 });
 
-                setInfo(otherUser);
+                //setInfo(otherUser);
                 break;
         }
     }
@@ -203,30 +233,24 @@ public class ProfileFragment extends Fragment implements Observer {
      * @param user The object to get the values from
      */
     private void setInfo(final User user) {
-        if (user.isLoaded()) {
+        //if (user.isLoaded()) {
             fullNameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             userNameTextView.setText(user.getUserName());
             Glide.with(this).load(user.getProfileURL()).into(profilePictureImageView);
             profilePictureImageView.setClipToOutline(true);
-        }
-
-        user.addObserver((observable, o) -> {
-            fullNameTextView.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-            userNameTextView.setText(user.getUserName());
-            Glide.with(ProfileFragment.this).load(user.getProfileURL()).into(profilePictureImageView);
-            profilePictureImageView.setClipToOutline(true);
-        });
+        //}
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         if (otherUser != null) {
             UserManager.addUserObserver(otherUserUID, this);
-        } else {
-            UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
+            ((MoodDetailsFragment)childFragment).setMoodEvent(otherUser.getMostRecentMoodEvent());
         }
+        UserManager.addUserObserver(UserManager.getCurrentUserUID(), this);
+
+        checkMode();
     }
 
     /**
@@ -237,7 +261,7 @@ public class ProfileFragment extends Fragment implements Observer {
         super.onPause();
         UserManager.removeUserObserver(UserManager.getCurrentUserUID(), this);
         if (otherUser != null) {
-            UserManager.removeUserObservers(otherUser.getUid());
+            UserManager.removeUserObserver(otherUser.getUid(), this);
         }
     }
 
@@ -264,29 +288,39 @@ public class ProfileFragment extends Fragment implements Observer {
     }
 
     private void hideChild() {
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.hide(Objects.requireNonNull(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName())));
-        fragmentTransaction.commit();
+        View childView = getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()).getView();
+        if (childView != null)
+        {
+            childView.setVisibility(View.GONE);
+        }
     }
 
     private void showChild() {
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        fragmentTransaction.show(Objects.requireNonNull(getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName())));
-        fragmentTransaction.commit();
-    }
+        if (otherUser.getMostRecentMoodEvent() == null)
+        {
+            return;
+        }
 
-    private void createChild() {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.user_mood_list, MoodDetailsFragment.newInstance(otherUser.getMostRecentMoodEvent()), MoodDetailsFragment.class.getSimpleName());
-        transaction.commitNow();
+        View childView = getChildFragmentManager().findFragmentByTag(MoodDetailsFragment.class.getSimpleName()).getView();
+        if (childView != null)
+        {
+            childView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkMode() {
-        if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && user.getFollowingList().contains(otherUserUID)) {
+        if (otherUser == null)
+        {
+            updateButton(Mode.OWN);
+            return;
+        }
+        if (user.getFollowingList().contains(otherUserUID)){
+            Log.d("TEST", "Followed");
             updateButton(Mode.FOLLOWING);
-        } else if (otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)) {
+        } else if (otherUser.getRequestedList().contains(user.getUid())){
+            Log.d("TEST", "Requested");
             updateButton(Mode.REQUESTED);
-        } else if (!otherUser.getRequestedList().contains(UserManager.getCurrentUserUID()) && !user.getFollowingList().contains(otherUserUID)) {
+        } else {
             updateButton(Mode.NONE);
         }
     }

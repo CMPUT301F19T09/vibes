@@ -2,6 +2,8 @@ package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,12 +63,10 @@ public class MoodListFilterFragment extends Fragment
 
     private class CustomFilterAdapter extends ArrayAdapter<String>{
 
-        private Context mContext;
         private List<String> moodList;
 
         public CustomFilterAdapter(@NonNull Context context, List<String> list) {
             super(context, 0, list);
-            mContext = context;
             moodList = list;
         }
 
@@ -78,7 +78,7 @@ public class MoodListFilterFragment extends Fragment
             View listItem = convertView;
 
             if(listItem == null){
-                LayoutInflater inflater = LayoutInflater.from(mContext);
+                LayoutInflater inflater = LayoutInflater.from(getContext());
                 listItem = inflater.inflate(R.layout.filter_row_mood_item, null);
             }
 
@@ -89,10 +89,8 @@ public class MoodListFilterFragment extends Fragment
             if(mood != "No Filter") {
                 EmotionalState emotion = new EmotionalState(mood.toUpperCase());
                 moodImage.setImageResource(emotion.getImageFile());
-//                moodImage.setColorFilter(emotion.getColour());
-
+                moodName.setBackgroundTintList(ColorStateList.valueOf(emotion.getColour()));
             }else{
-//                moodImage.setImageResource(R.drawable.no);
                 moodImage.setVisibility(View.INVISIBLE);
             }
 
@@ -145,7 +143,7 @@ public class MoodListFilterFragment extends Fragment
                 moods.add(noFilter);
                 moods.addAll(keys);
 
-                CustomFilterAdapter arrayAdapter = new CustomFilterAdapter(getActivity(),moods);
+                CustomFilterAdapter arrayAdapter = new CustomFilterAdapter(getContext(),moods);
 
                 builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override

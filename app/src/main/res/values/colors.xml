@@ -6,4 +6,14 @@
     <color name="highlight">#313233</color>
     <color name="moodListBackground">#F5F5F5</color>
     <color name="moodItemShadow">#E9E9E9</color>
+
+    <color name="emotion_happy">#F1C40F</color>
+    <color name="emotion_sad">#0652DD</color>
+    <color name="emotion_love">#FF60A8</color>
+    <color name="emotion_trust">#00A5E3</color>
+    <color name="emotion_angry">#E74C3C</color>
+    <color name="emotion_scared">#D35400</color>
+    <color name="emotion_anticipation">#F39C12</color>
+    <color name="emotion_disgust">#16A085</color>
+    <color name="emotion_surprise">#3498DB</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.graphics.Color;
 import android.util.Pair;
 
 import com.cmput301f19t09.vibes.R;
@@ -12,10 +13,11 @@ import java.util.Map;
  * This enumeration associates each colour name with its rgb value.
  *
  * To get the rgb value of any colour in this enumeration, use
- * ColourEnum.COLOUR.getValue()
+ * ColourEnum.COLOUR.value
  */
 enum ColourEnum {
     // Colours and their values.
+
     YELLOW (0xffffcd05),
     LIGHT_GREEN (0xff24ff53),
     GREEN (0xff009900),
@@ -26,7 +28,7 @@ enum ColourEnum {
     ORANGE (0xffffa500),
     PINK (0xffffc0ce);
 
-    private int value;
+    public final int value;
 
     /**
      * @param value : int
@@ -42,9 +44,9 @@ enum ColourEnum {
      *
      * Returns the value of the ColourEnum
      */
-    public int getValue(){
+    /*public int value{
         return this.value;
-    }
+    }*/
 }
 
 public class EmotionalState implements Serializable {
@@ -54,23 +56,23 @@ public class EmotionalState implements Serializable {
     static {
         // For every emotion, the map is given a key (the name of the emotion as a string) and a value
         // (a pair, first element is the drawable, the second is the rgb value of the colour)
-        Pair<Integer, Integer> happiness = new Pair<>(R.drawable.ic_happy, ColourEnum.YELLOW.getValue());
+        Pair<Integer, Integer> happiness = new Pair<>(R.drawable.ic_happy, ColourEnum.YELLOW.value);
         map.put("HAPPINESS", happiness);
-        Pair<Integer, Integer> trust = new Pair<>(R.drawable.ic_iconfinder_man_wink_2411818, ColourEnum.LIGHT_GREEN.getValue());
+        Pair<Integer, Integer> trust = new Pair<>(R.drawable.ic_iconfinder_man_wink_2411818, ColourEnum.LIGHT_GREEN.value);
         map.put("TRUST", trust);
-        Pair<Integer, Integer> fear = new Pair<>(R.drawable.ic_iconfinder_man_atonished_2411845, ColourEnum.GREEN.getValue());
+        Pair<Integer, Integer> fear = new Pair<>(R.drawable.ic_iconfinder_man_atonished_2411845, ColourEnum.GREEN.value);
         map.put("FEAR", fear);
-        Pair<Integer, Integer> surprise = new Pair<>(R.drawable.ic_iconfinder_man_surprised_2411823, ColourEnum.BLUE.getValue());
+        Pair<Integer, Integer> surprise = new Pair<>(R.drawable.ic_iconfinder_man_surprised_2411823, ColourEnum.BLUE.value);
         map.put("SURPRISE", surprise);
-        Pair<Integer, Integer> sadness = new Pair<>(R.drawable.ic_iconfinder_man_sad_2411830, ColourEnum.INDIGO.getValue());
+        Pair<Integer, Integer> sadness = new Pair<>(R.drawable.ic_iconfinder_man_sad_2411830, ColourEnum.INDIGO.value);
         map.put("SADNESS", sadness);
-        Pair<Integer, Integer> disgust = new Pair<>(R.drawable.ic_iconfinder_man_sick_2411828, ColourEnum.PURPLE.getValue());
+        Pair<Integer, Integer> disgust = new Pair<>(R.drawable.ic_iconfinder_man_sick_2411828, ColourEnum.PURPLE.value);
         map.put("DISGUST", disgust);
-        Pair<Integer, Integer> anger = new Pair<>(R.drawable.ic_iconfinder_man_angry_2411816, ColourEnum.RED.getValue());
+        Pair<Integer, Integer> anger = new Pair<>(R.drawable.ic_iconfinder_man_angry_2411816, ColourEnum.RED.value);
         map.put("ANGER", anger);
-        Pair<Integer, Integer> anticipation = new Pair<>(R.drawable.ic_iconfinder_man_neutral_face_2411832, ColourEnum.ORANGE.getValue());
+        Pair<Integer, Integer> anticipation = new Pair<>(R.drawable.ic_iconfinder_man_neutral_face_2411832, ColourEnum.ORANGE.value);
         map.put("ANTICIPATION", anticipation);
-        Pair<Integer, Integer> love = new Pair<>(R.drawable.ic_iconfinder_man_in_love_2411836, ColourEnum.PINK.getValue());
+        Pair<Integer, Integer> love = new Pair<>(R.drawable.ic_iconfinder_man_in_love_2411836, ColourEnum.PINK.value);
         map.put("LOVE", love);
     }
     private int file;
