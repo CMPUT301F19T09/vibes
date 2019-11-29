@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -38,7 +39,7 @@ public class UserMangerTests {
      */
     @Before
     public void setUp() {
-
+        FirebaseAuth.getInstance().signOut();
     }
 
     /**
