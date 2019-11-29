@@ -2,37 +2,35 @@ package com.cmput301f19t09.vibes.models;
 
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.cmput301f19t09.vibes.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class User extends Observable implements Serializable {
     private String uid;
@@ -59,10 +57,6 @@ public class User extends Observable implements Serializable {
     private transient List<Map> moods;
 
     private static boolean connectionStarted;
-
-    // This is the number of elements in the mood map on firebase.
-    // I used it to check if a map is complete to show it on the map.
-    final private int MAP_MOOD_SIZE = 7;
 
     /**
      * Callback listener when data from the database is retrieved
@@ -91,10 +85,6 @@ public class User extends Observable implements Serializable {
             connectionStarted = true;
 
             db = FirebaseFirestore.getInstance();
-            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(false)
-                    .build();
-            db.setFirestoreSettings(settings);
 
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
@@ -102,50 +92,54 @@ public class User extends Observable implements Serializable {
     }
 
     /**
+     * An empty constructor which does nothing and doesn't set attributes properly.
+     * Used ONLY FOR TESTING.
+     */
+    public User() {
+    }
+
+    /**
      * SnapshotListener that will allow real-time updates
      * @return The listener for UserManager
      */
-    public ListenerRegistration getSnapshotListener() {
+    ListenerRegistration getSnapshotListener() {
         documentReference = collectionReference.document(uid);
 
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
-        return documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                userName = documentSnapshot.getString("username");
-                firstName = documentSnapshot.getString("first");
-                lastName = documentSnapshot.getString("last");
-                email = documentSnapshot.getString("email");
-                picturePath = documentSnapshot.getString("profile_picture");
-                followingList = (List<String>) documentSnapshot.get("following_list");
-                requestedList = (List<String>) documentSnapshot.get("requested_list");
-                moods = (List<Map>) documentSnapshot.get("moods");
-                loadedData = true;
+        return documentReference.addSnapshotListener((documentSnapshot, e) -> {
+            userName = documentSnapshot.getString("username");
+            firstName = documentSnapshot.getString("first");
+            lastName = documentSnapshot.getString("last");
+            email = documentSnapshot.getString("email");
+            picturePath = documentSnapshot.getString("profile_picture");
+            followingList = (List<String>) documentSnapshot.get("following_list");
+            requestedList = (List<String>) documentSnapshot.get("requested_list");
+            moods = (List<Map>) documentSnapshot.get("moods");
+            loadedData = true;
 
-                // Parses the retrieved data to MoodEvent object
-                moodEvents = parseToMoodEvent();
+            // Parses the retrieved data to MoodEvent object
+            moodEvents = parseToMoodEvent();
 
-                // Gets profile picture from FireBase Storage if not null
-                if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                    setChanged();
-                    notifyObservers();
-                } else {
-                    storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
+            // Gets profile picture from FireBase Storage if not null
+            if (picturePath == null) {
+                profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                        + R.drawable.default_profile_picture);
+                setChanged();
+                notifyObservers();
+            } else {
+                storageReference = storage.getReference(picturePath);
+                storageReference.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
                             profileURL = uri;
                             setChanged();
                             notifyObservers();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        }
-                    });
-                }
+                        }).addOnFailureListener(e1 -> {
+                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                                    + R.drawable.default_profile_picture);
+                            setChanged();
+                            notifyObservers();
+                        });
             }
         });
     }
@@ -162,46 +156,44 @@ public class User extends Observable implements Serializable {
 
         documentReference = collectionReference.document(uid);
 
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                userName = documentSnapshot.getString("username");
-                firstName = documentSnapshot.getString("first");
-                lastName = documentSnapshot.getString("last");
-                email = documentSnapshot.getString("email");
-                picturePath = documentSnapshot.getString("profile_picture");
-                followingList = (List<String>) documentSnapshot.get("following_list");
-                requestedList = (List<String>) documentSnapshot.get("requested_list");
-                moods = (List<Map>) documentSnapshot.get("moods");
+        documentReference.get().addOnSuccessListener(documentSnapshot -> {
+            userName = documentSnapshot.getString("username");
+            firstName = documentSnapshot.getString("first");
+            lastName = documentSnapshot.getString("last");
+            email = documentSnapshot.getString("email");
+            picturePath = documentSnapshot.getString("profile_picture");
+            followingList = (List<String>) documentSnapshot.get("following_list");
+            requestedList = (List<String>) documentSnapshot.get("requested_list");
+            moods = (List<Map>) documentSnapshot.get("moods");
 
-                // Parses the retrieved data to MoodEvent object
-                moodEvents = parseToMoodEvent();
+            // Parses the retrieved data to MoodEvent object
+            moodEvents = parseToMoodEvent();
 
-                // Gets profile picture from FireBase Storage if not null
-                if (picturePath == null) {
-                    profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/" + R.drawable.default_profile_picture);
-                    firebaseCallback.onCallback(User.this);
-                    loadedData = true;
-                } else {
-                    storageReference = storage.getReference(picturePath);
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
+            // Gets profile picture from FireBase Storage if not null
+            if (picturePath == null) {
+                profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                        + R.drawable.default_profile_picture);
+                firebaseCallback.onCallback(User.this);
+                loadedData = true;
+            } else {
+                storageReference = storage.getReference(picturePath);
+                storageReference.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
                             profileURL = uri;
                             firebaseCallback.onCallback(User.this);
                             loadedData = true;
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        }
-                    });
-                }
+                            setChanged();
+                            notifyObservers();
+                        }).addOnFailureListener(e -> {
+                            profileURL = Uri.parse("android.resource://com.cmput301f19t09.vibes/"
+                                    + R.drawable.default_profile_picture);
+                            firebaseCallback.onCallback(User.this);
+                            loadedData = true;
+                            setChanged();
+                            notifyObservers();
+                        });
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-            }
+        }).addOnFailureListener(e -> {
         });
     }
 
@@ -247,22 +239,103 @@ public class User extends Observable implements Serializable {
         return requestedList;
     }
 
+    public void addRequest(String otherUserUID) {
+
+        documentReference = collectionReference.document(uid);
+        documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("TEST/UserAddRequest", "success");
+                    //requestedList.add(otherUserUID);
+                    setChanged();
+                    notifyObservers();
+                }).addOnFailureListener(e -> {
+
+            Log.d("TEST/UserAddRequest", "failure");
+        });
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    private void addFollowing(String otherUserUID) {
+        if (!followingList.contains(otherUserUID)) {
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
+                    .addOnSuccessListener(aVoid -> {
+                        //followingList.add(otherUserUID);
+                        setChanged();
+                        notifyObservers();
+                        Log.d("TEST/UserAddFollowing", "success");
+                    }).addOnFailureListener(e -> {
+                        Log.d("TEST/UserAddFollowing", "failure :(");
+            });
+        }
+    }
+
+    public void removeFollowing(String otherUserUID) {
+        if (followingList.contains(otherUserUID)) {
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(aVoid -> {
+                        //followingList.remove(otherUserUID);
+                        Log.d("TEST/UserRemoveFollowing", "success");
+                        setChanged();
+                        notifyObservers();
+                    }).addOnFailureListener(e -> {
+                        Log.d("TEST/UserRemoveFollowing", "failure :(");
+
+            });
+        }
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void acceptRequest(String otherUserUID) {
+        removeRequest(otherUserUID);
+
+        User otherUser = UserManager.getUser(otherUserUID);
+        if (!otherUser.getFollowingList().contains(UserManager.getCurrentUserUID())) {
+            otherUser.addFollowing(UserManager.getCurrentUserUID());
+        }
+    }
+
+    /**
+     *
+     * @param otherUserUID
+     */
+    public void removeRequest(String otherUserUID) {
+        if (requestedList.contains(otherUserUID)) {
+
+            documentReference = collectionReference.document(uid);
+            documentReference.update("requested_list", FieldValue.arrayRemove(otherUserUID))
+                    .addOnSuccessListener(aVoid -> {
+                        requestedList.remove(otherUserUID);
+                        setChanged();
+                        notifyObservers();
+                        Log.d("TEST/UserRemoveRequest", "success");
+                    }).addOnFailureListener(e -> {
+                        Log.d("TEST/UserRemoveRequest", "failure");
+                    });
+        }
+    }
     /**
      * Checks whether or mot the user already exists by checking UIDs
      * @param userExistListener A Listener to call back when user exists or not
      */
     public void exists(final UserExistListener userExistListener) {
         collectionReference.document(uid).get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if(documentSnapshot != null && documentSnapshot.exists()) {
-                                userExistListener.onUserExists();
-                            } else {
-                                userExistListener.onUserNotExists();
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if(documentSnapshot != null && documentSnapshot.exists()) {
+                            userExistListener.onUserExists();
+                        } else {
+                            userExistListener.onUserNotExists();
                         }
                     }
                 });
@@ -288,18 +361,23 @@ public class User extends Observable implements Serializable {
      * Parse the mapped mood events to MoodEvent objects
      * @return List of MoodEvent objects
      */
-    public List<MoodEvent> parseToMoodEvent() {
-        List<MoodEvent> events = new ArrayList<MoodEvent>();
+    private List<MoodEvent> parseToMoodEvent() {
+        List<MoodEvent> events = new ArrayList<>();
         if (moods != null) {
             for (Map moodEvent : moods) {
                 String emotion = (String) moodEvent.get("emotion");
                 String reason = (String) moodEvent.get("reason");
                 Number social = (Number) moodEvent.get("social");
                 Long timestamp = (Long) moodEvent.get("timestamp");
-                String username = (String) moodEvent.get("username");
+                String photoPath = (String) moodEvent.get("photo");
+
                 GeoPoint locationGeoPoint = (GeoPoint) moodEvent.get("location");
+                Location location;
 
                 // Checks if there are 7 fields
+                // This is the number of elements in the mood map on firebase.
+                // I used it to check if a map is complete to show it on the map.
+                int MAP_MOOD_SIZE = 7;
                 if (moodEvent.size() != MAP_MOOD_SIZE) {
                     continue;
                 }
@@ -319,19 +397,38 @@ public class User extends Observable implements Serializable {
                         ZoneOffset.UTC
                 );
 
-                // Not implemented yet (hardcoded)
-                Location location = new Location("");
-                location.setLatitude(locationGeoPoint.getLatitude());
-                location.setLongitude(locationGeoPoint.getLongitude());
+                if (locationGeoPoint != null) {
+                    location = new Location("");
+                    location.setLatitude(locationGeoPoint.getLatitude());
+                    location.setLongitude(locationGeoPoint.getLongitude());
+                } else {
+                    location = null;
+                }
 
+                assert social != null;
                 MoodEvent event = new MoodEvent(time.toLocalDate(),
                         time.toLocalTime(),
                         reason,
                         new EmotionalState(emotion),
                         social.intValue(),
+                        null,
                         location,
                         this);
-                events.add(event);
+                if (photoPath != null && !photoPath.equals("")) {
+                    storageReference = storage.getReference(photoPath);
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                event.setPhoto(uri);
+                                //events.add(event);
+                            })
+                            .addOnFailureListener(e -> {
+                                event.setPhoto(null);
+                                //events.add(event);
+                            });
+                }//} else //{
+                    events.add(event);
+                //}
+//                events.add(event);
             }
         }
         return events;
@@ -373,26 +470,45 @@ public class User extends Observable implements Serializable {
             throw new RuntimeException("MoodEvent not defined");
         } else {
             // Parses the MoodEvent to a map usable in the database
-            Map<String, Object> mood = new HashMap<String, Object>();
+            Map<String, Object> mood = new HashMap<>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
-            mood.put("photo", null); // Photo not implemented yet
             mood.put("timestamp", time.toEpochSecond(ZoneOffset.UTC));
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
             mood.put("username", moodEvent.getUser().getUserName());
 
-            documentReference = collectionReference.document(uid);
-            documentReference.update("moods", FieldValue.arrayUnion(mood)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                }
-            });
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
+            if (moodEvent.getPhoto() != null) {
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
+                mood.put("photo", photoPath);
+//                changeMoodPhoto(moodEvent.getPhoto());
+                storageReference = storage.getReference(photoPath);
+                storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
+                    documentReference = collectionReference.document(uid);
+                    documentReference.update("moods", FieldValue.arrayUnion(mood))
+                            .addOnSuccessListener(aVoid -> {
+                                setChanged();
+                                notifyObservers();
+                            }).addOnFailureListener(e -> {
+                    }).addOnFailureListener(e -> {
+                    });
+                });
+            } else {
+                mood.put("photo", null);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", FieldValue.arrayUnion(mood))
+                        .addOnSuccessListener(aVoid -> {
+                            setChanged();
+                            notifyObservers();
+                        }).addOnFailureListener(e -> {
+                });
+            }
         }
     }
 
@@ -402,31 +518,42 @@ public class User extends Observable implements Serializable {
      * @param index The location in the array in the database
      */
     public void editMood(MoodEvent moodEvent, Integer index) {
-        if (index > moods.size() - 1) {
-            return;
-        } else {
+        if (index <= moods.size() - 1) {
             // Parses the MoodEvent to a map usable in the database
-            Map<String, Object> mood = new HashMap<String, Object>();
+            Map<String, Object> mood = new HashMap<>();
             LocalDateTime time = LocalDateTime.of(moodEvent.date, moodEvent.time);
             mood.put("emotion", moodEvent.getState().getEmotion());
-            mood.put("location", new GeoPoint(53.23, -115.44)); // Location currently not implemented yet (hardcoded)
-            mood.put("photo", null); // Photo not implemented yet
             mood.put("reason", moodEvent.getDescription());
             mood.put("social", moodEvent.getSocialSituation());
             mood.put("timestamp", moodEvent.getEpochUTC());
             mood.put("username", moodEvent.getUser().getUserName());
 
-            moods.set(index.intValue(), mood);
-            documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                }
-            });
+            if (moodEvent.getLocation() != null) {
+                mood.put("location", new GeoPoint(moodEvent.getLocation().getLatitude(),
+                        moodEvent.getLocation().getLongitude()));
+            } else {
+                mood.put("location", null);
+            }
+            if (moodEvent.getPhoto() != null) {
+                String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
+                mood.put("photo", photoPath);
+//                changeMoodPhoto(moodEvent.getPhoto());
+                //moods.set(index, mood);
+                storageReference = storage.getReference(photoPath);
+                storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
+                    documentReference = collectionReference.document(uid);
+                    documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
+                    }).addOnFailureListener(e -> {
+                    });
+                });
+            } else {
+                mood.put("photo", null);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", moods)
+                        .addOnSuccessListener(aVoid -> {
+                        }).addOnFailureListener(e -> {
+                });
+            }
         }
     }
 
@@ -435,20 +562,60 @@ public class User extends Observable implements Serializable {
      * @param index Array index to remove MoodEvent
      */
     public void deleteMood(Integer index) {
-        if (index > moods.size() - 1) {
-            return;
-        } else {
-            moods.remove(index.intValue());
+        if (index <= moods.size() - 1) {
+            Map removed = moods.remove(index.intValue());
+            //moods.remove(index.intValue());
             documentReference = collectionReference.document(uid);
-            documentReference.update("moods", moods).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                }
+            documentReference.update("moods", moods)
+                    .addOnSuccessListener(aVoid -> {
+                        setChanged();
+                        notifyObservers();
+                    }).addOnFailureListener(e -> {
+                        //moods.
+                    });
+        }
+    }
+
+    public void changeProfilePicture(Uri uri) {
+        if (uri != null) {
+            picturePath = "image/" + uri.hashCode() + ".jpeg";
+            storageReference = storage.getReference(picturePath);
+            storageReference.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        collectionReference = db.collection("users");
+                        collectionReference.document(uid).update("profile_picture", picturePath)
+                                .addOnSuccessListener(aVoid -> {
+                                    setChanged();
+                                    notifyObservers();
+                                }).addOnFailureListener(e -> {
+
+                        });
+                    }).addOnFailureListener(e -> {
+
             });
         }
     }
+
+    private void changeMoodPhoto(Uri uri) {
+        if (uri != null) {
+            String photoPath = "reason_photos/" + uri.hashCode() + ".jpeg";
+            storageReference = storage.getReference(photoPath);
+            Log.d("URI: ",uri.toString());
+            storageReference.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        setChanged();
+                        notifyObservers();
+                    }).addOnFailureListener(e -> {
+
+            });
+        }
+    }
+
+    /**
+     * A comparator that is used for sort a list of users by firstName+lastName
+     *
+     * Ref:https://www.thejavaprogrammer.com/sort-arraylist-objects-java/
+     */
+    public static Comparator<User> sortByName = (user1, user2) -> (user1.getFirstName() + user1.getLastName())
+            .compareTo(user2.getFirstName() + user2.getLastName());
 }

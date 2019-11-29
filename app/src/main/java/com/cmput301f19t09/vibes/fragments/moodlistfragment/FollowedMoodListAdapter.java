@@ -1,188 +1,178 @@
 package com.cmput301f19t09.vibes.fragments.moodlistfragment;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-/*
-Subclass of MoodListAdapter, this loads the each of the most recent MoodEvents of the User that the
-current user follows
- */
-public class FollowedMoodListAdapter extends MoodListAdapter implements Observer
-{
-    interface FollowedUserListener extends Observer
-    {
-        @Override
-        void update(Observable o, Object arg);
-    }
+import android.content.Context;
 
-    // Maintain a list of the UIDs of users that this user observes
+/**
+ * This subclass of MoodListAdapter is responsible for managing the dataset of MoodEvents containing
+ * the (single) most recent MoodEvent of each of the Users that the primary (signed in) User follows
+ */
+public class FollowedMoodListAdapter extends MoodListAdapter {
+
+    // A list of the UIDs associated with Users that this instance has created an adapter for
     private List<String> observed_users;
+    private User mainUser;
 
     public FollowedMoodListAdapter(Context context)
     {
         super(context);
+        observed_users = new ArrayList<>();
+        this.mainUser = UserManager.getCurrentUser();
+        this.resume();
     }
 
-    /*
-    initialize the observed users list and call refresh data
+    /**
+     * Add observers to all of mainUser's followed Users. This should be called when the parent Fragment resumes
+     * so that Observers can be re-added
      */
     @Override
-    public void initializeData()
+    public void resume()
     {
-       observed_users = new ArrayList<String>();
-       refreshData();
+        addObservers();
+        refreshData();
     }
 
-    /*
-    For each User that the current User is following, make sure that that user has an entry in the
-    data set for their most recent MoodEvent
+    /**
+     * Remove all observers on followed users. This should be called when the parent fragment pauses so that
+     * the instance is not being updated in the background
+     */
+    public void pause()
+    {
+        clearObservers();
+    }
+
+    /**
+     * For each User that the current User is following, add an Observer to refresh their most recent
+     * MoodEvent. Also adds an Observer to User to observe when the following list changes
+     */
+    private void addObservers()
+    {
+        observed_users.clear();
+        observed_users.addAll(mainUser.getFollowingList());
+
+        for (String user_id : observed_users)
+        {
+            User followed_user = UserManager.getUser(user_id);
+
+            // When the observer is notified, it will update this user's event
+            followed_user.addObserver(new Observer()
+            {
+                @Override
+                public void update(Observable observable, Object arg)
+                {
+                    setUserEvent((User)observable);
+                }
+            });
+        }
+
+        // The mainUser's observer clears and reinitialises the Observers in case its following list has changed
+        mainUser.addObserver(new Observer()
+        {
+            public void update (Observable observable, Object arg)
+            {
+                clearObservers();
+                addObservers();
+
+                refreshData();
+            }
+        });
+    }
+
+    /**
+     * For all observed Users and the main User, remove their Observers
+     */
+    private void clearObservers()
+    {
+        for (String user_id : observed_users)
+        {
+            UserManager.removeUserObservers(user_id);
+        }
+
+        mainUser.deleteObservers();
+    }
+
+    /**
+     * Go through all observed_users and add their most recent MoodEvent to the List
      */
     @Override
     public void refreshData()
     {
-        if (observed_users == null)
+        for (String user_id : observed_users)
         {
-            return;
-        }
-
-        List<String> followed_users = user.getFollowingList();
-
-        for (String followed_user : followed_users)
-        {
-            if (!observed_users.contains(followed_user))
-            {
-                /*
-                If the user is not followed (by UID), add that user to the observed_users list and
-                create an Observer that updates the entry for that user whenever that User is changed
-                 */
-                User user = UserManager.getUser(followed_user);
-                observed_users.add(followed_user);
-
-                /*
-                If the User doesn't need to be loaded by UserManager, add the entry immediately
-                 */
-                if (user.isLoaded())
-                {
-                    refreshEvent(user);
-                }
-
-                UserManager.addUserObserver(followed_user, new Observer() {
-                    @Override
-                    public void update(Observable o, Object a) {
-                        FollowedMoodListAdapter.this.refreshEvent((User) o);
-                    }
-                });
-            }
+            User followed_user = UserManager.getUser(user_id);
+            setUserEvent(followed_user);
         }
     }
 
-    /*
-    Finds the MoodEvent with User user in the data. If that MoodEvent doesn't exist, add the User's
-    most recent MoodEvent, otherwise update the displayed MoodEvent to be the User's most recent MoodEvnet
+    /**
+     * Updates the MoodEvent shown in the list for this User. If the User already has an entry in the list
+     * it is replaced with their most recent MoodEvent. If their most recent MoodEvent is null, then it
+     * checks the list to remove any event associated with the User. MoodEvents are filtered by the set
+     * filter
+     * @param user The User whose event you are updating
      */
-    public void refreshEvent(User user) {
-        Log.d("TEST", "Refreshing event for " + user.getUserName());
+    public void setUserEvent(User user) {
 
-        if (user.getMostRecentMoodEvent() == null)
+        // Make sure the mainUser is loaded
+        if (user == null || !user.isLoaded())
         {
             return;
         }
 
-        Comparator<Object> reverse_chronolgical = new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                return ((MoodEvent) o2).compareTo(o1);
-            }
-        };
+        MoodEvent event = user.getMostRecentMoodEvent();
+        boolean show_event = false;
 
-        /*
-        Iterate through the list and check if an event associated with user exists, if it does,
-        replace that event with the most recent MoodEvent
-         */
-        boolean replaced = false;
-        for (MoodEvent event : data)
+        // If the event isn't null and matches the filter (or there is no filter), then it will be shown
+        if (event != null &&
+                (filter == null ||
+                filter.equals("") ||
+                event.getState().getEmotion().equals(filter)))
         {
+            show_event = true;
+        }
 
+        int index;
 
-            if (event.getUser().getUid().equals(user.getUid()))
+        // Search the list of shown events for one matching the current mainUser. If such an event is found, it
+        // will be replaced
+        for (index = 0; index < data.size(); index++)
+        {
+            if (data.get(index).getUser().equals(user))
             {
-                clear();
-
-                data.remove(event);
-                data.add(user.getMostRecentMoodEvent());
-                //Collections.sort(data);
-                data.sort(reverse_chronolgical);
-
-                addAll(data);
-
-                replaced = true;
-
-                Log.d("TEST", "Replaced the event");
-
                 break;
             }
         }
 
-        /*
-        If there wasn't an event to replace, add a new entry to the list
-         */
-        if (! replaced)
+        index = (index == data.size()) ? -1 : index;
+
+        if (index == -1 && show_event)
         {
-            clear();
-
-            data.add(user.getMostRecentMoodEvent());
-            data.sort(reverse_chronolgical);
-            //Collections.sort(data);
-
-            addAll(data);
-
-            Log.d("TEST", "Event didn't exist, added new event");
+            // No existing event -> add the current event
+            data.add(event);
         }
-    }
-
-    /*
-    Called for notifyObservers, if the user parameter is the current user, update the entire list,
-    otherwise update the event associated with the User parameter
-    @param observable
-        A User object
-    @param arg
-        An optional (ignored) argument
-     */
-    @Override
-    public void update(Observable observable, Object arg)
-    {
-        User user1 = (User) user;
-
-        if (user1 == this.user)
+        else if (index >= 0 && show_event)
         {
-            refreshData();
+            // Existing event -> replace the existing event with the current event
+            data.set(index, event);
         }
-        else
+        else if (index >= 0)
         {
-            refreshEvent(user1);
+            // Existing event and show_event is false -> remove the existing event
+            data.remove(index);
         }
-    }
 
-    /*
-    Remove any observers that observed_users have
-     */
-    @Override
-    public void destroy()
-    {
-        for (String user : observed_users)
-        {
-            UserManager.removeUserObservers(user);
-        }
-        super.destroy();
+        // Sort the list in reverse-chronological order
+        data.sort((MoodEvent a, MoodEvent b) -> { return b.compareTo(a); });
+
+        clear();
+        addAll(data);
     }
 }
