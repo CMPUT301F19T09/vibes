@@ -1,5 +1,6 @@
 package com.cmput301f19t09.vibes.models;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,24 +11,24 @@ import java.util.Map;
 import java.util.Observer;
 import java.util.function.Consumer;
 
-/*
-This class holds a static map of loaded users, indexed by their UIDs. Allows getting a user by UID,
-getting current user, and adding Observers to users
+/**
+ * This class manages a list of all Users that have been used in components of the app. Each User object
+ * is given a snapshot-listener.
  */
 public class UserManager
 {
+    // All users that have been created, associated with their listener
     private static Map<String, Pair<ListenerRegistration, User>> registeredUsers;
-    private static String UID;
+    private static String mainUserUID;
 
     static
     {
         registeredUsers = new HashMap<String, Pair<ListenerRegistration, User>>();
     }
 
-    /*
-    Add a user to the registeredUsers, create a snapshot listener in the db
-    @param user_id
-        the user's id to register
+    /**
+     * Create a new User object for user_id, add a snapshot listener to that User
+     * @param user_id The UID (in firebase) of the User to create
      */
     public static void registerUser(String user_id)
     {
@@ -42,29 +43,23 @@ public class UserManager
             User user = new User(user_id);
 
             // Immediately make a call to read the user data from the DB
-            user.readData(new User.FirebaseCallback() {
-                @Override
-                public void onCallback(User u) {
-                }
-            });
+            user.readData((User u) -> { });
 
-            // Create a snapshot listener for this user (document) so the object will be
-            // updated whenever the user document in the DB is
+            // Add a snapshot listener to the new User and add the User to the registeredUsers map
             ListenerRegistration registration = user.getSnapshotListener();
             registeredUsers.put(user_id,
                     new Pair(registration, user));
         }
     }
 
-    /*
-    Remove a user from registeredUsers. This removes the snapshot listener from the DB
-    @param user_id
-        the UID of the user to remove
+    /**
+     * Remove a User from registeredUsers and remove the SnapshotListener from the User
+     * @param user_id The UID of the User to remove
      */
     public static void unregisterUser(String user_id)
     {
         // Make sure the user is already registered, also don't unregister current user
-        if (registeredUsers.containsKey(user_id) && !UID.equals(user_id))
+        if (registeredUsers.containsKey(user_id) && !mainUserUID.equals(user_id))
         {
             // Get the user, remove the registration then remove the user from the map
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -75,12 +70,10 @@ public class UserManager
         }
     }
 
-    /*
-    Add an observer to the user specified by user_id
-    @param user_id
-        the id of the user to observe
-    @param observer
-        the observer
+    /**
+     * Add an observer the the User with UID
+     * @param user_id The UID of the User to add an Observer to
+     * @param observer The Observer to add to the User
      */
     public static void addUserObserver(String user_id, Observer observer)
     {
@@ -90,21 +83,22 @@ public class UserManager
             registerUser(user_id);
         }
 
+        Log.d("TEST/UserManager", "add observer to " + user_id);
+
         Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
 
         u.addObserver(observer);
     }
 
-    /*
-    Remove the observer from the user specified by user_id
-    @param user_id
-        the UID of the user to remove observer from
-    @param observer
-        the observer to remove
+    /**
+     * Remove the Observer observer from the User with UID user_id
+     * @param user_id The UID of the User to remove the Observer from
+     * @param observer The Observer to remove
      */
     public static void removeUserObserver(String user_id, Observer observer)
     {
+        // Make sure the User exists before trying to remove an observer
         if ( registeredUsers.containsKey(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -119,14 +113,13 @@ public class UserManager
         }
     }
 
-    /*
-    remove all observers from the specified user
-    @param user_id
-        the UID of the user whose observers you are removing
+    /**
+     * Remove all Observers from the User with UID user_id
+     * @param user_id The UID of the User to remove Observers from
      */
     public static void removeUserObservers(String user_id)
     {
-
+        // Make sure that the User actually exists
         if ( registeredUsers.containsKey(user_id))
         {
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -136,12 +129,11 @@ public class UserManager
         }
     }
 
-    /*
-    return the user specified by user_id, if the user doesn't exist register it
-    @param user_id
-        The UID of the User to get
-    @return
-        The User with UID user_id
+    /**
+     * Return the User with UID. If the User has been registered, return it from registeredUsers, if
+     * it hasn't then register it first.
+     * @param user_id The UID of the User to return
+     * @return The User object with UID user_id
      */
     public static User getUser(String user_id)
     {
@@ -153,22 +145,28 @@ public class UserManager
         return registeredUsers.get(user_id).second;
     }
 
-    /*
-    Set the current user to the user specified by the UID associated with the current Firebase user
-    Anything calling this method should not return until callback is executed.
-    @param callback
-        A method to be called once the user's data has been read in. This is necessary due to many
-        things depending on current user being valid.
+    /**
+     * Register a new User and set that User as the main application User. Set the mainUserUID to
+     * the FirebaseAuth UID of the currently signed-in User
+     * @param callback A callback for when the main User has been registered
      */
     public static void registerCurrentUser(final Consumer<User> callback)
     {
-        // Get the UID from Firebase
-        UID = FirebaseAuth.getInstance().getUid();
-        User user = new User(UID);
+        // Get the mainUserUID from FirebaseAuth
+        mainUserUID = FirebaseAuth.getInstance().getUid();
+
+        // Make sure that this user hasn't already been registered
+        if (registeredUsers.containsKey(mainUserUID))
+        {
+            callback.accept(getCurrentUser());
+            return;
+        }
+
+        User user = new User(mainUserUID);
 
         // Register the user
         ListenerRegistration registration = user.getSnapshotListener();
-        registeredUsers.put(UID,
+        registeredUsers.put(mainUserUID,
                 new Pair(registration, user));
 
         // Get the user data from the DB, call callback once the read is complete
@@ -180,16 +178,15 @@ public class UserManager
         });
     }
 
-    /*
-    // Return the current user (as specified by Firebase)
-    @return
-        The user that has UID UID, should be the current user as specified by Firebase
+    /**
+     * Returns the User object represen
+     * @return
      */
     public static User getCurrentUser()
     {
-        if (registeredUsers.containsKey(UID))
+        if (registeredUsers.containsKey(mainUserUID))
         {
-            return registeredUsers.get(UID).second;
+            return registeredUsers.get(mainUserUID).second;
         }
         else
         {
@@ -198,12 +195,12 @@ public class UserManager
     }
 
     /*
-    get the current user UID
+    get the current user mainUserUID
     @return
-        The UID associated with currentUser
+        The mainUserUID associated with currentUser
      */
     public static String getCurrentUserUID()
     {
-        return UID;
+        return mainUserUID;
     }
 }

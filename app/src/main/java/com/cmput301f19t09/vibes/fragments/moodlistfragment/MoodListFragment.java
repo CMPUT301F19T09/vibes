@@ -164,12 +164,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      */
     public void showOwnMoods()
     {
-        if (mode != OWN_MOODS || adapter == null)
-        {
-            setAdapter(new OwnMoodListAdapter(getContext()));
-        }
-
-        mode = OWN_MOODS;
+        setAdapter(new OwnMoodListAdapter(getContext()));
     }
 
     /**
@@ -177,12 +172,7 @@ public class MoodListFragment extends Fragment implements MoodFilterListener
      */
     public void showFollowedMoods()
     {
-        if (mode != FOLLOWED_MOODS || adapter == null)
-        {
-            setAdapter(new FollowedMoodListAdapter(getContext()));
-        }
-
-        mode = FOLLOWED_MOODS;
+        setAdapter(new FollowedMoodListAdapter(getContext()));
     }
 
     /**

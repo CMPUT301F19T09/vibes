@@ -3,7 +3,7 @@
     <string-array name="situations">
         <item>By Myself</item>
         <item>With Someone Else</item>
-        <item>With A Few People</item>
-        <item>In A Crowd</item>
+        <item>With a Few People</item>
+        <item>In a Crowd</item>
     </string-array>
 </resources>
