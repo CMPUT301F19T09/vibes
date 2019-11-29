@@ -4,15 +4,14 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 
-/*
-For part 4, this will be notified when MoodListFIlter is changed,
-should possibly be replaced with observers
+/**
+ * Interface for an Object that contains MoodEvents and can be filtered
  */
 public interface MoodFilterListener extends Serializable
 {
     void showOwnMoods();
     void showFollowedMoods();
 
-    void setFilter(String emotion);
+    void setFilter(String filter);
 
 }

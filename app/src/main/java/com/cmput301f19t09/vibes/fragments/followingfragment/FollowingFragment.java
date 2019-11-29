@@ -96,25 +96,6 @@ public class FollowingFragment extends Fragment {
         followingAdapter.refreshData(user.getFollowingList());
         requestedAdapter.refreshData(user.getRequestedList());
 
-        /*
-        followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                followingLinearLayout.removeOnLayoutChangeListener(this);
-                followingAdapter.notifyDataSetChanged();
-            }
-        });
-
-        requestedLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                followingLinearLayout.removeOnLayoutChangeListener(this);
-                requestedAdapter.notifyDataSetChanged();
-            }
-        });
-
-         */
-
         // Allowing two listviews to scroll as one
         // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
         ViewTreeObserver listVTO = followingLinearLayout.getViewTreeObserver();
@@ -126,13 +107,6 @@ public class FollowingFragment extends Fragment {
             }
         });
 
-//        listVTO.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-//            @Override
-//            public void onDraw() {
-//                followingAdapter.notifyDataSetChanged();
-//            }
-//        });
-
         ViewTreeObserver listVTO2 = requestedLinearLayout.getViewTreeObserver();
         listVTO2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -141,13 +115,6 @@ public class FollowingFragment extends Fragment {
                 resizeListView(requestedLinearLayout);
             }
         });
-
-//        listVTO2.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-//            @Override
-//            public void onDraw() {
-//                requestedAdapter.notifyDataSetChanged();
-//            }
-//        });
 
         return view;
     }
