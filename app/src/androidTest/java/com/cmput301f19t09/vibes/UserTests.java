@@ -24,6 +24,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -329,8 +330,7 @@ public class UserTests {
 
 
 
-
-//        onView(withId(R.id.social_chip_group)).check(matches(withText("0.0")));
+//        onView(withId(R.id.social_chip_group)).check(matches(isNotChecked()));
 //        onView(withId(R.id.state_text_view)).check(matchesChecks());
 
         // select new mood; HAPPINESS

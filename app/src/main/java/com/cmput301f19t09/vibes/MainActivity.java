@@ -47,6 +47,9 @@ public class MainActivity extends FragmentActivity {
     private User user;
     Context mcontext;
 
+    AlertDialog alertDialog = null;
+
+
     //TODO: DEBUG, REMOVE THIS
     private final String logTag = "TEST/MainActivity";
     
@@ -139,29 +142,29 @@ public class MainActivity extends FragmentActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("Logout");
+                dialog.setMessage("Are you sure you want to logout?");
+                dialog.setCancelable(true);
+                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                //Yes button clicked
-                                // Log out action
-                                UserManager.unregisterAllUsers();
-                                FirebaseAuth.getInstance().signOut();
-                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                                finish();
-                                break;
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                //No button clicked
-                                break;
-                        }
+                        dialog.dismiss();
                     }
-                };
+                });
+                dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Logout action
+                        UserManager.unregisterAllUsers();
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                });
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
-                builder.setMessage("Do you want to logout?").setPositiveButton("Yes", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
-
+                alertDialog = dialog.create();
+                alertDialog.show();
             }
         });
 
@@ -388,6 +391,17 @@ public class MainActivity extends FragmentActivity {
         {
             manager.popBackStackImmediate();
         }
+    }
+
+    /**
+     * Gives access to the most recently set alert dialog. Can be used to access the
+     * logout dialog in tests and programmatically.
+     *
+     * @return
+     *      The most recent alert dialog
+     */
+    public AlertDialog getAlertDialog() {
+        return alertDialog;
     }
 }
 
