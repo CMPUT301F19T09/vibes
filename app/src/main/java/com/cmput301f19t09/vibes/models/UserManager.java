@@ -6,6 +6,7 @@ import android.util.Pair;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class UserManager
     public static void unregisterUser(String user_id)
     {
         // Make sure the user is already registered, also don't unregister current user
-        if (registeredUsers.containsKey(user_id) && !mainUserUID.equals(user_id))
+        if (registeredUsers.containsKey(user_id))
         {
             // Get the user, remove the registration then remove the user from the map
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
@@ -84,8 +85,6 @@ public class UserManager
             registerUser(user_id);
         }
 
-        Log.d("TEST/UserManager", "add observer to " + user_id);
-
         Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
 
@@ -106,11 +105,6 @@ public class UserManager
             User user = p.second;
 
             user.deleteObserver(observer);
-
-            if (user.countObservers() == 0)
-            {
-                unregisterUser(user_id);
-            }
         }
     }
 
@@ -156,13 +150,6 @@ public class UserManager
         // Get the mainUserUID from FirebaseAuth
         mainUserUID = FirebaseAuth.getInstance().getUid();
 
-        // Make sure that this user hasn't already been registered
-        if (registeredUsers.containsKey(mainUserUID))
-        {
-            callback.accept(getCurrentUser());
-            return;
-        }
-
         User user = new User(mainUserUID);
 
         // Register the user
@@ -203,5 +190,12 @@ public class UserManager
     public static String getCurrentUserUID()
     {
         return mainUserUID;
+    }
+
+    public static void unregisterAllUsers() {
+
+        for (String uid : new ArrayList<String>(registeredUsers.keySet())) {
+            unregisterUser(uid);
+        }
     }
 }
