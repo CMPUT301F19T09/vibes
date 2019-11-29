@@ -60,6 +60,11 @@ public class SearchTests {
         onView(withId(R.id.main_search_button)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Test whether elements are returned when searching test. The search is by username
+     * and is case sensitive. Note: this test will fail if the test user accounts are deleted.
+     * Test user account fields are prefixes by a '?'.
+     */
     @Test
     public void searchName() throws InterruptedException {
         Thread.sleep(500);
@@ -75,5 +80,27 @@ public class SearchTests {
         int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.search_listview);
 
         assertTrue(end > start);
+    }
+
+    /**
+     * Test that no elements are displayed on the search page by default and that no
+     * elements are displayed as a result of interacting with the textview but
+     * not entering any text.
+     */
+    @Test
+    public void assertNoTyping() throws InterruptedException {
+        Thread.sleep(500);
+        int start = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.search_listview);
+        // whe the fragment starts their should be no elements in the list view
+        assertEquals(0, start);
+
+        // click on the textview but dont type anything
+        onView(withId(R.id.search_edittext)).perform(click());
+        closeSoftKeyboard();
+
+        Thread.sleep(500);
+        int end = CountHelper.getCountFromListUsingTypeSafeMatcher(R.id.search_listview);
+
+        assertTrue(end == start);
     }
 }
