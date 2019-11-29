@@ -33,6 +33,13 @@
             android:textStyle="normal" />
 
         <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/logoutButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_exit_to_app_black_24dp" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/main_follow_list_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -46,6 +53,7 @@
             android:background="@drawable/circle"
             app:srcCompat="@drawable/ic_person_white_36dp"
             android:layout_margin="7dp"/>
+
     </LinearLayout>
 
     <LinearLayout

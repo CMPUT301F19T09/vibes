@@ -434,7 +434,12 @@ public class EditFragment extends Fragment {
 
             // We set the photo displayed to the photo associated with this mood.
             photoUri = moodEvent.getPhoto();
-            setPhotoImage(photoUri, photoImage);
+
+            if (photoUri != null){
+                setPhotoImage(photoUri, photoImage);
+            } else {
+                setPhotoImage(null, photoImage);
+            }
 
             // set the use location slider based on whether the mood event has a location or not
             if (moodEvent.getLocation() != null) {
