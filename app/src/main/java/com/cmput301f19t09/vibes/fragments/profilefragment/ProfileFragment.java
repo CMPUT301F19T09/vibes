@@ -314,32 +314,10 @@ public class ProfileFragment extends Fragment implements Observer {
             updateButton(Mode.OWN);
             return;
         }
-
-        boolean followed = false;
-        boolean requested = false;
-
-        for (String s : user.getFollowingList())
-        {
-            if (s.equals(otherUserUID))
-            {
-                followed = true;
-                break;
-            }
-        }
-
-        for (String s : otherUser.getRequestedList())
-        {
-            if (s.equals(user.getUid()))
-            {
-                requested = true;
-                break;
-            }
-        }
-
-        if (followed){
+        if (user.getFollowingList().contains(otherUserUID)){
             Log.d("TEST", "Followed");
             updateButton(Mode.FOLLOWING);
-        } else if (requested){
+        } else if (otherUser.getRequestedList().contains(user.getUid())){
             Log.d("TEST", "Requested");
             updateButton(Mode.REQUESTED);
         } else {

@@ -46,6 +46,8 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
      * @param   socialSituation
      *      The context surrounding an event; can be one of alone, with one other person, with two
      *      to several people, or with a crowd.
+     * @param   photo
+     *      Used in part to describe the circumstances of an event. The path to a photo.
      * @param   location
      *      Where a MoodEvent occurred; the location should contain latitude and longitude coordinates.
      * @param   user
@@ -112,10 +114,21 @@ public class MoodEvent extends Event implements Serializable, Comparable, Cluste
         this.socialSituation = socialSituation;
     }
 
+    /**
+     * Returns the photo for a mood event. Used in part to describe a mood event along with
+     * description.
+     */
     public Uri getPhoto() {
         return this.photo;
     }
 
+    /**
+     * Sets the photo for a mood event. Used in part to describe a mood event along with
+     * description.
+     *
+     * @param   photo
+     *      The photo path to attach to a mood event.
+     */
     public void setPhoto(Uri photo) {
         this.photo = photo;
     }
