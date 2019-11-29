@@ -210,4 +210,10 @@ public class UserManager
     {
         return UID;
     }
+
+    public static void unregisterAllUsers() {
+        for (String uid : registeredUsers.keySet()) {
+            unregisterUser(uid);
+        }
+    }
 }
