@@ -7,8 +7,6 @@ import android.widget.Checkable;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -33,7 +31,6 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -381,7 +378,6 @@ public class UserTests {
         onView(withText("By myself")).check(matches(isChecked()));
 //        onView(withId(R.id.social_chip_group)).check(matches(isNotChecked()));
         onView(withText("Anger")).check(matches(isChecked()));
-//        onView(withId(R.id.state_text_view)).check(matchesChecks());
 
         // select new mood; HAPPINESS
         Thread.sleep(100);
@@ -416,7 +412,6 @@ public class UserTests {
         onView(withText("With someone else")).check(matches(isChecked()));
 //        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
         onView(withText("Happiness")).check(matches(isChecked()));
-//        onView(withId(R.id.state_text_view)).check(matches(withText("HAPPINESS")));
         closeSoftKeyboard();
         onView(withId(R.id.button_cancel_view)).perform(ViewActions.scrollTo()).perform(click());
 

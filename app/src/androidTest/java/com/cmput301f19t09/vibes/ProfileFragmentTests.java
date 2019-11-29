@@ -75,9 +75,10 @@ public class ProfileFragmentTests {
      * Tests that the logout button is displayed on main activity navigation bar when
      * the profile fragment is open. Checks that confirming the dialog logs out. This test
      * must be run after all other tests if running all tests at once, hence the 'z' and
-     * sort ascending.
+     * sort ascending. The mood filter fragment may not be being destroyed correctly in which
+     * case this test will fail saying that main activity has leaked a DecorView.
      */
-//    @Test
+    @Test
     public void zlogoutTest() throws InterruptedException {
         onView(withId(R.id.logoutButton)).check(matches(isDisplayed()));
         // open the logout dialog
@@ -110,13 +111,14 @@ public class ProfileFragmentTests {
      * a profile.
      */
     @Test
-    public void filterTest() {
+    public void filterTest() throws InterruptedException {
         // check that the filter fragment is displayed correctly
         onView(withId(R.id.mood_list_filter)).check(matches(isDisplayed()));
         // no following or you radio buttons displayed
         onView(withId(R.id.radioFollowed)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.radioYou)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.filter_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        Thread.sleep(500);
         // click on mood filter dialog
         onView(withId(R.id.filter_button)).perform(click());
         onView(withText("Select a mood filter:")).inRoot(isDialog()).check(matches(isDisplayed()));
