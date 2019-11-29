@@ -155,6 +155,7 @@ public class MoodListFilterFragment extends Fragment
                 builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                         String strName = arrayAdapter.getItem(which);
                         strName = (strName.equals(noFilter)) ? null : strName.toUpperCase();
                         filter(strName);

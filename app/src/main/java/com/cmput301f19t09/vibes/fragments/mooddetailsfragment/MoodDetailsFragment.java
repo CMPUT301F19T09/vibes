@@ -121,7 +121,8 @@ public class MoodDetailsFragment extends Fragment
         emotionImage.setImageResource(state.getImageFile());
 
         emotionChip.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
-        emotionChip.setText(state.getEmotion());
+        String emotionName = state.getEmotion();
+        emotionChip.setText(emotionName.charAt(0) + emotionName.substring(1).toLowerCase());
 
 
         //Sets the photo to the image specified by the event's photo (type uri)

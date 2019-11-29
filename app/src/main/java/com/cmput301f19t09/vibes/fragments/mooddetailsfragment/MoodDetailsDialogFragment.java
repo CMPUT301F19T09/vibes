@@ -105,7 +105,8 @@ public class MoodDetailsDialogFragment extends DialogFragment
         emotionImage.setImageResource(state.getImageFile());
 
         emotionChip.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
-        emotionChip.setText(state.getEmotion());
+        String emotionName = state.getEmotion();
+        emotionChip.setText(emotionName.charAt(0) + emotionName.substring(1).toLowerCase());
 
         int situation = event.getSocialSituation();
         if (situation != -1)

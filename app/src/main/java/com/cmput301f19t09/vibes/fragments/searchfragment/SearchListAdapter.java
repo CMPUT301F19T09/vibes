@@ -63,28 +63,31 @@ public class SearchListAdapter extends ArrayAdapter<String> implements Observer 
 
         }
 
-        UserManager.addUserObserver(userUID, new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                Glide.with(getContext()).load(user.getProfileURL()).into(userProfile);
-                userProfile.setClipToOutline(true);
-
-                userFullName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-                userUserName.setText(user.getUserName());
-            }
-        });
         return item;
     }
 
     void refreshData(List<String> userList) {
         data.clear();
         clear();
-        notifyDataSetChanged();
+
+        for (String uid : userList)
+        {
+            UserManager.removeUserObservers(uid);
+        }
 
         if (userList == null) {
             return;
         }
 
+        for (String uid : userList)
+        {
+            UserManager.addUserObserver(uid, new Observer() {
+                @Override
+                public void update(Observable observable, Object o) {
+                    notifyDataSetChanged();
+                }
+            });
+        }
         data.addAll(userList);
         addAll(data);
     }
