@@ -4,8 +4,10 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
 
@@ -22,7 +24,9 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     public FollowedMoodListAdapter(Context context)
     {
         super(context);
+        observed_users = new ArrayList<>();
         this.mainUser = UserManager.getCurrentUser();
+        this.resume();
     }
 
     /**
@@ -51,26 +55,34 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
      */
     private void addObservers()
     {
-        observed_users = mainUser.getFollowingList();
+        observed_users.clear();
+        observed_users.addAll(mainUser.getFollowingList());
 
         for (String user_id : observed_users)
         {
             User followed_user = UserManager.getUser(user_id);
 
             // When the observer is notified, it will update this user's event
-            followed_user.addObserver((Observable observable, Object arg) ->
+            followed_user.addObserver(new Observer()
             {
-                setUserEvent((User)observable);
+                @Override
+                public void update(Observable observable, Object arg)
+                {
+                    setUserEvent((User)observable);
+                }
             });
         }
 
         // The mainUser's observer clears and reinitialises the Observers in case its following list has changed
-        mainUser.addObserver((Observable observable, Object arg) ->
+        mainUser.addObserver(new Observer()
         {
-            clearObservers();
-            addObservers();
+            public void update (Observable observable, Object arg)
+            {
+                clearObservers();
+                addObservers();
 
-            refreshData();
+                refreshData();
+            }
         });
     }
 
@@ -93,12 +105,6 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     @Override
     public void refreshData()
     {
-        if (observed_users == null || observed_users.size() == 0)
-        {
-            clear();    // Make sure the list is clear
-            return;
-        }
-
         for (String user_id : observed_users)
         {
             User followed_user = UserManager.getUser(user_id);

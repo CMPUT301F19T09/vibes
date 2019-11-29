@@ -8,6 +8,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Observer;
 import java.util.function.Consumer;
@@ -84,8 +85,6 @@ public class UserManager
             registerUser(user_id);
         }
 
-        Log.d("TEST/UserManager", "add observer to " + user_id);
-
         Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
         User u = p.second;
 
@@ -121,6 +120,8 @@ public class UserManager
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             User user = p.second;
 
+            Log.d("TEST~", "deleting observer of " + user_id);
+            if (user_id.equals(mainUserUID)) Log.d("TEST~", "######DELETE OBSERVER MAIN USER######");
             user.deleteObservers();
         }
     }
@@ -150,13 +151,6 @@ public class UserManager
     {
         // Get the mainUserUID from FirebaseAuth
         mainUserUID = FirebaseAuth.getInstance().getUid();
-
-        // Make sure that this user hasn't already been registered
-        if (registeredUsers.containsKey(mainUserUID))
-        {
-            callback.accept(getCurrentUser());
-            return;
-        }
 
         User user = new User(mainUserUID);
 

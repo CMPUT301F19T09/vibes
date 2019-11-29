@@ -1,10 +1,13 @@
 package com.cmput301f19t09.vibes.fragments.followingfragment;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -17,6 +20,8 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -88,41 +93,10 @@ public class FollowingFragment extends Fragment {
         requestedLinearLayout = view.findViewById(R.id.requested_list);
         requestedLinearLayout.setAdapter(requestedAdapter);
 
-        assert user != null;
-        if (user.isLoaded()) {
-            followingList.clear();
-            followingAdapter.clear();
+        followingAdapter.refreshData(user.getFollowingList());
+        requestedAdapter.refreshData(user.getRequestedList());
 
-            requestedList.clear();
-            requestedAdapter.clear();
-
-            followingList.addAll(user.getFollowingList());
-            requestedList.addAll(user.getRequestedList());
-
-            followingAdapter.refreshData(followingList);
-            requestedAdapter.refreshData(requestedList);
-
-            resizeListView(followingLinearLayout);
-            resizeListView(requestedLinearLayout);
-        }
-
-        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
-            followingList.clear();
-            followingAdapter.clear();
-
-            requestedList.clear();
-            requestedAdapter.clear();
-
-            followingList.addAll(user.getFollowingList());
-            requestedList.addAll(user.getRequestedList());
-
-            followingAdapter.refreshData(followingList);
-            requestedAdapter.refreshData(requestedList);
-
-            resizeListView(followingLinearLayout);
-            resizeListView(requestedLinearLayout);
-        });
-
+        /*
         followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -138,6 +112,8 @@ public class FollowingFragment extends Fragment {
                 requestedAdapter.notifyDataSetChanged();
             }
         });
+
+         */
 
         // Allowing two listviews to scroll as one
         // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
@@ -181,19 +157,75 @@ public class FollowingFragment extends Fragment {
      * @param listView
      */
     private void resizeListView(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
+        ArrayAdapter<String> listAdapter = (ArrayAdapter) listView.getAdapter();
         int count = listAdapter.getCount();
         int itemHeight;
 
         View oneChild = listView.getChildAt(0);
-        if (oneChild == null) {
-            return;
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
+
+        if (oneChild == null)
+        {
+            itemHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 96, getResources().getDisplayMetrics()));
+        }
+        else if (count > 0)
+        {
+            itemHeight = oneChild.getHeight();
+
+        }
+        else
+        {
+            itemHeight = 0;
         }
 
-        itemHeight = oneChild.getHeight();
-
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
+
         listView.setLayoutParams(params);
+
+        listAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause()
+    {
+        Log.d("TEST~", "ON PAUSE");
+        user.deleteObservers();
+
+        for (String uid : user.getFollowingList())
+        {
+            UserManager.removeUserObservers(uid);
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    public void onResume()
+    {
+        Log.d("TEST~", "ON RESUME");
+        UserManager.addUserObserver(UserManager.getCurrentUserUID(), new Observer()
+        {
+            @Override
+            public void update(Observable o, Object arg)  {
+                Log.d("TEST/Following", "User got updated!!!");
+
+                followingAdapter.refreshData(user.getFollowingList());
+                requestedAdapter.refreshData(user.getRequestedList());
+
+                resizeListView(followingLinearLayout);
+                resizeListView(requestedLinearLayout);
+            }
+        });
+
+        if (user.isLoaded())
+        {
+            followingAdapter.refreshData(user.getFollowingList());
+            requestedAdapter.refreshData(user.getRequestedList());
+        }
+
+        resizeListView(followingLinearLayout);
+        resizeListView(requestedLinearLayout);
+
+        super.onResume();
     }
 }

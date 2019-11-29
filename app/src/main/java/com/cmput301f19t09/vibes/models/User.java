@@ -245,7 +245,7 @@ public class User extends Observable implements Serializable {
         documentReference.update("requested_list", FieldValue.arrayUnion(otherUserUID))
                 .addOnSuccessListener(aVoid -> {
                     Log.d("TEST/UserAddRequest", "success");
-                    requestedList.add(otherUserUID);
+                    //requestedList.add(otherUserUID);
                     setChanged();
                     notifyObservers();
                 }).addOnFailureListener(e -> {
@@ -264,7 +264,7 @@ public class User extends Observable implements Serializable {
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayUnion(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-                        followingList.add(otherUserUID);
+                        //followingList.add(otherUserUID);
                         setChanged();
                         notifyObservers();
                         Log.d("TEST/UserAddFollowing", "success");
@@ -280,7 +280,7 @@ public class User extends Observable implements Serializable {
             documentReference = collectionReference.document(uid);
             documentReference.update("following_list", FieldValue.arrayRemove(otherUserUID))
                     .addOnSuccessListener(aVoid -> {
-                        followingList.remove(otherUserUID);
+                        //followingList.remove(otherUserUID);
                         Log.d("TEST/UserRemoveFollowing", "success");
                         setChanged();
                         notifyObservers();
@@ -289,12 +289,6 @@ public class User extends Observable implements Serializable {
 
             });
         }
-    }
-
-    @Override
-    public void notifyObservers() {
-        Log.d("TEST/Notify", "notift");
-        super.notifyObservers();
     }
 
     /**
@@ -425,15 +419,15 @@ public class User extends Observable implements Serializable {
                     storageReference.getDownloadUrl()
                             .addOnSuccessListener(uri -> {
                                 event.setPhoto(uri);
-                                events.add(event);
+                                //events.add(event);
                             })
                             .addOnFailureListener(e -> {
                                 event.setPhoto(null);
-                                events.add(event);
+                                //events.add(event);
                             });
-                } else {
+                }//} else //{
                     events.add(event);
-                }
+                //}
 //                events.add(event);
             }
         }
@@ -499,6 +493,8 @@ public class User extends Observable implements Serializable {
                     documentReference = collectionReference.document(uid);
                     documentReference.update("moods", FieldValue.arrayUnion(mood))
                             .addOnSuccessListener(aVoid -> {
+                                setChanged();
+                                notifyObservers();
                             }).addOnFailureListener(e -> {
                     }).addOnFailureListener(e -> {
                     });
@@ -508,6 +504,8 @@ public class User extends Observable implements Serializable {
                 documentReference = collectionReference.document(uid);
                 documentReference.update("moods", FieldValue.arrayUnion(mood))
                         .addOnSuccessListener(aVoid -> {
+                            setChanged();
+                            notifyObservers();
                         }).addOnFailureListener(e -> {
                 });
             }
@@ -540,7 +538,7 @@ public class User extends Observable implements Serializable {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
 //                changeMoodPhoto(moodEvent.getPhoto());
-                moods.set(index, mood);
+                //moods.set(index, mood);
                 storageReference = storage.getReference(photoPath);
                 storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
                     documentReference = collectionReference.document(uid);
@@ -565,11 +563,15 @@ public class User extends Observable implements Serializable {
      */
     public void deleteMood(Integer index) {
         if (index <= moods.size() - 1) {
-            moods.remove(index.intValue());
+            Map removed = moods.remove(index.intValue());
+            //moods.remove(index.intValue());
             documentReference = collectionReference.document(uid);
             documentReference.update("moods", moods)
                     .addOnSuccessListener(aVoid -> {
+                        setChanged();
+                        notifyObservers();
                     }).addOnFailureListener(e -> {
+                        //moods.
                     });
         }
     }
