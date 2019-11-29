@@ -18,6 +18,7 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -84,14 +85,13 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
 
         if (user.isLoaded())
         {
+            Log.d("TEST", "Creating view for loaded user " + user.getFirstName());
             Glide.with(getContext()).load(user.getProfileURL()).into(userImage);
             userImage.setClipToOutline(true);
 
             fullNameText.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             usernameText.setText(user.getUserName());
         }
-
-        sortData();
 
         userImage.setOnClickListener(v -> goToProfile(userUID));
 
@@ -113,11 +113,16 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             });
         }
 
-        notifyDataSetChanged();
         return view;
     }
 
     void refreshData(List<String> uidList) {
+
+        for (String id : userList)
+        {
+            UserManager.removeUserObservers(id);
+        }
+
         userList.clear();
         clear();
 
@@ -125,18 +130,20 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
             return;
         }
 
-        for (String uid : uidList)
+        for (String id : uidList)
         {
-            User user = UserManager.getUser(uid);
-
-            if (!user.isLoaded())
+            UserManager.addUserObserver(id, new Observer()
             {
-                user.addObserver((Observable o, Object a) ->
+                @Override
+                public void update(Observable o, Object arg)
                 {
                     sortData();
-                });
-            }
+                    notifyDataSetChanged();
+                }
+            });
         }
+
+        sortData();
         userList.addAll(uidList);
         addAll(uidList);
 
@@ -145,26 +152,27 @@ public class FollowingFragmentAdapter extends ArrayAdapter<String> {
 
     private void sortData()
     {
-        sort((String uid_a, String uid_b) ->
+        super.sort(new Comparator<String>()
         {
+            @Override
+            public int compare (String uid_a, String uid_b)
+            {
             User user_a = UserManager.getUser(uid_a);
             User user_b = UserManager.getUser(uid_b);
 
+            Log.d("TEST/Sorting", "-> {" + user_a.isLoaded() + " | " + user_b.isLoaded() + " }");
+
             if (user_a.isLoaded() && user_b.isLoaded())
             {
+                Log.d("TEST/Sorting", "Comparing " + user_a.getFirstName() + " and " + user_b.getFirstName());
                 return user_a.getFirstName().compareTo(user_b.getUserName());
             }
-            else if (user_a.isLoaded())
+            else
             {
-                return -1;
+                return 0;
             }
-            else if (user_b.isLoaded())
-            {
-                return 1;
-            }
-
-            return 0;
-        });
+        }
+    });
 
         notifyDataSetChanged();
     }

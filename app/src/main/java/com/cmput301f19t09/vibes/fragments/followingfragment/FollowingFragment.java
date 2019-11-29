@@ -17,6 +17,8 @@ import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -166,7 +168,6 @@ public class FollowingFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
         params.height = itemHeight * count;
         listView.setLayoutParams(params);
-        listView.deferNotifyDataSetChanged();
     }
 
     @Override
@@ -185,24 +186,28 @@ public class FollowingFragment extends Fragment {
     @Override
     public void onResume()
     {
-        UserManager.addUserObserver(user.getUid(), (o, arg) -> {
-            //followingList.clear();
-            //followingAdapter.clear();
+        UserManager.addUserObserver(user.getUid(), new Observer()
+        {
+            @Override
+            public void update(Observable o, Object arg)  {
+                //followingList.clear();
+                //followingAdapter.clear();
 
-            //requestedList.clear();
-            //requestedAdapter.clear();
+                //requestedList.clear();
+                //requestedAdapter.clear();
 
-            //followingList.addAll(user.getFollowingList());
-            //requestedList.addAll(user.getRequestedList());
+                //followingList.addAll(user.getFollowingList());
+                //requestedList.addAll(user.getRequestedList());
 
-            //followingAdapter.refreshData(followingList);
-            //requestedAdapter.refreshData(requestedList);
+                //followingAdapter.refreshData(followingList);
+                //requestedAdapter.refreshData(requestedList);
 
-            followingAdapter.refreshData(user.getFollowingList());
-            requestedAdapter.refreshData(user.getRequestedList());
+                followingAdapter.refreshData(user.getFollowingList());
+                requestedAdapter.refreshData(user.getRequestedList());
 
-            resizeListView(followingLinearLayout);
-            resizeListView(requestedLinearLayout);
+                resizeListView(followingLinearLayout);
+                resizeListView(requestedLinearLayout);
+            }
         });
         super.onResume();
     }
