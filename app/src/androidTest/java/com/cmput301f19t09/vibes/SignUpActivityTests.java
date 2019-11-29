@@ -49,9 +49,13 @@ public class SignUpActivityTests {
     public void signUpUser() throws InterruptedException {
         navigateToSignUp();
         onView(withId(R.id.username_field)).perform(typeText("?signupuser"));
+        closeSoftKeyboard();
         onView(withId(R.id.email_field)).perform(typeText("?signup@example.com"));
+        closeSoftKeyboard();
         onView(withId(R.id.first_name_field)).perform(typeText("?SignupFN"));
+        closeSoftKeyboard();
         onView(withId(R.id.last_name_field)).perform(typeText("?SignupLN"));
+        closeSoftKeyboard();
         onView(withId(R.id.password_field)).perform(typeText("000000"));
         closeSoftKeyboard();
         onView(withId(R.id.confirm_password_field)).perform(typeText("000000"));
