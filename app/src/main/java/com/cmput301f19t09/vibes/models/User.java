@@ -24,6 +24,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -108,6 +109,12 @@ public class User extends Observable implements Serializable {
         // Using SnapshotListener helps reduce load times and obtains from local cache
         // Ref https://firebase.google.com/docs/firestore/query-data/listen
         return documentReference.addSnapshotListener((documentSnapshot, e) -> {
+
+            if (documentSnapshot == null)
+            {
+                return;
+            }
+
             userName = documentSnapshot.getString("username");
             firstName = documentSnapshot.getString("first");
             lastName = documentSnapshot.getString("last");
@@ -534,25 +541,40 @@ public class User extends Observable implements Serializable {
             } else {
                 mood.put("location", null);
             }
-            if (moodEvent.getPhoto() != null) {
+
+            String lastURISegment = null;
+            if (moodEvent.getPhoto() != null)
+            {
+                List<String> uriSegments = moodEvent.getPhoto().getPathSegments();
+                lastURISegment = uriSegments.get(uriSegments.size() - 1);
+            }
+
+            if (moodEvent.getPhoto() != null && lastURISegment.equals(moods.get(index).get("photo")))
+            {
+                String photoPath = (String) moods.get(index).get("photo");
+                mood.put("photo", photoPath);
+                moods.set(index, mood);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
+                }).addOnFailureListener(e -> { });
+            }
+            else if (moodEvent.getPhoto() != null) {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
-//                changeMoodPhoto(moodEvent.getPhoto());
-                //moods.set(index, mood);
+                moods.set(index, mood);
                 storageReference = storage.getReference(photoPath);
                 storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
                     documentReference = collectionReference.document(uid);
                     documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
-                    }).addOnFailureListener(e -> {
-                    });
+                    }).addOnFailureListener(e -> { });
                 });
             } else {
                 mood.put("photo", null);
+                moods.set(index, mood);
                 documentReference = collectionReference.document(uid);
                 documentReference.update("moods", moods)
                         .addOnSuccessListener(aVoid -> {
-                        }).addOnFailureListener(e -> {
-                });
+                        }).addOnFailureListener(e -> { });
             }
         }
     }

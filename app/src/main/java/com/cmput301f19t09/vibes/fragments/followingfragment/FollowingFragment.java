@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +18,6 @@ import com.cmput301f19t09.vibes.R;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -33,8 +31,6 @@ import java.util.Observer;
  */
 public class FollowingFragment extends Fragment {
     private User user;
-    private ArrayList<String> followingList;
-    private ArrayList<String> requestedList;
     private FollowingFragmentAdapter followingAdapter;
     private FollowingFragmentAdapter requestedAdapter;
     private ListView followingLinearLayout;
@@ -73,17 +69,13 @@ public class FollowingFragment extends Fragment {
      */
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         // Ref: https://www.tutorialspoint.com/fragment-tutorial-with-example-in-android-studio
         View view = inflater.inflate(R.layout.following_fragment, container, false);
 
         // Gets the user object provided
         user = UserManager.getCurrentUser();
-
-        // Initializes ArrayList's for the users that are being followed and
-        // the users that have requested to follow the current user.
-        followingList = new ArrayList<>();
-        requestedList = new ArrayList<>();
 
         followingAdapter = new FollowingFragmentAdapter(getActivity(), "following");
         followingLinearLayout = view.findViewById(R.id.following_list);
@@ -96,58 +88,27 @@ public class FollowingFragment extends Fragment {
         followingAdapter.refreshData(user.getFollowingList());
         requestedAdapter.refreshData(user.getRequestedList());
 
-        /*
-        followingLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                followingLinearLayout.removeOnLayoutChangeListener(this);
-                followingAdapter.notifyDataSetChanged();
-            }
-        });
-
-        requestedLinearLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                followingLinearLayout.removeOnLayoutChangeListener(this);
-                requestedAdapter.notifyDataSetChanged();
-            }
-        });
-
-         */
-
         // Allowing two listviews to scroll as one
         // Ref: https://stackoverflow.com/questions/27329419/merging-two-listviews-one-above-another-with-a-common-scroll
         ViewTreeObserver listVTO = followingLinearLayout.getViewTreeObserver();
         listVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                followingLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                followingLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(
+                        this);
                 resizeListView(followingLinearLayout);
             }
         });
-
-//        listVTO.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-//            @Override
-//            public void onDraw() {
-//                followingAdapter.notifyDataSetChanged();
-//            }
-//        });
 
         ViewTreeObserver listVTO2 = requestedLinearLayout.getViewTreeObserver();
         listVTO2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                requestedLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                requestedLinearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(
+                        this);
                 resizeListView(requestedLinearLayout);
             }
         });
-
-//        listVTO2.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-//            @Override
-//            public void onDraw() {
-//                requestedAdapter.notifyDataSetChanged();
-//            }
-//        });
 
         return view;
     }
@@ -157,42 +118,33 @@ public class FollowingFragment extends Fragment {
      * @param listView
      */
     private void resizeListView(ListView listView) {
-        ArrayAdapter<String> listAdapter = (ArrayAdapter) listView.getAdapter();
+        ArrayAdapter listAdapter = (ArrayAdapter) listView.getAdapter();
         int count = listAdapter.getCount();
         int itemHeight;
 
         View oneChild = listView.getChildAt(0);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) listView.getLayoutParams();
 
-        if (oneChild == null)
-        {
-            itemHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 96, getResources().getDisplayMetrics()));
-        }
-        else if (count > 0)
-        {
+        if (oneChild == null) {
+            itemHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 96,
+                    getResources().getDisplayMetrics()));
+        } else if (count > 0) {
             itemHeight = oneChild.getHeight();
 
-        }
-        else
-        {
+        } else {
             itemHeight = 0;
         }
 
         params.height = itemHeight * count;
-
         listView.setLayoutParams(params);
-
         listAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onPause()
-    {
-        Log.d("TEST~", "ON PAUSE");
+    public void onPause() {
         user.deleteObservers();
 
-        for (String uid : user.getFollowingList())
-        {
+        for (String uid : user.getFollowingList()) {
             UserManager.removeUserObservers(uid);
         }
 
@@ -200,15 +152,10 @@ public class FollowingFragment extends Fragment {
     }
 
     @Override
-    public void onResume()
-    {
-        Log.d("TEST~", "ON RESUME");
-        UserManager.addUserObserver(UserManager.getCurrentUserUID(), new Observer()
-        {
+    public void onResume() {
+        UserManager.addUserObserver(UserManager.getCurrentUserUID(), new Observer() {
             @Override
             public void update(Observable o, Object arg)  {
-                Log.d("TEST/Following", "User got updated!!!");
-
                 followingAdapter.refreshData(user.getFollowingList());
                 requestedAdapter.refreshData(user.getRequestedList());
 
@@ -217,8 +164,7 @@ public class FollowingFragment extends Fragment {
             }
         });
 
-        if (user.isLoaded())
-        {
+        if (user.isLoaded()) {
             followingAdapter.refreshData(user.getFollowingList());
             requestedAdapter.refreshData(user.getRequestedList());
         }

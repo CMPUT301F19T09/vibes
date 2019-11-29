@@ -32,10 +32,10 @@ import com.cmput301f19t09.vibes.models.UserManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-/*
-This fragment opens a Dialog that shows the event. If the event belongs to the current user, then
-it is editable and the user can delete it from the database. Clicking on the user's profile picture
-will open the profile (ProfileFragmetn) of that user
+/**
+ * This fragment opens a Dialog that shows a MoodEvent. If the event belongs to the current user, then
+ * it is editable and the user can delete it from the database. Clicking on the user's profile picture
+ * will open the profile (ProfileFragment) of that user
  */
 public class MoodDetailsDialogFragment extends DialogFragment
 {
@@ -45,12 +45,12 @@ public class MoodDetailsDialogFragment extends DialogFragment
     private boolean editable;
 
 
-    /*
-    Create a new fragment for the event, set the editable flag to editable
-    @param event
-        The MoodEvent to show the details of
-    @param editable
-        Whether the MoodEvent should be editable
+    /**
+     * Create a new instance of MoodDetailsDialogFragment to show the given event. If editable is true,
+     * then the user is able edit or delete the event
+     * @param event The event to show
+     * @param editable True -> The event is editable, False -> The event is not editable
+     * @return A MoodDetailsDialogFragment with the given arguments
      */
     public static MoodDetailsDialogFragment newInstance(MoodEvent event, boolean editable)
     {
@@ -64,6 +64,11 @@ public class MoodDetailsDialogFragment extends DialogFragment
         return fragment;
     }
 
+    /**
+     * Create the Dialog and populate its fields with the MoodEvent's details
+     * @param savedInstanceState
+     * @return A Dialog showing the details of the MoodEvent given to the class
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState)
@@ -109,6 +114,9 @@ public class MoodDetailsDialogFragment extends DialogFragment
         emotionChip.setText(emotionName.charAt(0) + emotionName.substring(1).toLowerCase());
 
         int situation = event.getSocialSituation();
+
+        // If the MoodEvent has a social situation, set the social situation view to show that situation,
+        // otherwise, don't show the view
         if (situation != -1)
         {
             socialChip.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), android.R.color.darker_gray, null)));
