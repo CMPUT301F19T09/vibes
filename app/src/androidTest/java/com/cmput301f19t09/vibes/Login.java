@@ -22,8 +22,8 @@ public class Login {
             deviceAnimationTestRule = new DeviceAnimationTestRule();
 
     @Rule
-    public ActivityTestRule<SplashActivity> rule =
-            new ActivityTestRule<>(SplashActivity.class, true, true);
+    public ActivityTestRule<LoginActivity> rule =
+            new ActivityTestRule<>(LoginActivity.class, true, true);
 
     /**
      * Class method callable using Login.setUp() for intent tests to login a default test user.
