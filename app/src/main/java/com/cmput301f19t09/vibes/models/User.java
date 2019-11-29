@@ -537,22 +537,20 @@ public class User extends Observable implements Serializable {
             if (moodEvent.getPhoto() != null) {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
-//                changeMoodPhoto(moodEvent.getPhoto());
-                //moods.set(index, mood);
+                moods.set(index, mood);
                 storageReference = storage.getReference(photoPath);
                 storageReference.putFile(moodEvent.getPhoto()).addOnSuccessListener(taskSnapshot -> {
                     documentReference = collectionReference.document(uid);
                     documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
-                    }).addOnFailureListener(e -> {
-                    });
+                    }).addOnFailureListener(e -> { });
                 });
             } else {
                 mood.put("photo", null);
+                moods.set(index, mood);
                 documentReference = collectionReference.document(uid);
                 documentReference.update("moods", moods)
                         .addOnSuccessListener(aVoid -> {
-                        }).addOnFailureListener(e -> {
-                });
+                        }).addOnFailureListener(e -> { });
             }
         }
     }
