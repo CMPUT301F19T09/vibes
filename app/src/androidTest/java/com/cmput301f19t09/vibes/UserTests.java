@@ -295,6 +295,18 @@ public class UserTests {
         deleteMoods(3);
     }
 
+    /**
+     *  Custom ViewAction to turn OFF/ON any checkable object (Switch, Checkbox, etc.) that
+     *  isn't dependent on previous state. So, if it's already ON, it'll stay ON. If it's OFF,
+     *  it'll toggle ON.
+     *
+     * https://stackoverflow.com/questions/37819278/android-espresso-click-checkbox-if-not-checked
+     *
+     * @param checked
+     *      State to set the item too
+     * @return
+     *      An espresso ViewAction
+     */
     public static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {
             @Override
