@@ -55,8 +55,6 @@ public class SearchFragment extends Fragment {
         ImageButton searchButton = view.findViewById(R.id.search_button);
         searchButton.setImageResource(R.drawable.ic_search_grey_36dp);
 
-        searchButton.setOnClickListener(view1 -> Toast.makeText(getContext(), "SEARCHING", Toast.LENGTH_LONG).show());
-
         adapter = new SearchListAdapter(getContext());
         searchList.setAdapter(adapter);
 
