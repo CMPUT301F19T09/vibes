@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="situations">
+        <item>By Myself</item>
+        <item>With Someone Else</item>
+        <item>With A Few People</item>
+        <item>In A Crowd</item>
+    </string-array>
+</resources>

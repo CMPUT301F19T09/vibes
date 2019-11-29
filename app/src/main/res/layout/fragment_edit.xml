@@ -11,226 +11,257 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/top_of_fragment"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <GridView
-            android:id="@+id/state_grid_view"
+        <TextView
+            android:id="@+id/tv_emotion_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:isScrollContainer="false"
-            android:nestedScrollingEnabled="false"
-            android:numColumns="3"
-            android:stretchMode="spacingWidthUniform"
-            app:layout_constraintBottom_toTopOf="@+id/state_text_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Emotion:"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/top_of_fragment"/>
+            app:layout_constraintTop_toBottomOf="@+id/title_textview" />
+
+        <ImageView
+            android:id="@+id/emotion_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/emotion_chip_group"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/emotion_chip_group"
+            app:srcCompat="@drawable/emotion_image_anticipation" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/emotion_chip_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/emotion_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_emotion_title"
+            app:singleSelection="true">
+
+        </com.google.android.material.chip.ChipGroup>
 
         <TextView
-            android:id="@+id/state_text_view"
+            android:id="@+id/tv_reason_title"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:fontFamily="@font/roboto_thin"
-            android:gravity="center_horizontal"
-            android:text="@string/state"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Reason:"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/edit_situation_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <EditText
-            android:id="@+id/edit_situation_view"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="8dp"
-            android:ems="10"
-            android:fontFamily="@font/roboto_thin"
-            android:hint="@string/enter_context"
-            android:inputType="number"
-            app:layout_constraintBottom_toTopOf="@+id/reason_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/state_text_view" />
+            app:layout_constraintBottom_toBottomOf="@+id/reason_container"
+            app:layout_constraintStart_toStartOf="@+id/tv_emotion_title"
+            app:layout_constraintTop_toTopOf="@+id/reason_container" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/reason_container"
-            android:layout_width="match_parent"
-            android:layout_height="73dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             app:counterEnabled="true"
             app:counterMaxLength="20"
-            app:layout_constraintBottom_toTopOf="@+id/location_text_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_situation_view">
+            app:layout_constraintStart_toEndOf="@+id/tv_reason_title"
+            app:layout_constraintTop_toBottomOf="@id/emotion_chip_group">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_reason_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/roboto_thin"
                 android:hint="@string/enter_reason"
                 android:inputType="textCapSentences|textAutoCorrect"
                 android:maxLength="20"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <LinearLayout
-            android:id="@+id/photo_layout"
-            android:layout_width="match_parent"
+            android:id="@+id/photo_buttons"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/reason_container">
-            <LinearLayout
-                android:layout_width="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/tv_photo_title"
+            app:layout_constraintTop_toBottomOf="@+id/social_chip_group">
+
+            <ImageButton
+                android:id="@+id/capture_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/photo_image"
-                android:id="@+id/photo_buttons"
-                android:weightSum="3">
+                android:layout_marginHorizontal="8dp"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:src="@drawable/ic_camera_black_36dp"
+                android:tint="@android:color/darker_gray"></ImageButton>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/capture_button"
-                    android:text="Camera"
-                    android:layout_weight="1">
-                </Button>
+            <ImageButton
+                android:id="@+id/gallery_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:src="@drawable/ic_insert_photo_black_36dp"
+                android:tint="@android:color/darker_gray"></ImageButton>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/gallery_button"
-                    android:text="Gallery"
-                    android:layout_weight="1">
-                </Button>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/clear_photo_button"
-                    android:text="Clear"
-                    android:layout_weight="1">
-                </Button>
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/photo_image"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:src="@drawable/empty_picture_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/photo_buttons" />
+            <ImageButton
+                android:id="@+id/clear_photo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:src="@drawable/ic_cancel_black_36dp"
+                android:tint="@android:color/holo_red_dark"></ImageButton>
         </LinearLayout>
 
         <TextView
-            android:id="@+id/location_text_view"
+            android:id="@+id/tv_location_title"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:ems="10"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_regular"
-            android:hint="@string/use_location"
+            android:text="@string/use_location"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/date_text_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/location_switch"
+            app:layout_constraintStart_toStartOf="@+id/tv_photo_title" />
 
         <Switch
             android:id="@+id/location_switch"
             android:layout_width="wrap_content"
             android:layout_height="27dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_regular"
-            app:layout_constraintBottom_toTopOf="@+id/date_text_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/photo_layout" />
+            app:layout_constraintStart_toEndOf="@+id/tv_location_title"
+            app:layout_constraintTop_toBottomOf="@+id/photo_image" />
 
         <TextView
             android:id="@+id/date_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:ems="10"
             android:fontFamily="@font/roboto_regular"
-            android:gravity="center_horizontal"
-            android:hint="@string/date"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/time_text_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/location_text_view" />
+            app:layout_constraintStart_toStartOf="@+id/tv_location_title"
+            app:layout_constraintTop_toBottomOf="@+id/location_switch" />
 
         <TextView
             android:id="@+id/time_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:ems="10"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:fontFamily="@font/roboto_regular"
-            android:gravity="center_horizontal"
-            android:hint="@string/time"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/button_submit_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_text_view" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_at"
+            app:layout_constraintStart_toEndOf="@+id/tv_at" />
 
         <Button
             android:id="@+id/button_submit_view"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
             android:background="@drawable/rounded_button"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/submit"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_cancel_view"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/button_cancel_view"
             app:layout_constraintTop_toBottomOf="@+id/time_text_view" />
 
         <Button
             android:id="@+id/button_cancel_view"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/rounded_button_blue"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/cancel"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/button_submit_view"
+            app:layout_constraintEnd_toStartOf="@+id/button_submit_view"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_social_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Social Situation (Optional):"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_reason_title"
+            app:layout_constraintTop_toBottomOf="@+id/reason_container" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/social_chip_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/reason_container"
+            app:layout_constraintStart_toStartOf="@+id/tv_reason_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_social_title"
+            app:singleSelection="true" />
+
+        <TextView
+            android:id="@+id/tv_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="at"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/date_text_view"
+            app:layout_constraintStart_toEndOf="@+id/date_text_view" />
+
+        <TextView
+            android:id="@+id/tv_photo_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Picture (Optional):"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/photo_buttons"
+            app:layout_constraintStart_toStartOf="@+id/tv_social_title"
+            app:layout_constraintTop_toTopOf="@+id/photo_buttons" />
+
+        <ImageView
+            android:id="@+id/photo_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/empty_picture_image"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/button_submit_view"
-            app:layout_constraintTop_toBottomOf="@+id/time_text_view" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_photo_title" />
+
+        <TextView
+            android:id="@+id/title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="New Mood:"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

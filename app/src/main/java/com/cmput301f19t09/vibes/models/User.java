@@ -80,14 +80,17 @@ public class User extends Observable implements Serializable {
             connectionStarted = true;
 
             db = FirebaseFirestore.getInstance();
-            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(false)
-                    .build();
-            db.setFirestoreSettings(settings);
 
             collectionReference = db.collection("users");
             storage = FirebaseStorage.getInstance();
         }
+    }
+
+    /**
+     * An empty constructor which does nothing and doesn't set attributes properly.
+     * Used ONLY FOR TESTING.
+     */
+    public User() {
     }
 
     /**
