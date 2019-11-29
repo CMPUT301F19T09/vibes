@@ -4,6 +4,7 @@ import com.cmput301f19t09.vibes.models.MoodEvent;
 import com.cmput301f19t09.vibes.models.User;
 import com.cmput301f19t09.vibes.models.UserManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
@@ -22,6 +23,7 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     public FollowedMoodListAdapter(Context context)
     {
         super(context);
+        observed_users = new ArrayList<>();
         this.mainUser = UserManager.getCurrentUser();
         this.resume();
     }
@@ -52,7 +54,8 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
      */
     private void addObservers()
     {
-        observed_users = mainUser.getFollowingList();
+        observed_users.clear();
+        observed_users.addAll(mainUser.getFollowingList());
 
         for (String user_id : observed_users)
         {
@@ -94,12 +97,6 @@ public class FollowedMoodListAdapter extends MoodListAdapter {
     @Override
     public void refreshData()
     {
-        if (observed_users == null || observed_users.size() == 0)
-        {
-            clear();    // Make sure the list is clear
-            return;
-        }
-
         for (String user_id : observed_users)
         {
             User followed_user = UserManager.getUser(user_id);
