@@ -24,6 +24,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -534,7 +535,24 @@ public class User extends Observable implements Serializable {
             } else {
                 mood.put("location", null);
             }
-            if (moodEvent.getPhoto() != null) {
+
+            String lastURISegment = null;
+            if (moodEvent.getPhoto() != null)
+            {
+                List<String> uriSegments = moodEvent.getPhoto().getPathSegments();
+                lastURISegment = uriSegments.get(uriSegments.size() - 1);
+            }
+
+            if (moodEvent.getPhoto() != null && lastURISegment.equals(moods.get(index).get("photo")))
+            {
+                String photoPath = (String) moods.get(index).get("photo");
+                mood.put("photo", photoPath);
+                moods.set(index, mood);
+                documentReference = collectionReference.document(uid);
+                documentReference.update("moods", moods).addOnSuccessListener(aVoid -> {
+                }).addOnFailureListener(e -> { });
+            }
+            else if (moodEvent.getPhoto() != null) {
                 String photoPath = "reason_photos/"+moodEvent.getPhoto().hashCode()+".jpeg";
                 mood.put("photo", photoPath);
                 moods.set(index, mood);

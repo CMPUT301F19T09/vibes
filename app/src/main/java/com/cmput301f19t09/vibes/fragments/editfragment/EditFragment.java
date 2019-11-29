@@ -307,7 +307,6 @@ public class EditFragment extends Fragment {
                     } else
                     {
                         emotionChip.setChipBackgroundColor(ColorStateList.valueOf(bgColor));
-                        Log.d("TEST/Chips", state.getEmotion() + " is unchecked");
                     }
                 }
             });

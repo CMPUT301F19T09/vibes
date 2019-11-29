@@ -21,7 +21,6 @@ public class UserManager
 {
     // All users that have been created, associated with their listener
     private static Map<String, Pair<ListenerRegistration, User>> registeredUsers;
-    private static String mainUserUID;
 
     static
     {
@@ -120,8 +119,6 @@ public class UserManager
             Pair<ListenerRegistration, User> p = registeredUsers.get(user_id);
             User user = p.second;
 
-            Log.d("TEST~", "deleting observer of " + user_id);
-            if (user_id.equals(mainUserUID)) Log.d("TEST~", "######DELETE OBSERVER MAIN USER######");
             user.deleteObservers();
         }
     }
@@ -150,13 +147,13 @@ public class UserManager
     public static void registerCurrentUser(final Consumer<User> callback)
     {
         // Get the mainUserUID from FirebaseAuth
-        mainUserUID = FirebaseAuth.getInstance().getUid();
+        String UID = FirebaseAuth.getInstance().getUid();
 
-        User user = new User(mainUserUID);
+        User user = new User(UID);
 
         // Register the user
         ListenerRegistration registration = user.getSnapshotListener();
-        registeredUsers.put(mainUserUID,
+        registeredUsers.put(UID,
                 new Pair(registration, user));
 
         // Get the user data from the DB, call callback once the read is complete
@@ -174,9 +171,10 @@ public class UserManager
      */
     public static User getCurrentUser()
     {
-        if (registeredUsers.containsKey(mainUserUID))
+        String UID = FirebaseAuth.getInstance().getUid();
+        if (registeredUsers.containsKey(UID))
         {
-            return registeredUsers.get(mainUserUID).second;
+            return registeredUsers.get(UID).second;
         }
         else
         {
@@ -184,16 +182,18 @@ public class UserManager
         }
     }
 
-    /*
-    get the current user mainUserUID
-    @return
-        The mainUserUID associated with currentUser
+    /**
+     * Get the UID of the currently signed-in User
+     * @return The UID associated with currentUser
      */
     public static String getCurrentUserUID()
     {
-        return mainUserUID;
+        return FirebaseAuth.getInstance().getUid();
     }
 
+    /**
+     * Unregister all users currently held. This also removes all snapshot listeners on the users
+     */
     public static void unregisterAllUsers() {
 
         for (String uid : new ArrayList<String>(registeredUsers.keySet())) {

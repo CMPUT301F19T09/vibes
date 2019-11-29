@@ -101,7 +101,8 @@ public abstract class MoodListAdapter extends ArrayAdapter<MoodEvent>
 
         emotionImage.setImageResource(state.getImageFile());
 
-        emotionTag.setText(state.getEmotion());
+        String emotionName = state.getEmotion();
+        emotionTag.setText(emotionName.charAt(0) + emotionName.substring(1).toLowerCase());
         emotionTag.setBackgroundTintList(ColorStateList.valueOf(state.getColour()));
 
         moodTime.setText("~" + getRelativeTimeString(event.getLocalDateTime()));
