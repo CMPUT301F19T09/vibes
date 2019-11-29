@@ -353,7 +353,8 @@ public class UserTests {
         // create a new MoodEvent
         // select ANGER
         onView(withTagValue(is("ANGER"))).perform(click());
-        onView(withText("By Myself")).perform(setChecked(true));
+        onView(withText("By myself")).perform(setChecked(true));
+//        onView(withId(R.id.edit_situation_view)).perform(typeText("0.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(typeText("three words desc"));
         closeSoftKeyboard();
@@ -374,13 +375,16 @@ public class UserTests {
         // verify that the fields are populated correctly
         onView(withId(R.id.edit_reason_view)).check(matches(withText("three words desc")));
         Thread.sleep(100);
-        onView(withText("By Myself")).check(matches(isChecked()));
+        onView(withText("By myself")).check(matches(isChecked()));
+//        onView(withId(R.id.social_chip_group)).check(matches(isNotChecked()));
         onView(withText("Anger")).check(matches(isChecked()));
 
         // select new mood; HAPPINESS
         Thread.sleep(100);
         onView(withTagValue(is("HAPPINESS"))).perform(click());
-        onView(withText("With Someone Else")).perform(setChecked(true));
+//        onData(anything()).inAdapterView(withId(R.id.state_grid_view)).atPosition(5).perform(click());
+        onView(withText("With someone else")).perform(setChecked(true));
+//        onView(withId(R.id.edit_situation_view)).perform(typeText("1.0"));
         closeSoftKeyboard();
         onView(withId(R.id.edit_reason_view)).perform(replaceText("a new desc"));
         closeSoftKeyboard();
@@ -405,7 +409,8 @@ public class UserTests {
 
         // verify that the fields are populated correctly again
         onView(withId(R.id.edit_reason_view)).check(matches(withText("a new desc")));
-        onView(withText("With Someone Else")).check(matches(isChecked()));
+        onView(withText("With someone else")).check(matches(isChecked()));
+//        onView(withId(R.id.edit_situation_view)).check(matches(withText("1.0")));
         onView(withText("Happiness")).check(matches(isChecked()));
         closeSoftKeyboard();
         onView(withId(R.id.button_cancel_view)).perform(ViewActions.scrollTo()).perform(click());
