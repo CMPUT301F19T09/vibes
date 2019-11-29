@@ -146,7 +146,7 @@ public class MainActivity extends FragmentActivity {
                             case DialogInterface.BUTTON_POSITIVE:
                                 //Yes button clicked
                                 // Log out action
-//                                UserManager.unre
+                                UserManager.unregisterAllUsers();
                                 FirebaseAuth.getInstance().signOut();
                                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                                 finish();
