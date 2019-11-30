@@ -65,19 +65,22 @@ public class MainActivity extends FragmentActivity {
                 Fragment currentFragment = fragments.get(fragments.size() - 1);
                 String tag = currentFragment.getTag();
 
-                //Log.d("MAIN-ACTIVITY", "Backstack changed -->" + tag);
-
-                if (tag == null || !tag.equals(MapFragment.class.getSimpleName())) {
-                    //Log.d("MAIN-ACTIVITY", "Switching to list");
-                    if (tag != null && tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID())) {
+                if (tag != null && tag.equals(MoodListFragment.class.getSimpleName()))
+                {
+                    currentButtonMode = ButtonMode.MAP;
+                }
+                else
+                {
+                    if (tag != null &&
+                            tag.equals(ProfileFragment.class.getSimpleName() + UserManager.getCurrentUserUID()))
+                    {
                         findViewById(R.id.logoutButton).setVisibility(View.VISIBLE);
-                    } else {
+                    }
+                    else
+                    {
                         findViewById(R.id.logoutButton).setVisibility(View.GONE);
                     }
 
-                    currentButtonMode = ButtonMode.MAP;
-                } else {
-                    //Log.d("MAIN-ACTIVITY", "Switching to map");
                     currentButtonMode = ButtonMode.LIST;
                 }
 
@@ -104,7 +107,6 @@ public class MainActivity extends FragmentActivity {
         followingButton = findViewById(R.id.main_follow_list_button);
         logoutButton = findViewById(R.id.logoutButton);
         searchButton = findViewById(R.id.main_search_button);
-        viewButton = findViewById(R.id.main_view_button);
 
         logoutButton.setVisibility(View.GONE);
 
@@ -178,27 +180,9 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        // When the 'view' button is clicked open either the MapFragment or the MoodListFragment depending on buttonMode
-        viewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (currentButtonMode) {
-                    case LIST:
-                        setListFragment();
-                        currentButtonMode = ButtonMode.MAP;
-                        break;
-                    default:
-                        setMapFragment();
-                        currentButtonMode = ButtonMode.LIST;
-                        break;
-                }
-            }
-        });
-
         Glide.with(MainActivity.this).load(user.getProfileURL()).into(profileButton);
 
         setListFragment();
-        updateViewButton();
     }
 
     /**
@@ -396,10 +380,18 @@ public class MainActivity extends FragmentActivity {
 
             case MAP:
                 image = R.drawable.ic_map_white_36dp;
+                viewButton.setOnClickListener((View v) ->
+                {
+                    setMapFragment();
+                });
                 break;
             case LIST:
             default:
                 image = R.drawable.ic_list_white_36dp;
+                viewButton.setOnClickListener((View v) ->
+                {
+                    setListFragment();
+                });
                 break;
         }
 
