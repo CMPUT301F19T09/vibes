@@ -297,7 +297,7 @@ public class EditFragment extends Fragment {
                     emotionImageView.setVisibility(VISIBLE);
                 }
 
-                if (validReason) {
+                if (validReason && emotionalState != null) {
                     buttonSubmitView.setEnabled(true);
                 }
             }

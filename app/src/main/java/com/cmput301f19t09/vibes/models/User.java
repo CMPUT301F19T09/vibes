@@ -253,15 +253,15 @@ public class User extends Observable implements Serializable {
                     storageReference.getDownloadUrl()
                             .addOnSuccessListener(uri -> {
                                 event.setPhoto(uri);
-                                events.add(event);
+                                //events.add(event);
                             })
                             .addOnFailureListener(e -> {
                                 event.setPhoto(null);
-                                events.add(event);
+                                //events.add(event);
                             });
-                } else {
+                }// else {
                     events.add(event);
-                }
+                //}
             }
         }
         return events;
